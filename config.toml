@@ -1,5 +1,5 @@
-baseurl = "https://www.example.com/"
-title = "Black & Light"
+baseurl = "https://harlecin.netlify.com/"
+title = "dika"
 author = "Christoph Bodner"
 canonifyurls = true
 languagecode = "en"
@@ -9,7 +9,7 @@ pygmentsstyle       = "bw"
 pygmentscodefences  = true
 
 [params]
-  sitename = "Test"
+  sitename = "dika"
 
 [[menu.main]]
     name = "About"
