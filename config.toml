@@ -1,23 +1,27 @@
 baseurl = "https://harlecin.netlify.com/"
-title = "dika"
+title = "semper quaerere"
 author = "Christoph Bodner"
 canonifyurls = true
 languagecode = "en"
 theme = "hugo-black-and-light-theme"
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
 pygmentsstyle       = "bw"
 pygmentscodefences  = true
 
 [params]
-  sitename = "dika"
+  sitename = "semper quaerere"
+  
+  MathJaxCDN = "//cdn.bootcss.com"
+  MathJaxVersion = "2.7.1"
 
 [[menu.main]]
     name = "About"
-    url  = "https://github.com/davidhampgonsalves/hugo-black-and-light-theme"
+    url  = "/home/about"
 [[menu.main]]
     name = "Projects"
-    url  = "https://github.com/davidhampgonsalves/hugo-black-and-light-theme"
+    url  = "/projects/project_1"
 [[menu.main]]
     name = "Resume"
-    url  = "https://github.com/davidhampgonsalves/hugo-black-and-light-theme"
+    url  = "/projects/project_1"
 
