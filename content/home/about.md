@@ -7,7 +7,7 @@ Christoph Bodner is the Lead Data Scientist at the Austrian Postal Service. He i
 
 Christoph holds a Master degree in Quantitative Finance and a Bachelor degree in Business. So he is neither scared by stuff like:
 $$\max \left(\frac{1}{2}\sigma^2 V''(x)+\mu V'(x)-rV(x), 1-V'(x) \right) = 0$$
-nor bei acronyms such as GDPR, IFRS and EBITDA:)
+nor by acronyms such as GDPR, IFRS and EBITDA:)
 
 His interests include traveling (he did a 9-month-trip-around-the-world), climbing and  playing board games. Recently he started teaching himself the piano. 
 
