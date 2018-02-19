@@ -37,5 +37,6 @@ pie(
 ```
 
 # Latex math
+$$\max \left\{\frac{1}{2}\sigma^2 V''(x)+\mu V'(x)-rV(x), 1-V'(x) \right\} = 0$$
 
 $$\alpha \times \frac{1}{2}$$
