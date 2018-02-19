@@ -35,3 +35,7 @@ pie(
   init.angle = -50, border = NA
 )
 ```
+
+# Latex math
+
+$$\alpha \times \frac{1}{2}$$
