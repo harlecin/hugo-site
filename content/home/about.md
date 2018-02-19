@@ -28,4 +28,4 @@ Have questions or suggestions? Feel free to [open an issue on GitHub](https://gi
 
 Thanks for reading!
 
-`$\frac{1}{2}$`
+`$$\frac{1}{2}$$`
