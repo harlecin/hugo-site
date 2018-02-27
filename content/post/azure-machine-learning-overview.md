@@ -38,17 +38,21 @@ West and North Europe are both offered as availability regions. The target-user 
 ## Azure Machine Learning Services
 Microsoft markets Azure ML Serives (not Studio!) as an 'end-to-end, scalable, trusted platform', which begs the question why someone would want to use an untrusted platform:) AzureML Services consists of the following components:
 
-A desktop data-science development-environment called:
+A desktop data-science development-environment called:  
+
 - Workbench 
 
-to manage:
+to manage:  
+
 - Experimentation service
 - Model management
 
-You can also use an addin for Visual Studio Code:
+You can also use an addin for Visual Studio Code:  
+
 - Visual Studio Code Tools for AI
 
-Last, but not least, there are:
+Last, but not least, there are:  
+
 - AI Toolkit for Azure IoT Edge
 - MMLSpark
 
