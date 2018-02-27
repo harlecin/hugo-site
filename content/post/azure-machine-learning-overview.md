@@ -38,7 +38,30 @@ West and North Europe are both offered as availability regions. The target-user 
 ## Azure Machine Learning Services
 Microsoft markets Azure ML Serives (not Studio!) as an 'end-to-end, scalable, trusted platform', which begs the question why someone would want to use an untrusted platform:) AzureML Services consists of the following components:
 
-- 
+A desktop data-science development-environment called:
+- Workbench 
+
+to manage:
+- Experimentation service
+- Model management
+
+You can also use an addin for Visual Studio Code:
+- Visual Studio Code Tools for AI
+
+Last, but not least, there are:
+- AI Toolkit for Azure IoT Edge
+- MMLSpark
+
+AzureML Workbench runs on W10, WS2016, macOS Sierra or High Sierra only. Azure ML Workbench will also force you to install Python 3.5, Miniconda, Azure ML Data Profile, Azure ML CLI and a couple of other dependencies such as Jupyter. So it seems that changing the Python interpreter is not possible at the moment. AzureML Workbench does not support R at the time of writing.   
+
+In order to use AzureML Workbench, you need to create an Azure Experimentation service and Model management service. AzureML Workbench is then used to connect to these services. 
+
+A couple of notes before you go ahead an install the Workbench:
+> MS warns that installation can take quite long (around 30min) and you should download the installer to disk and launch it from there and NOT from your browser widget!
+
+I only saw the second warning after launching the installer from the browser and after about 10min it does indeed throw an error and the installation terminates, so that is that:)
+
+After the install is complete, you need to sign in with your Azure credentials. By default Workbench will choose the first(!) Experimentation account it finds in your subscription. You can change the Experimentation account afterwards though.
 ## Data science plattform checklist
 
 The following checklist is by no means complete, but maybe helpful in choosing data science plattforms:
