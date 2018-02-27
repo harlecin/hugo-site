@@ -3,7 +3,7 @@ title = "About"
 date = "2018-02-19"
 +++
 
-Christoph Bodner is the Lead Data Scientist at the Austrian Postal Service. He is responsible for designing the data science architecture and for coding up predictive models. Prior to joining the Austrian Post, he worked as a financial consultant at KPMG.
+Christoph Bodner is the Lead Data Scientist at the Austrian Postal Service. He is responsible for designing the data science architecture, building the data science team and for coding up predictive models. Prior to joining the Austrian Post, he worked as a financial consultant at KPMG.
 
 Christoph holds a Master degree in Quantitative Finance and a Bachelor degree in Business. So he is neither scared by stuff like:
 $$\max \left(\frac{1}{2}\sigma^2 V''(x)+\mu V'(x)-rV(x), 1-V'(x) \right) = 0$$
@@ -18,4 +18,3 @@ You can find Christoph on
 
 
 Hopefully, you enjoy this site. If you find any errors, please open a [Github issue](https://github.com/harlecin/hugo-site).
-
