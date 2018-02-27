@@ -76,4 +76,4 @@ The following checklist is by no means complete, but maybe helpful in choosing d
 - What does pricing look like for different usage scenarios?
 
 
-[azure-ml-studio]: ../../data/azure-machine-learning-studio.jpg "Azure Machine Learning Studio"
+[azure-ml-studio]: data/azure-machine-learning-studio.jpg "Azure Machine Learning Studio"
