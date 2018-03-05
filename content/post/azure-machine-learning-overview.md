@@ -115,7 +115,7 @@ I found the following tools/projects interesting, but since they do not depend o
 - [MMLSpark](https://github.com/Azure/mmlspark)
 
 
-[azure-ml-studio]: /static/img/azure-machine-learning-studio.jpg "Azure Machine Learning Studio"
-[azure-ml-services-overview]: /static/img/azure-ml-services-overview.png "Azure ML Services Overview"
+[azure-ml-studio]: /img/azure-machine-learning-studio.jpg "Azure Machine Learning Studio"
+[azure-ml-services-overview]: /img/azure-ml-services-overview.png "Azure ML Services Overview"
 
 
