@@ -76,8 +76,8 @@ The Model Management service is used to register models and manifests (= recipe 
 
 The pricing model contains two components:
 
-1) Experimentation account + Model Management and on top
-2) Compute/Storage/other Azure ressources 
+1. Experimentation account + Model Management and on top  
+2. Compute/Storage/other Azure ressources 
 
  The [pricing section](https://azure.microsoft.com/en-us/pricing/details/machine-learning-services/) of AzureML Services quotes prices for Experimentation accounts (2 users for free, afterwards €42 per user per month) and prices for Model Management (from free to about €2,100 p.m. for the largest tier). The tiers come with "available cores", but the number of cores refers to the maximum number the account may have active at any given time and NOT the charges for compute hours. Running the models during experimentation and deployment incurs extra charges on top. Extra charges can also be incurred for any Azure services consumed in conjunction with Azure Machine Learning such as compute charges, storage charges, usage of Azure Container Services/Registry, Azure Key Vault, etc. 
 

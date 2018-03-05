@@ -1,0 +1,34 @@
+---
+title: "Hyperparameter tuning with multiple time series"
+author: "Christoph"
+date: 2018-02-23T21:13:14-05:00
+categories: ["R"]
+tags: ["machine learning", "time series", "xgboost"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+library(readr)
+library(dplyr)
+library(caret)
+```
+
+```{r load data}
+data_train = read_csv("../../../data/rossmann/train.csv/train.csv", 
+    col_types = cols(Date = col_date(format = "%Y-%m-%d"),
+                     StateHoliday = col_character())
+    )
+
+data_stores = read_csv("../../../data/rossmann/store.csv/store.csv")
+
+data_joined = left_join(data_train, data_stores, by = "Store") %>%
+  mutate_at(.vars = c("Store", "DayOfWeek", "Open", "Promo", "StateHoliday",
+                      "SchoolHoliday", "StoreType", "Promo2"),
+            .funs = as.factor)
+```
+
+Let's simulate some data:
+```{r}
+
+```
+
