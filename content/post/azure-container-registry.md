@@ -6,7 +6,7 @@ title = "Azure Container Registry - Quick Start Guide"
 Azure Container Registry is the Microsoft equivalent to private Dockerhub repositories. First, I will show you how to quickly push an image to Azure Container Registry. In a second step, I will cover how to manage your registries and repositories using the PowerShell cmdlet `AzureRM` as well as the `Azure CLI`.
 
 ## Quick start
-To push a docker image to the Azure Container Registry, first go to your Azure Container Registry service in the Azure portal.
+To push a docker image to Azure Container Registry, first go to your Azure Container Registry service in the Azure portal.
 
 In the 'Overview' section you can find a field called 'Login server'. Jot down this address.  
 
@@ -44,12 +44,12 @@ On Windows using Powershell is probably one of the easiest and most powerful way
 
 You can install the `AzureRm` cmdlet to manage your container registry. `AzureRm` is primarily focused on managing Azure services from a sysadmin perspective and provides mainly functions to create and change Azures services. I have not yet found a way to e.g. delete repositories in an Azure registry or list all repositories in a given registry. A more powerful solution is the Azure CLI (see next section).
 
-The preferred method to install the cmdlet is to use PowerShellGet and pull it directly from the PowerShell Gallery. So first, we need to check if PowerShellGet is available:
+The preferred method to install the cmdlet is to use `PowerShellGet` and pull it directly from the PowerShell Gallery. So first, we need to check if `PowerShellGet` is available:
 ```
 Get-Module -Name PowerShellGet -ListAvailable | Select-Object -Property Name,Version,Path
 ```
 
-You should see PowerShellGet, a version number and a path, if it is installed. Next, run:
+You should see `PowerShellGet`, a version number and a path, if it is installed. Next, run:
 ```
 Install-Module -Name AzureRM -AllowClobber
 ```
@@ -67,7 +67,7 @@ Login-AzureRmAccount
 ```
 You should see a pop-up window asking for your username and password.  
 
-> Note: Powershell Core v6.0.0 crashed when trying to open the login window, so I relied on the 'old' Windows Powershell instead.
+**Note**: Powershell Core v6.0.0 crashed when trying to open the login window, so I relied on the 'old' Windows Powershell instead.
 
 Now let's get our login credentials and save them to a variable:
 ```
@@ -106,7 +106,7 @@ You can find an overview of the functionality provided by Azure CLI [here](https
 - `az acr repository delete --name your_registry --repository repo_to_delete [--resource-group your_resource_group][--tag tag_to_delete]` to delete a repository in your container registry with a specific tag. If you omit the tag, the entire repo is deleted 
 - `az acr repository list` to show all images in a given 
 
-You can find more commands [here].(https://docs.microsoft.com/en-us/cli/azure/acr/repository?view=azure-cli-latest#delete)
+You can find more commands [here](https://docs.microsoft.com/en-us/cli/azure/acr/repository?view=azure-cli-latest#delete).
 
 
 
