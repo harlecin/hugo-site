@@ -27,7 +27,7 @@ devtools::install_github("Azure/rAzureBatch")
 devtools::install_github("Azure/doAzureParallel") 
 ```
 
-```{r}
+```{r, eval = F}
 # Load the doAzureParallel library 
 library(doAzureParallel) 
 ```
