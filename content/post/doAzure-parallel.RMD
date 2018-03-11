@@ -50,7 +50,7 @@ Next, you need to create an Azure Batch and a storage account in your Azure subs
 ```
 Leave the github part blank. Now we need to load the credentials into our current R session:
 
-```{r}
+```{r, eval = F}
 setCredentials(paste0(path_credentials, "azure-batch-credentials.json"))
 ```
 
@@ -169,7 +169,7 @@ You can pre-load data into your cluster when it is created using resource files.
 
 
 When you are done, it is important to stop the cluster. Otherwise, you will continue to incur charges.
-```{r}
+```{r, eval = F}
 stopCluster(cluster)
 ```
 
