@@ -11,7 +11,7 @@ path_credentials = "../../../../../2_Projekte/_credentials/"
 
 While (personal) computers have become increasingly powerful over the last years there are still lots of workloads that easily bring even the best workstation to its knees. Running huge Monte-Carlo simulations or training thousands of models takes hours, if not days even on very beefy machines. Now enter Azure Batch processing. Azure Batch is a Microsoft cloud computing service that allows you to run your computations on multiple machines in the cloud and collect the results back in R once the computations are done using `doAzureParallel` a `foreach` backend.  
 
-This article is intended as a quick start guide on how to use Azure Batch from R to distribute computations to the cloud and is based on Microsoft's online documentation.
+This article is intended as a quick start guide on how to use Azure Batch from R to distribute computations to the cloud and is based on Microsoft's online documentation. asdf
 
 ## Prerequisites
 
