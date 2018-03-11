@@ -28,9 +28,23 @@ docker push your-login-server-address-here/target_image[:TAG]
 ```
 And we are done:) You can now pull your image using `docker pull`.
 
+## Managing images
+Every container registry contains 1:n repositories that are used to group container images together (e.g. by project).
+
+Repositories are defined by using slashes `/` as follows:  
+
+- `your-login-server-address-here/target_image[:TAG]` is a top-level image
+- `your-login-server-address-here/project_name/target_image[:TAG]` is a project specific image
+- `your-login-server-address-here/project_name/sub_project/target_image[:TAG]` is an image in a sub-project of the main project
+
+You can view all your images by navigating to your registry in the Azure Portal and clicking on the 'Repository' tab. You can also start containers directly from there.
 
 ## Connecting with ActiveDirectory and PowerShell
-On Windows, using Powershell is probably one of the easiest and most powerful ways to manage your Azure resources (including the container registry). The preferred method to install the cmdlet is to use PowerShellGet and pull it directly from the PowerShell Gallery. So first, we need to check if PowerShellGet is available:
+On Windows using Powershell is probably one of the easiest and most powerful ways to manage your Azure resources (including the container registry). 
+
+You can install the `AzureRm` cmdlet to manage your container registry. `AzureRm` is primarily focused on managing Azure services from a sysadmin perspective and provides mainly functions to create and change Azures services. I have not yet found a way to e.g. delete repositories in an Azure registry or list all repositories in a given registry. A more powerful solution is the Azure CLI (see next section).
+
+The preferred method to install the cmdlet is to use PowerShellGet and pull it directly from the PowerShell Gallery. So first, we need to check if PowerShellGet is available:
 ```
 Get-Module -Name PowerShellGet -ListAvailable | Select-Object -Property Name,Version,Path
 ```
@@ -53,7 +67,7 @@ Login-AzureRmAccount
 ```
 You should see a pop-up window asking for your username and password.  
 
-> Note: Powershell Core v6.0.0 crashed when trying to open the login window, so I relied on the 'old' Powershell instead.
+> Note: Powershell Core v6.0.0 crashed when trying to open the login window, so I relied on the 'old' Windows Powershell instead.
 
 Now let's get our login credentials and save them to a variable:
 ```
@@ -67,11 +81,9 @@ You can now login to your Container registry with:
 ```
 docker login $registry.LoginServer -u $creds.Username -p $creds.Password
 ```
-When you get 'Login Succeed' you can throw your hands up in the air:)
+You should get a 'Login succeeded' message.
 
-As of the time of this writing, there does not seem to be an option to list all containers or delete them.
-
-## Connecting using Azure CLI
+## Connecting using Active Directory and Azure CLI 
 You can also use the Azure CLI tool in Powershell to manage your repository (and Azure ressources more generally). You can check if Azure CLI is installed by running:
 
 ```
@@ -85,21 +97,18 @@ First, we need to connect to our Azure account:
 az login
 ```
 
-If you get an SSL "bad handshake" error, "tls_process_server_certificates, certificate verify failed" I am afraid I currently do not know how to fix that, but I am working on it.
+Follow the instructions in your console to login. If you get an SSL error check if your are using self-signed certificates. 
 
-## Managing images
-Every container registry contains 1:n repositories that are used to group container images together (e.g. by project).
+You can find an overview of the functionality provided by Azure CLI [here](https://docs.microsoft.com/en-us/cli/azure/). A few commands I find quite useful are provided below. Please be careful to check if you operate on an entire **registry** or on **repositories** in a registry!
 
-Repositories are defined by using slashes `/` as follows:  
+- `az acr list -g your_resource_group -o table` to list all container services in a table for a specific resource group
+- `az acr delete --name [--resource-group]` to delete a container registry
+- `az acr repository delete --name your_registry --repository repo_to_delete [--resource-group your_resource_group][--tag tag_to_delete]` to delete a repository in your container registry with a specific tag. If you omit the tag, the entire repo is deleted 
+- `az acr repository list` to show all images in a given 
 
-- `your-login-server-address-here/target_image[:TAG]` is a top-level image
-- `your-login-server-address-here/project_name/target_image[:TAG]` is a project specific image
-- `your-login-server-address-here/project_name/sub_project/target_image[:TAG]` is an image in a sub-project of the main project
+You can find more commands [here].(https://docs.microsoft.com/en-us/cli/azure/acr/repository?view=azure-cli-latest#delete)
 
-You can view all your images by navigating to your registry in the Azure Portal and clicking on the 'Repository' tab. You can also start containers directly from there.
 
-## Best practices
-- https://docs.microsoft.com/en-us/azure/container-registry/container-registry-best-practices
 
 
 
