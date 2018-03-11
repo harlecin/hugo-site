@@ -3,7 +3,7 @@ date = "2018-03-05"
 title = "Azure Container Registry - Quick Start Guide"
 +++
 
-Azure Container Registry is the Microsoft equivalent to privat Dockerhub repositories. First, I will show you how to quickly push an image to the registry. In a second step, I will cover how to manage your images (grouping, updating, deleting, etc) and in a last step, I will briefly dive into how you can authenticate with your registry.
+Azure Container Registry is the Microsoft equivalent to private Dockerhub repositories. First, I will show you how to quickly push an image to Azure Container Registry. In a second step, I will cover how to manage your registries and repositories using the PowerShell cmdlet `AzureRM` as well as the `Azure CLI`.
 
 ## Quick start
 To push a docker image to the Azure Container Registry, first go to your Azure Container Registry service in the Azure portal.
@@ -84,7 +84,7 @@ docker login $registry.LoginServer -u $creds.Username -p $creds.Password
 You should get a 'Login succeeded' message.
 
 ## Connecting using Active Directory and Azure CLI 
-You can also use the Azure CLI tool in Powershell to manage your repository (and Azure ressources more generally). You can check if Azure CLI is installed by running:
+You can also use the Azure CLI tool in Powershell to manage your repository (and Azure resources more generally). You can check if Azure CLI is installed by running:
 
 ```
 az --version
