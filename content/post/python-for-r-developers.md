@@ -167,36 +167,6 @@ ENTRYPOINT [ “/bin/bash”, “-c” ]
 CMD [ “source activate your-environment && exec python application.py” ]
 ```
 
-## Write your own Python package 
-
-Hierarchy: Package > module
-
-### Package structure
-### Documenting your functions
-### Unit testing
-### Debugging
-
-- remote debugging Docker
-### Bundling your app as a Conda package
-? include ? 
-
-### Best practices
-
-- type declaration
-
-## Notes
-- build conda package in Docker in a multi-stage build and install final package?
-- check Docker install
-
-- Using Powershell with anaconda env does not work properly yet
-- Separate post: working with pandas, scikit-learn and plotly
-- pweave + JupyterLab
-- Jupter Extension
-
-## Links
-- Overview different  package managers etc: https://www.andrey-melentyev.com/python-environments-and-where-to-find-them.html#conda
-- Docker + Conda: https://fmgdata.kinja.com/using-docker-with-conda-environments-1790901398
-    - https://beenje.github.io/blog/posts/docker-and-conda/
 
 
 [overview-conda-workflow]: /img/workflow-python-conda.png "Overview workflow Python + conda"
