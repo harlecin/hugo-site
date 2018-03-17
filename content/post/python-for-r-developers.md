@@ -64,7 +64,7 @@ deactivate myenv
 conda create -n myenv python=x.y
 conda install -n myenv pip scipy=a.b.c numpy matplotlib
 ```
-**Note: ** You have to use `source activate myenv` on macOS/Linux.
+**Note:** You have to use `source activate myenv` on macOS/Linux.
 
 It is also possible to use `pip` to install packages in a `conda` environment:
 ```
