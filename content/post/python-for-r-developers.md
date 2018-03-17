@@ -142,7 +142,7 @@ However, conda always creates a virtual environment if you want to restore an *'
 
 **Option 3.1**
 which I found on [Docker and conda](https://beenje.github.io/blog/posts/docker-and-conda/) (shortened and modified):
-```bash
+```
 FROM continuumio/miniconda3:latest
 WORKDIR /app
 COPY . /app/
@@ -157,7 +157,7 @@ ENV PATH /opt/conda/envs/myapp/bin:$PATH
 Alternatively, you can try:  
 
 **Option 3.2** from [Using Docker with Conda Environments](https://fmgdata.kinja.com/using-docker-with-conda-environments-1790901398) a bit shortened and modified:
-```bash
+```
 FROM continuumio/miniconda3:latest
 WORKDIR /app
 COPY . /app/
