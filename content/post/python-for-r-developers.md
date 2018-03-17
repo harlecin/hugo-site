@@ -137,7 +137,7 @@ RUN pip install -r requirements.txt
 However, conda always creates a virtual environment if you want to restore an *'environment.yml'* file. So you have three options:
 
 1. Use `conda install` in your Dockerfile and specify all dependencies there
-2. Use `pip freeze > requirements.txt` if everything can be installed using `pip
+2. Use `pip freeze > requirements.txt` if everything can be installed using `pip`
 3. Use conda inside your Docker container to setup a virtual environment in which to install the packages specified in your *'environment.yml'* and either do:
 
 **Option 3.1**
