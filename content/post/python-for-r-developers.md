@@ -52,37 +52,37 @@ Let's start by creating a virtual environment called `myenv`:
 
 ### Creating environments & installing packages
 Open an integrated terminal in VS Code and type 
-```cmd
-REM create the environment
+```
+# create the environment
 conda create --name myenv
 
-REM Active/deactivate the environment
+# Active/deactivate the environment
 activate myenv
 deactivate myenv
 
-REM create environment with specific Python & package versions
+# create environment with specific Python & package versions
 conda create -n myenv python=x.y
 conda install -n myenv pip scipy=a.b.c numpy matplotlib
 ```
 **Note: ** You have to use `source activate myenv` on macOS/Linux.
 
 It is also possible to use `pip` to install packages in a `conda` environment:
-```cmd
-REM first install pip using conda
+```
+# first install pip using conda
 conda install pip -y
-REM then use pip to install scipy
+# then use pip to install scipy
 pip install scipy
 ```
 
 You can select an existing environment by pressing `ctrl+shift+p` and typing *'Python: Select Interpreter'* or clicking on the interpreter icon currently active on the right side of VS Code's menu bar at the bottom. 
 
 You can also specify a default package list that is installed every time you create a new environment. Furthermore, it is possible to clone existing environments using:
-```cmd
+```
 conda create --name myclone --clone myenv
 ```
 ### Information about environments
 Use 
-```cmd
+```
 conda info --envs
 ```
 to get a list of all environments available.
@@ -94,30 +94,30 @@ You can easily see which environment is currently active by looking at your term
 The active environment is shown in `()`. Alternatively, you can see an asterisk `*` in front of the active environment if you use `conda info --envs`.
 
 To see which packages are currently installed in an environment run:
-```cmd
-REM to get a list of all packages
+```
+# to get a list of all packages
 conda list -n myenv
 
-REM to check for a specific package (returns nothing or package version)
+# to check for a specific package (returns nothing or package version)
 conda list -n myenv pip
 ```
 ### Exporting an environment
 An environment can be exported using:
-```cmd
-REM writes a conda config to your current working directory
-REM that can handle both pip and conda packages
+```
+# writes a conda config to your current working directory
+# that can handle both pip and conda packages
 conda env export > file_name.yml
 
-REM Build environment based on file_name.yml:
-REM to create an environment from scratch
+# Build environment based on file_name.yml:
+# to create an environment from scratch
 conda env create -f file_name.yml
-REM to build an environment based on a .yml config run in an existing environment
+# to build an environment based on a .yml config run in an existing environment
 conda env update --file file_name.yml
 ```
 
 ### Deleting an environment
 If you want to delete an environment and all associated content run:
-```cmd
+```
 conda remove --name myenv --all
 ```
 **Note:** Don't forget, if you use a Linux based Docker image you have to run `source activate myenv`!
@@ -129,7 +129,8 @@ More detailed information is available on the `conda` [help pages](https://conda
 
 ### Conda environments in Docker
 Creating Docker containers with `pip install` is super easy. All you need to do is specify a *'requirements.txt'* file for pip to use in your Dockerfile:
-```cmd
+
+```
 COPY requirements.txt ./requirements.txt
 RUN pip install -r requirements.txt
 ```
