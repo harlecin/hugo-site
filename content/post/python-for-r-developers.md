@@ -22,7 +22,7 @@ Feel free to choose a different Python distribution, but I would recommend using
 
 After you completed the steps above, create a file called `hello_world.py` with the following code:
 
-```python
+```
 print("hello world")
 ``` 
 
@@ -167,12 +167,66 @@ ENTRYPOINT [ “/bin/bash”, “-c” ]
 
 CMD [ “source activate your-environment && exec python application.py” ]
 ```
-## Write your own Python package 
+## From module to package
+Coming from an R background, I was a bit confused at first. People were sometimes talking about Python modules and at other times about Python packages. I was never quite sure if the two are merely synonyms or actually different concepts and if so, how they are different and how they relate to R's concept of source files and packages.
 
-Hierarchy: Package > module
+### Python module
+Turns out, Python modules are basically equivalent to plain R files, but they get imported into their own isolated namespace. So in essence, a module is sort of an 'R-package-light'.
+
+### Comparison: R file - Python module
+|                	| R                  	        | Python              	|
+|----------------	|--------------------	        |---------------------	|
+| Code source    	| file.R             	        | file.py             	|
+| Name           	| source file        	        | module              	|
+| Import command 	| source(file.R)     	        | import file         	|
+| Scope          	| Global Environment (default)	| module  environment 	|
+
+ Every `.py` file can be used as a module, although some naming restrictions apply (e.g. don't use a dot (.) or a question mark (?) in the filename, because they interfere with how Python searches for modules). 
+
+There are a couple of ways you can emulate this behavior in R. You can `source()`, i.e. import files into their own environment or use packages such as [modules](https://CRAN.R-project.org/package=modules) or [import](https://CRAN.R-project.org/package=import). Still, I really like that in Python this the default behavior to import additional code.
+
+#### Module search path
+When you use `import` to load a Python file as a module, Python will start looking in the directory of the caller and then will recursively work its way up through the Python search path. R on the other hand always starts in the Global Environment and searches through the namespaces of all loaded packages. 
+
+### Python package
+R enforces a pretty strict structure on any package. Python on the other hand considers any directory containing an `__init__.py` file a Python package. 
+
+Suppose you have a folder called `MyPackage` that contains `__init__.py` and `MyModule.py`. You can import `MyModule` using:
+```
+import MyPackage.MyModule
+
+## specify a shorter namespace
+import MyPackage.MyModule as ShortName
+```
+Python will search for your package and execute `__init__.py`. Afterwards, it will search for `MyModule` and import it into the `MyPackage.MyModule` namespace.
+### Comparison: R package - Python package
+|                	| R                                                      	| Python                                                            	|
+|----------------	|--------------------------------------------------------	|-------------------------------------------------------------------	|
+| Name           	| package                                                	| package                                                           	|
+| Structure      	| R script + man folder, DESCRIPTION and NAMESPACE files 	| multiple .py files in a folder with __init__ file in project root 	|
+| Import command 	| library(package) or package::function()                	| import package                                                    	|
+| Scope          	| package environment                                    	| package environment                                               	|
+
 
 ### Package structure
+
+- importing code (:: vs import as)
+- build reload package
 ### Documenting your functions
+Roxygen equivalent for Python
+
+```
+def complex(real=0.0, imag=0.0):
+    """Form a complex number.
+
+    Keyword arguments:
+    real -- the real part (default 0.0)
+    imag -- the imaginary part (default 0.0)
+    """
+    if imag == 0.0 and real == 0.0:
+        return complex_zero
+    ...
+```
 ### Unit testing
 ### Debugging
 
@@ -191,7 +245,7 @@ Hierarchy: Package > module
 - Using Powershell with anaconda env does not work properly yet
 - Separate post: working with pandas, scikit-learn and plotly
 - pweave + JupyterLab
-- Jupter Extension
+- Jupyter Extension
 
 ## Links
 - Overview different  package managers etc: https://www.andrey-melentyev.com/python-environments-and-where-to-find-them.html#conda
