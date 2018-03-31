@@ -112,7 +112,8 @@ I found the following tools/projects interesting, but since they do not depend o
 
 - [Visual Studio Code Tools for AI](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.vscode-ai)
 - [AI Toolkit for Azure IoT Edge](https://github.com/Azure/ai-toolkit-iot-edge)
-- [MMLSpark](https://github.com/Azure/mmlspark)
+- [MMLSpark](https://github.com/Azure/mmlspark) Microsoft Machine Learning for Apache Spark
+- [AZTK](https://github.com/Azure/aztk) on-demand dockerized Spark jobs on Azure (powered by Azure Batch)
 
 
 [azure-ml-studio]: /img/azure-machine-learning-studio.jpg "Azure Machine Learning Studio"
