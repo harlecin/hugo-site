@@ -342,6 +342,9 @@ Using tools such as `Doctest` allow you to embed unit tests in your docstring (p
 
 Docstrings can be accessed by using the `help()` function.
 ### Unit testing
+
+- pytest, nose, unittest
+- tox
 ### Debugging
 
 - remote debugging Docker
