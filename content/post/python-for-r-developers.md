@@ -306,21 +306,41 @@ reload(fb)
 ```
 This is equivalent to using `devtools::load_all()` or building and installing the package again in R.
 
-### Documenting your functions
-Roxygen equivalent for Python
+### Documenting your project
+'The Hitchhiker's Guide to Python' recommends to always include the following files in your project's root directory:
+
+- A `README.rst` file giving an overview of important information for users/maintainers like setup instructions, general infos about your code and a `TODO` section
+- A `CHANGELOG` to show changes in your code from version to version
+- A `LICENSE` file 
+
+In R I use Roxygen, which is based on Doxygen, to document my code. While you can use Doxygen for Python, the recommended tool by the Hitchhiker's Guide is Sphinx. Sphinx can convert reStructured text markup to HTML, LaTex and other formats (so it is equivalent to Pandoc in a way). Sphinx docs can be hosted for free on [Read The Docs](readthedocs.org) and rebuilding your documentation can be triggered automatically every time you commit to your repository.
+
+In Python you use *docstrings* to document functions, modules and classes:
 
 ```
-def complex(real=0.0, imag=0.0):
-    """Form a complex number.
-
-    Keyword arguments:
-    real -- the real part (default 0.0)
-    imag -- the imaginary part (default 0.0)
+# leading comment block = programmer's note
+def print_bar(string1: str, string2: str) -> str:
     """
-    if imag == 0.0 and real == 0.0:
-        return complex_zero
-    ...
+    print 2 strings to console
+
+    This function uses PEP 484 type annotations and 
+    prints two strings to the console.
+
+    Args:
+        string1: some text to print
+        string2: some more text to print
+
+    Returns:
+        Prints string1 and string2 to the console
+
+    >>> print_bar(1,2)
+    '1 2'
+    """
+    return print(string1, string2)
 ```
+Using tools such as `Doctest` allow you to embed unit tests in your docstring (prefixed with ">>>", see above). 
+
+Docstrings can be accessed by using the `help()` function.
 ### Unit testing
 ### Debugging
 
