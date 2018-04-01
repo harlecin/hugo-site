@@ -168,7 +168,7 @@ ENTRYPOINT [ “/bin/bash”, “-c” ]
 CMD [ “source activate your-environment && exec python application.py” ]
 ```
 ## From module to package
-Coming from an R background, I was a bit confused at first. People were sometimes talking about Python modules and at other times about Python packages. I was never quite sure if the two are merely synonyms or actually different concepts and if so, how they are different and how they relate to R's concept of source files and packages.
+Coming from an R background, I was a bit confused at first: People were sometimes talking about Python modules and at other times about Python packages. I was never quite sure if the two are merely synonyms or actually different concepts and if so, how they are different and how they relate to R's concept of source files and packages.
 
 ### Python module
 Turns out, Python modules are basically equivalent to plain R files, but they get imported into their own isolated namespace. So in essence, a module is sort of an 'R-package-light'.
@@ -183,35 +183,129 @@ Turns out, Python modules are basically equivalent to plain R files, but they ge
 
  Every `.py` file can be used as a module, although some naming restrictions apply (e.g. don't use a dot (.) or a question mark (?) in the filename, because they interfere with how Python searches for modules). 
 
-There are a couple of ways you can emulate this behavior in R. You can `source()`, i.e. import files into their own environment or use packages such as [modules](https://CRAN.R-project.org/package=modules) or [import](https://CRAN.R-project.org/package=import). Still, I really like that in Python this the default behavior to import additional code.
+There are a couple of ways you can emulate this behavior in R. You can `source()`, i.e. import, files into their own environment or use packages such as [modules](https://CRAN.R-project.org/package=modules) or [import](https://CRAN.R-project.org/package=import). Still, I really like that in Python this is the default behavior to import additional code.
 
 #### Module search path
-When you use `import` to load a Python file as a module, Python will start looking in the directory of the caller and then will recursively work its way up through the Python search path. R on the other hand always starts in the Global Environment and searches through the namespaces of all loaded packages. 
+When you use `import` to load a Python file as a module, Python will start looking in the directory of the caller (i.e. where your Python process was started) and then will recursively work its way up through the Python search path. 
+
+To take a look at the current search path run:
+```
+import sys
+sys.path
+```
+When you use `conda`, it modifies this search path for you.
+
+Package search paths in R work more or less the same way. R always starts by looking for a `Rprofile.site` file located in the R install directory. Afterwards, it will search for `.Rprofile` files in the directory of the caller and if it does not find one, in the user's home directory and runs it. If either `Rprofile.site` or `.Rprofile` modify the search path, the new search path is used. Otherwise, R defaults to the user library and then to the system library. 
+
+To take a look at R's current search path or to modify it run:
+```
+# print current search path to console:
+.libPaths()
+
+# modify search path for current session:
+.libPaths = .libPaths(c("some/path/here", .libPaths()))
+```
+Or automatically alter your search path on R startup by putting the following in your `Rprofile`:
+
+```
+.First = function() {
+    print("loading .Rprofile")
+    ## Append custom library folder to libPath
+    .libPaths(c("/usr/r_libs", .libPaths()))
+} 
+```
+**Note:** If you use RStudio's build tools, you have to place your `.Rprofile` in the directory containing your RStudio project. 
 
 ### Python package
 R enforces a pretty strict structure on any package. Python on the other hand considers any directory containing an `__init__.py` file a Python package. 
 
-Suppose you have a folder called `MyPackage` that contains `__init__.py` and `MyModule.py`. You can import `MyModule` using:
+Suppose you have a folder called `foo` that contains `__init__.py`, `bar.py` and `some_other_module.py`. Module `bar.py` contains a function `print_bar()`: 
+
 ```
-import MyPackage.MyModule
+foo/
+    __init__.py
+    bar.py
+        print_bar()
+    some_other_module.py
+```
+
+You can import module `bar` from package `foo` using:
+```
+## importing using full name
+import foo.bar
+# or
+from foo import bar
 
 ## specify a shorter namespace
-import MyPackage.MyModule as ShortName
+import foo.bar as fb
+# or
+from foo import bar as fb
+
+## import everything into global namespace
+from foo import *
+
 ```
-Python will search for your package and execute `__init__.py`. Afterwards, it will search for `MyModule` and import it into the `MyPackage.MyModule` namespace.
+
+
+
+Python will search for your package and execute `__init__.py`. Afterwards, it will search for `bar` and import it into the `foo.bar` namespace.
 ### Comparison: R package - Python package
 |                	| R                                                      	| Python                                                            	|
 |----------------	|--------------------------------------------------------	|-------------------------------------------------------------------	|
 | Name           	| package                                                	| package                                                           	|
-| Structure      	| R script + man folder, DESCRIPTION and NAMESPACE files 	| multiple .py files in a folder with __init__ file in project root 	|
-| Import command 	| library(package) or package::function()                	| import package                                                    	|
+| Structure      	| R script + man folder, DESCRIPTION and NAMESPACE files 	| multiple .py files in a folder with `__init__.py` file in project root 	|
+| Import command 	| `library(package)` or `package::function()`                	| `import package` / `import package as pkg`                                                  	|
 | Scope          	| package environment                                    	| package environment                                               	|
 
 
-### Package structure
+### Exporting/importing in Python
 
-- importing code (:: vs import as)
-- build reload package
+If you have developed an R package before, you will remember that a user can always access all objects using `:::`, but you can specify which objects you want to be available to the user by exporting them, so the user can access them by calling `library()` or `::`.
+
+In Python you can specify which modules/objects of your package to export in your `__init__.py`:
+```
+__init__.py:
+# 1
+    ## expose modules for: from foo import *
+    __all__ = ["bar", "some_other_module"]
+
+#2
+    ## expose modules for users:
+    from foo import bar
+
+#3
+    ## expose objects for users:
+    from foo.bar import print_bar
+    # or shorter:
+    from .bar import print_bar
+```
+
+Let's take a closer look at those three import options in `__init__.py`:
+
+1. `__all__` specifies which modules are available if the user runs `from foo import *`
+2. Using this option, the user can write `foo.bar.print_bar()` after running `import foo`.
+3. Now the user can access our function using `foo.print_bar()`
+
+While you can import all objects of a Python package into the global namespace using `from package import *` (the equivalent of `library(package)` in R) this is considered bad practice and the following methods are preferable:
+
+1. `import package as pkg` or `import package`
+2. `from package import specific-object-1, specific-object-2`
+
+I really like that you can shorten package names using `import as` in Python. The default way in R to achieve this functionality is to use `package::function`, which can be quite verbose (although you can do `function <- package::function` or use e.g. the `import` package). 
+
+### Reloading modules/packages
+If you changed parts of your package and you want to see the changes in your Python console you can either start a new Python session and import your package again or reload it. Reloading modules and packages works differently depending on your Python version. From Python 3.4+ you can use:
+```
+from importlib import reload
+import foo.bar as fb
+
+<some code here>
+
+## Now you made some changes to the package foo.bar and want to reload it
+reload(fb)
+```
+This is equivalent to using `devtools::load_all()` or building and installing the package again in R.
+
 ### Documenting your functions
 Roxygen equivalent for Python
 
@@ -245,7 +339,8 @@ def complex(real=0.0, imag=0.0):
 - Using Powershell with anaconda env does not work properly yet
 - Separate post: working with pandas, scikit-learn and plotly
 - pweave + JupyterLab
-- Jupyter Extension
+- Jupyter Extension/using iPython console
+- Autocomplete in cmd for Python
 
 ## Links
 - Overview different  package managers etc: https://www.andrey-melentyev.com/python-environments-and-where-to-find-them.html#conda
