@@ -22,7 +22,7 @@ Feel free to choose a different Python distribution, but I would recommend using
 
 After you completed the steps above, create a file called `hello_world.py` with the following code:
 
-```python
+```
 print("hello world")
 ``` 
 
