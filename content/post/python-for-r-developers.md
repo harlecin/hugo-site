@@ -31,7 +31,7 @@ Press `ctrl+shift+p` and type `Python: Run Python file in Terminal` and press En
 ## Working with virtual environments and installing packages
 When you work on multiple projects sooner or later you will run into dependency issues:
 
-> Project A needs library XY version 1.1, but Project B needs library XY version 1.2 and there are lots of breaking changes between package versions
+> Project A needs library XY version 1.1, but Project B needs library XY version 1.2 and there are lots of breaking changes between package versions. How can we fix this situation?
 
 One way to resolve this kind of problem is to isolate project dependencies using virtual environments. A virtual environment specifies and isolates the Python interpreter you want to use for a given project and (depending on which virtual environment tool you use) most/all dependencies. As already mentioned before, we will focus on Continuum Analytics' package and dependency management system `conda` that is part of Anaconda Python. 
 

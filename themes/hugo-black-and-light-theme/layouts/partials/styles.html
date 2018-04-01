@@ -122,8 +122,12 @@
 
   blockquote {
     font-family:"Old Standard TT",serif;
-    text-align:center;
-    padding:50px;
+    text-align: center;
+    margin-top: 50px;
+    border-left: 7px #ccc solid;
+    padding-left: 50px;
+    padding-right: 50px;
+    margin-bottom: 50px;  
   }
 
   blockquote p {
@@ -133,7 +137,6 @@
 
   blockquote:before,blockquote:after {
     font-family:"Old Standard TT",serif;
-    content:'\201C';
     font-size:35px;
     color:#403c3b;
   }
@@ -142,6 +145,9 @@
     content:'\201D';
   }
 
+  blockquote::before, blockquote::after {
+    content: none !important;
+  }
   hr {
     width:40%;
     height: 1px;
@@ -202,6 +208,10 @@
   }
   ul li:before {
     content:"\00BB \0020";
+  }
+
+  ul {
+    text-indent: -1em;
   }
 
   #nav ul li:before, .posts_listing li:before {
