@@ -58,6 +58,10 @@ During the sprint, we primarily track progress using a so-called burn-down-chart
 
 ![burn-down-chart][burn-down-chart]
 
+As you can see in the chart above, as of today, our team is not on track to finish all work items assigned during the sprint.
+
+Another useful metric is called 'Velocity'. Velocity shows how many story points your team achieved in the past on average during a sprint and allows you to better plan new sprints.
+
 We found that this process really helps us to stay on track and manage the complexity inherent in many data science projects. 
 
 All the best for your next project!
