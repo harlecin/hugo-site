@@ -3,24 +3,24 @@ date = "2018-04-24"
 title = "Package development in R - Overview"
 +++
 
-When I wrote my first R package, I can still remember when I called:
+Creating an R package is as easy as typing:
 ```
-package.skeleton()
+package.skeleton(name = "YourPackageName")
 ```
 As you might have guessed, this function creates the basic file and folder structure you need to create an R package. You will get:
 
 ```
-package_folder/
+YourPackageName/
     DESCRIPTION
     man/
     NAMESPACE
     R/
 ```
-You can also use RStudio to create a package with `File > New Project ... > Create R Package using devtools`.
+You can also use RStudio to create a package with `File > New Project ... > New Directory > Create R Package using devtools`.
 
 Before you continue, make sure you run `install.packages("devtools")` as we will be using this package a lot.
 
-In the following few sections I will show you the bare minimum you need to build an R package. Hopefully, at the end of this post, you will feel confident enough to try it on your own. 
+In the following few sections I will show you the essentials you need to build an R package. Hopefully, at the end of this post, you will feel confident enough to try it on your own. 
 
 Working with packages requires a bit of an investment up-front, but the payoffs are huge, especially if you use RStudio. You will get:
 
@@ -165,9 +165,9 @@ devtools::install_deps(pkg = "/path/to/your/pkg/")
 
 
 ## Further reading
-You can find additional information in
-- [R Packages](http://r-pkgs.had.co.nz/) from Hadley Wickham (if you never heard of Hadley before, his books and packages are amazing!)
-- [Writing R extensions](https://cran.r-project.org/doc/manuals/r-release/R-exts.html), the official guideline on CRAN
+You can find additional information in:
+- [R Packages](http://r-pkgs.had.co.nz/) from Hadley Wickham (if you never heard of Hadley before, his books and packages are amazing!).
+- [Writing R extensions](https://cran.r-project.org/doc/manuals/r-release/R-exts.html), the official guideline on CRAN.
 - You might also be interested in reading about [semantic versioning](https://en.wikipedia.org/wiki/Software_versioning) or versioning more generally.
 
 
