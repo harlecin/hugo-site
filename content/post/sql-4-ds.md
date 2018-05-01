@@ -150,11 +150,45 @@ LEFT JOIN name_of_CTE_2 b on a.id = b.id
 ```
 
 ## UPDATE
+As you might have guessed, the `UPDATE` statement allows you to alter existing records in a table. 
+
+First, you specify the table you want to update, then you `SET` one or more columns you want to update followed by a `WHERE` the update should take place:
+```
+UPDATE [test_db].[dbo].[test_table]
+SET first_name = 'Peter Wilfried', last_name = 'Paan'
+WHERE last_name = 'Pan'
+```
+
+## Some more useful commands
+
+I found the following commands quite useful:
+```
+-- select unique rows
+SELECT DISTINCT
+    col1
+    ,col2
+FROM some_table
+
+-- counting
+SELECT
+    -- count all rows
+    COUNT(*)
+    -- count rows that are not NULL in col1
+    ,COUNT(col1)
+FROM some_table
+
+-- Aggregation functions
+SELECT
+    -- sum per group
+    SUM(col1) OVER (PARTITION BY col2, col3) as SUM_COL1_GROUP
+    -- rolling sum per group
+    ,SUM(col1) over (partition by col2, col3 order by col4 rows between 30 preceding and 1 preceding)
+    -- median per group
+    ,PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY col4) OVER (PARTITION BY col2) as MEDIAN_COL2_GROUP
+FROM some_table
+```
+
+I hope you found this short overview useful. I plan to cover working with (columnstore) indices and the SQL Server Machine Learning Library in another post.
 
 
-## Machine Learning Services
-
-
-## Further stuff
-- GO operator
 
