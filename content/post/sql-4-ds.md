@@ -86,14 +86,14 @@ FROM [test_db].[dbo].[test_table]
 Some names are reserved key words and need to be put in square brackets if you want to use them as table or column names, like so:
 `[test_db].[dbo].[test_table]`.
 
-The following commands always need to be specified in this order: `WHERE` > `GROUP BY` > `ORDER BY`
+The following commands always need to be specified in this order: `WHERE` > `GROUP BY` >  `HAVING` > `ORDER BY`. The number on the right side of the statement specifies the order in which the statement is going to be processed by the database engine:
 ```
-SELECT *
-FROM test_table
-WHERE id = '1' AND id = '2'         -- filter rows
-GROUP BY id, last_name, first_name  -- group rows
-HAVING COUNT(last_name) = 1         -- filter groups
-ORDER BY id, last_name
+SELECT *                            -- 5
+FROM test_table                     -- 1
+WHERE id = '1' AND id = '2'         -- 2: filter rows
+GROUP BY id, last_name, first_name  -- 3: group rows
+HAVING COUNT(last_name) = 1         -- 4: filter groups
+ORDER BY id, last_name              -- 6
 ```
 
 ## Temporary tables and Common Table Expressions
