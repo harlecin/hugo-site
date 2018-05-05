@@ -43,10 +43,10 @@ You can access the online help for a specific command by highlighting a command 
 A schema is basically a namespace in a database and is also closely tied to permission settings. The default schema is `[dbo]` and is specified immediately after the database name:
 ```
 SELECT *
-FROM [test_db].[dbo].[test_table]
+FROM [server_name].[test_db].[dbo].[test_table]
 ```
 
-This is the fully qualified name of a table, starting with the database [test_db], followed by the schema [dbo] and the table [test_table] at the very end. Most of the time you will probably not bother to write the fully qualified name, especially if you use the default [dbo] schema, since no explicit schema implies [dbo].
+This is the fully qualified name of a table, starting with the server [server_name], then the database [test_db], followed by the schema [dbo] and the table [test_table] at the very end. Most of the time you will probably not bother to write the fully qualified name, especially if you use the default [dbo] schema, since no explicit schema implies [dbo]. 
 
 ## Loading data
 Now wer are going to add some data to our table:
@@ -90,8 +90,9 @@ The following commands always need to be specified in this order: `WHERE` > `GRO
 ```
 SELECT *
 FROM test_table
-WHERE id = '1' AND id = '2'
-GROUP BY id, last_name, first_name
+WHERE id = '1' AND id = '2'         -- filter rows
+GROUP BY id, last_name, first_name  -- group rows
+HAVING COUNT(last_name) = 1         -- filter groups
 ORDER BY id, last_name
 ```
 
