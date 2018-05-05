@@ -94,7 +94,10 @@ WHERE id = '1' AND id = '2'         -- 2: filter rows
 GROUP BY id, last_name, first_name  -- 3: group rows
 HAVING COUNT(last_name) = 1         -- 4: filter groups
 ORDER BY id, last_name              -- 6
+OFFSET 2 ROWS                       -- 7: ORDER BY is obligatory before OFFSET!
+FETCH NEXT 10 ROWS ONLY             -- 7
 ```
+Since the `ORDER BY` is the last statement to be executed, you can already use a column alias and columns defined in the `SELECT` statement.
 
 ## Temporary tables and Common Table Expressions
 There are basically two ways to work with temporary data in SQL:
@@ -187,6 +190,20 @@ SELECT
     -- median per group
     ,PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY col4) OVER (PARTITION BY col2) as MEDIAN_COL2_GROUP
 FROM some_table
+
+-- Checking cases<>
+SELECT col1
+       ,CASE col2 
+            WHEN 'a' then 1
+            WHEN 'b' then 2
+            ELSE NULL
+        END as col2_case
+FROM some_table
+
+-- Select top n values with ties
+SELECT TOP 10 WITH TIES
+    col1
+FROM some_table
 ```
 
 Last but not least, I will quickly talk about data types.
@@ -224,10 +241,28 @@ Using our sample table:
 ```
 SELECT 
       CAST([id] AS NUMERIC) as id                       -- Cast from char to numeric
-      ,TRY_CAST[last_name] AS NUMERIC) as last_name     -- will return NULL
+      ,TRY_CAST([last_name] AS NUMERIC) as last_name     -- will return NULL
       ,[first_name]
       ,[age]
 FROM [test_db].[dbo].[test_table]
+```
+
+## Dealing with NULLs
+
+`NULL` in SQL Server represents missing or unknown values. Any expression involving `NULL` will return `NULL`, such as 'character' + NULL = NULL. Note, that the empty string is NOT equal to `NULL`, it is known and it is empty:)
+
+```
+-- Return value if column is NULL
+ISNULL(column, value)
+
+-- Make NULL if column has value
+NULLIF(column, value)
+
+-- Find the first non-NULL column and return it (here: 'a')
+COALESCE(NULL, 'a', 'b')
+
+-- Combining functions:
+ISNULL(TRY_CAST([last_name] AS NUMERIC), 'NA')
 ```
 
 That was a brief detour into data types. 
