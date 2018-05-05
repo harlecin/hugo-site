@@ -204,6 +204,32 @@ Choosing the right data type depends on your specific application and depending 
 
 > Choose `nchar` or `nvarchar` to get Unicode characters!
 
+To convert data from one type to another you can use:
+```
+-- Plain vanilla conversion from one format to another
+-- Fails if CAST is not possible
+CAST(column as DATATYPE)
+
+-- Returns NULL if casting is not successful
+TRY_CAST(column as DATATYPE)
+
+-- Same as CAST, but additional options for DATES
+CONVERT(DATATYPE, column)
+
+-- Returns NULL if convert is not successful
+TRY_CONVERT(DATATYPE, column)
+```
+
+Using our sample table:
+```
+SELECT 
+      CAST([id] AS NUMERIC) as id                       -- Cast from char to numeric
+      ,TRY_CAST[last_name] AS NUMERIC) as last_name     -- will return NULL
+      ,[first_name]
+      ,[age]
+FROM [test_db].[dbo].[test_table]
+```
+
 That was a brief detour into data types. 
 
 I hope you found this short overview useful. I plan to cover working with (columnstore) indices and the SQL Server Machine Learning Library in another post.
