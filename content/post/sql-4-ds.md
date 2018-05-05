@@ -14,7 +14,7 @@ However, since SQL was designed to work with and process data, I think that ever
 There are a lot of SQL flavors out there, but in this post I will focus on Microsoft's T-SQL. It should be easy enough to translate T-SQL to your SQL flavor of choice.
 
 ## Setup
-Before we get started, I would recommend you download SQL Server Management Studio or VS Code with the MSSQL extension. To follow along, you will need access to a SQL Server instance. If you don't you can either:
+Before we get started, I would recommend you download SQL Server Management Studio or VS Code with the MSSQL extension. Another cross-platform option is [SQL Operations Studio](https://docs.microsoft.com/en-us/sql/sql-operations-studio/), which offers a VS Code style look and feel. To follow along, you will need access to a SQL Server instance. If you don't you can either:
 
 - [Install SQL Server 2017 locally on either Windows or Linux](https://www.microsoft.com/en-us/sql-server/sql-server-downloads-free-trial)
 - [Install SQL Server 2017 using Docker](https://hub.docker.com/r/microsoft/mssql-server-linux/) or
