@@ -189,6 +189,23 @@ SELECT
 FROM some_table
 ```
 
+Last but not least, I will quickly talk about data types.
+## Data types
+SQL Server offers essentially 6 different data type categories:
+
+1. Exact numeric: `int`, `numeric`, etc
+2. Approximate numeric: `float` and `real`
+3. Character: `char`, `varchar` and `nchar` and `nvarchar` 
+4. Date/time: `date`, `time`, `datetime`, etc
+5. Binary: `varbinary`, `image`, etc
+6. Other: `xml`, `geography`, etc
+
+Choosing the right data type depends on your specific application and depending on your choice, you will need less or more storage space. One important point though when you work with characters: 
+
+> Choose `nchar` or `nvarchar` to get Unicode characters!
+
+That was a brief detour into data types. 
+
 I hope you found this short overview useful. I plan to cover working with (columnstore) indices and the SQL Server Machine Learning Library in another post.
 
 
