@@ -86,15 +86,18 @@ FROM [test_db].[dbo].[test_table]
 Some names are reserved key words and need to be put in square brackets if you want to use them as table or column names, like so:
 `[test_db].[dbo].[test_table]`.
 
-The following commands always need to be specified in this order: `WHERE` > `GROUP BY` > `ORDER BY`
+The following commands always need to be specified in this order: `WHERE` > `GROUP BY` >  `HAVING` > `ORDER BY`. The number on the right side of the statement specifies the order in which the statement is going to be processed by the database engine:
 ```
-SELECT *
-FROM test_table
-WHERE id = '1' AND id = '2'         -- filter rows
-GROUP BY id, last_name, first_name  -- group rows
-HAVING COUNT(last_name) = 1         -- filter groups
-ORDER BY id, last_name
+SELECT *                            -- 5
+FROM test_table                     -- 1
+WHERE id = '1' AND id = '2'         -- 2: filter rows
+GROUP BY id, last_name, first_name  -- 3: group rows
+HAVING COUNT(last_name) = 1         -- 4: filter groups
+ORDER BY id, last_name              -- 6
+OFFSET 2 ROWS                       -- 7: ORDER BY is obligatory before OFFSET!
+FETCH NEXT 10 ROWS ONLY             -- 7
 ```
+Since the `ORDER BY` is the last statement to be executed, you can already use a column alias and columns defined in the `SELECT` statement.
 
 ## Temporary tables and Common Table Expressions
 There are basically two ways to work with temporary data in SQL:
@@ -187,7 +190,82 @@ SELECT
     -- median per group
     ,PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY col4) OVER (PARTITION BY col2) as MEDIAN_COL2_GROUP
 FROM some_table
+
+-- Checking cases<>
+SELECT col1
+       ,CASE col2 
+            WHEN 'a' then 1
+            WHEN 'b' then 2
+            ELSE NULL
+        END as col2_case
+FROM some_table
+
+-- Select top n values with ties
+SELECT TOP 10 WITH TIES
+    col1
+FROM some_table
 ```
+
+Last but not least, I will quickly talk about data types.
+## Data types
+SQL Server offers essentially 6 different data type categories:
+
+1. Exact numeric: `int`, `numeric`, etc
+2. Approximate numeric: `float` and `real`
+3. Character: `char`, `varchar` and `nchar` and `nvarchar` 
+4. Date/time: `date`, `time`, `datetime`, etc
+5. Binary: `varbinary`, `image`, etc
+6. Other: `xml`, `geography`, etc
+
+Choosing the right data type depends on your specific application and depending on your choice, you will need less or more storage space. One important point though when you work with characters: 
+
+> Choose `nchar` or `nvarchar` to get Unicode characters!
+
+To convert data from one type to another you can use:
+```
+-- Plain vanilla conversion from one format to another
+-- Fails if CAST is not possible
+CAST(column as DATATYPE)
+
+-- Returns NULL if casting is not successful
+TRY_CAST(column as DATATYPE)
+
+-- Same as CAST, but additional options for DATES
+CONVERT(DATATYPE, column)
+
+-- Returns NULL if convert is not successful
+TRY_CONVERT(DATATYPE, column)
+```
+
+Using our sample table:
+```
+SELECT 
+      CAST([id] AS NUMERIC) as id                       -- Cast from char to numeric
+      ,TRY_CAST([last_name] AS NUMERIC) as last_name     -- will return NULL
+      ,[first_name]
+      ,[age]
+FROM [test_db].[dbo].[test_table]
+```
+
+## Dealing with NULLs
+
+`NULL` in SQL Server represents missing or unknown values. Any expression involving `NULL` will return `NULL`, such as 'character' + NULL = NULL. Note, that the empty string is NOT equal to `NULL`, it is known and it is empty:)
+
+```
+-- Return value if column is NULL
+ISNULL(column, value)
+
+-- Make NULL if column has value
+NULLIF(column, value)
+
+-- Find the first non-NULL column and return it (here: 'a')
+COALESCE(NULL, 'a', 'b')
+
+-- Combining functions:
+ISNULL(TRY_CAST([last_name] AS NUMERIC), 'NA')
+```
+
+That was a brief detour into data types. 
 
 I hope you found this short overview useful. I plan to cover working with (columnstore) indices and the SQL Server Machine Learning Library in another post.
 

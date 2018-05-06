@@ -166,6 +166,7 @@ devtools::install_deps(pkg = "/path/to/your/pkg/")
 
 ## Further reading
 You can find additional information in:
+
 - [R Packages](http://r-pkgs.had.co.nz/) from Hadley Wickham (if you never heard of Hadley before, his books and packages are amazing!).
 - [Writing R extensions](https://cran.r-project.org/doc/manuals/r-release/R-exts.html), the official guideline on CRAN.
 - You might also be interested in reading about [semantic versioning](https://en.wikipedia.org/wiki/Software_versioning) or versioning more generally.
@@ -173,4 +174,4 @@ You can find additional information in:
 
 I hope you found this short post helpful!
 
-[roxygen-on-build]: /static/img/rstudio-project-settings.PNG "RStudio Build Settings"
+[roxygen-on-build]: /img/rstudio-project-settings.PNG "RStudio Build Settings"
