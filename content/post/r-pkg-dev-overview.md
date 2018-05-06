@@ -173,4 +173,4 @@ You can find additional information in:
 
 I hope you found this short post helpful!
 
-[roxygen-on-build]: /static/img/rstudio-project-settings.PNG "RStudio Build Settings"
+[roxygen-on-build]: /img/rstudio-project-settings.PNG "RStudio Build Settings"
