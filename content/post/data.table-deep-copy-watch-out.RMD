@@ -1,0 +1,63 @@
+---
+title: "Using data.table deep copy"
+author: "Christoph"
+date: 2018-05-12T14:41:14-05:00
+categories: ["R"]
+tags: ["data.table", "R", "change by reference"]
+---
+
+`data.table` is an awesome R package, but there are a few things you need to watch out for when using it.
+
+R usually does not modify objects in place (e.g. by reference), but makes a copy when you change a value and saves this copy. This can be a problem if you work with large datasets since you will quickly need about 2-3x your dataset size
+in RAM to accommodate these intermediary copies.
+
+With `data.table` you can modify objects by reference which is:
+
+- way faster (you do not need to allocate new memory and copy everything) and
+- uses way less RAM.
+
+Now consider the following example:
+```{r}
+library(data.table)
+
+dt_mtcars = mtcars
+
+## change to data.table object
+setDT(dt_mtcars)
+
+## assign to new variable
+dt_mtcars_shallow_copy = dt_mtcars
+```
+
+What do you think will happen when we modify `dt_mtcars_shallow_copy` by reference?
+```{r}
+# Let's drop a column in dt_mtcars_shallow_copy
+dt_mtcars_shallow_copy[,cyl := NULL]
+
+# Are the two objects identical?
+identical(dt_mtcars_shallow_copy, dt_mtcars)
+```
+
+
+They are! How could that happen? Let's check the memory location in RAM where our objects are stored:
+```{r}
+tracemem(dt_mtcars)
+tracemem(dt_mtcars_shallow_copy)
+```
+
+
+Both objects are stored at the same place in our computer's memory. The reason for this is actually quite simple:
+When you do an assignment in R, both variables point to the same location in memory until one of them changes. When we change one
+of the variables using R's normal functions, R makes a copy of the object. However, since we used `data.table` to modify the
+object by reference R never makes a copy and both variables till point to the same address with the changed dataset. 
+
+You can force a deep copy (aka copy an object to its own location in memory) by using `copy()`:
+```{r}
+# use copy() to create a deep copy
+dt_mtcars_deep_copy = copy(dt_mtcars)
+
+tracemem(dt_mtcars_deep_copy)
+tracemem(dt_mtcars)
+```
+
+That's it, hope you found the post useful:)
