@@ -1,6 +1,6 @@
 +++
 date = "2018-05-12"
-title = "Data Science with Windows 10 - Random Problems and how to solve them"
+title = "Data Science with Windows 10 - Quick Fixes"
 +++
 
 When you work for a large corporation you often have little choice in picking a specific operating system for your company laptop. This post is a collection of random problems I ran into in the past mostly with R and Python on Windows 10 and how to resolve them. I plan to update this post over time (hopefully not often:)
