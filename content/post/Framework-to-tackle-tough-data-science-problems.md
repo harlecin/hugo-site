@@ -81,11 +81,7 @@ Before I dive into the analysis I like to draw up a structure. Doing that helps 
 
 We usually follow a template like this:
  
-1. Asking for infos on where to start.
-2. Getting to know our data
-3. Building a simple prototype (minimum viable forecast)
-4. Framing the problem in different ways
-5. Checking plausibility, sensitivity & feasibility of solution 
+![template-structure][template-structure]
 
 I will explain each point in more detail in the next sections:
 ## Asking for infos on where to start
@@ -208,3 +204,4 @@ Finally, you should always keep in mind that your solution may need to scale lat
 
 [missing-value-map]: /img/missing-value-map.png "Missing-value-map"
 [business-understanding]: /img/business-understanding.png "Business understanding"
+[template-structure]: /img/overview-structure.png "Overview structure"
