@@ -75,34 +75,81 @@ Forgetting to ask the last question actually nearly tripped me up once. I had to
 
 ## Structuring your analysis
 
-Before I dive into the analysis I like to draw up a structure. Doing that helps in two ways:
+Before I dive into the analysis I like to draw up a structure. Doing that helps in two important ways:
 
 1. It helps my team and myself to work in a systematic way that allows us to track work items and divide work efficiently.
 2. It helps communicate our progress to our clients.
 
 
-Usually we 
-- take a look at the available data
-- ask for infos on where to start
-- come up with some hypothesis
-- MECE
-## Getting to know your data
+We usually follow a template like this:
+ 
+1. Asking for infos on where to start.
+2. Getting to know our data
+3. Building a simple prototype (minimum viable forecast)
+4. Framing the problem in different ways
+5. Checking plausibility, sensitivity & feasibility of solution 
+
+I will explain each point in more detail in the next sections:
+## Asking for infos on where to start
+
+In many cases, when a business unit asks you to solve a problem for them they have already invested time trying to solve the problem themselves and ask for help because solving the problem proved more difficult and/or resource intensive than initially anticipated. In some cases, somebody already tried to solve the problem in the past and there might already be a working prototype or something similar that you can build on.
+
+So there is a good chance that you do not need to start from scratch and can build on the experience of your colleagues. Even if there is nothing you can build on directly, your colleagues in the individual business units usually have lots of experience and can help you decide where you should focus your attention and help you check whether your results are plausible.
+
+## Getting to know our data
+
+
+- quality
+- bias
+- relevant?
+- content
+
 ### Signal/Noise ratio
 
-## Starting really simple - Minimum Viable Forecast (MVF)
+## Build a simple prototype (minimum viable forecast)
 ### Working with an easy sample
 ### A quick and dirty baseline
 
 ## Framing the problem in different ways
+My colleagues and I recently worked on an interesting problem where we had to predict the most likely 1h-arrival time window for each stop point on a given tour. We decided to tackle the problem the following way:
 
-## Checking plausibility & feasibility of solution
+1. Try 'standard' machine learning approaches like gradient boosting first and check if the accuracy is sufficient.
+2. If not, try to model the spatio-temporal relationship in the data more explicitly.
 
-## Deploying your solution
+Intuitively, the number of stop points and the stops themselves should play an important role in determining the most likely 1h-arrival time window. So we build features to capture the historic arrival times at a given stop point and the absolute order the stop had in a given tour (say stop #34) as well as its relative order (e.g. first half of the tour). We ran everything through a gbm algorithm and not surprisingly, the most important features where absolute order, relative order and information about historic arrival times. 
+
+This got me thinking: Maybe we should not try to forecast the arrival time directly, but instead forecast the order of the stops for a given tour. I asked my colleagues to re-run our gbm with two additional features: the actual order of a stop point and the relative order of a stop point for a given tour. As it turned out, those two features helped improve our accuracy by almost 50%. So if we can predict the ordering of stop points, we can determine the 1h-arrival window pretty easily.
+
+So in essence, we reframed our problem from:
+
+> Find the 1h-arrival time given some explanatory variables X
+
+to
+
+> Find the most likely ordering of stop points given some variables X and use this information to forecast the 1h-arrival time
+
+In many cases, reframing the problem can actually simplify your analysis a lot. 
+
+> ~~All~~ Many roads lead to Rome (but some are considerably shorter and easier)
+
+So if you are stuck, try to check if it is possible to recast/reframe your problem. 
+
+## Checking plausibility, sensitivity & feasibility of solution
+Checking plausibility is particularly important if you use black box algorithms to understand how your model behaves in extreme cases. 
+
+Let's look at an example: Suppose again, you are asked to forecast volume of some goods. Obviously, volume needs to be greater or equal to zero. However, it is also a good idea to check how fast volume varies over time. If the maximum 1 week change in volume in the past was 50% and your model forecasts 300% you might want to check why you got this output. You should probably also check how your model behaves around Christmas and New Year. In many countries you would expect volume to level off after Christmas for instance.
+
+It is also advisable to check how sensitive your model reacts to changes in your input data. In many real world scenarios it is preferable to have a slightly less accurate, but more robust model. 
+
+It's a good idea to include some 'unit tests' to catch strange results early.
+
+Finally, you should always keep in mind that your solution may need to scale later. I stumbled over this particular issue once. I built a fairly good, but way to resource intensive model that I could not scale quickly enough with the hardware I had available at the time. So I ended up restricting the training time of the model, which resulted in less than optimal performance and still posed quite a few problems infrastructure wise. In hindsight, I should have probably stuck to a simple model in the beginning and gradually switched to a more resource hungry version later on.
+
+
 
 <Communicating with clients: 
 presenting conclusions without showing your work
 scatter brained
 no visual explanation
 correct, but not practical
-how to present your results
->
+how to present your results>
