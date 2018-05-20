@@ -97,18 +97,80 @@ In many cases, when a business unit asks you to solve a problem for them they ha
 So there is a good chance that you do not need to start from scratch and can build on the experience of your colleagues. Even if there is nothing you can build on directly, your colleagues in the individual business units usually have lots of experience and can help you decide where you should focus your attention and help you check whether your results are plausible.
 
 ## Getting to know our data
+A large part of data science is understanding and cleaning your data and for a very good reason:
 
+- At first, we need to check if the data available is actually sufficient to answer our questions.
+- Then we have to make sure data quality is high enough and 
+- we have to check our data for bias that might lead us astray.
+- Finally, we need to make sure we actually understand what data we are working with.
 
-- quality
-- bias
-- relevant?
-- content
+Data quality is especially problematic if we use algorithms with high variance that are easily tripped by a high level of noise in our data.
+
+However, I would argue that not really knowing what the data you are working with means is actually much more wide spread than one would believe and more problematic. You are bound to stumble over columns in a database with names that either seem to be pretty clear, but in reality mean something completely different or names that are just plain confusing.
+
+For this reason I suggest you always try to follow these steps:
+
+1. Ask the data owner to provide you with descriptions for all individual fields including allowed data ranges.
+2. Then go to somebody who actually works with the data on a daily basis and ask them for their input. Ideally, the two descriptions match, but likely they won't.
+3. If they don't try to bring both parties together and try to clarify the issues.
+4. Do logical validation of your data based on the data ranges provided by the data owner and common sense.
+5. For any problems that you find, prepare a short summary with example data for discussion.
+6. Repeat until you are satisfied with data quality.
+
+### Data validation & exploration
+I suggest you always start by calculating summary statistics for each column in your dataset. The R function `skimr::skim()` offers very nice high level summaries for different data types. At a minimum you need to check:
+
+- Number of missing values
+- Quantiles, minimum and maximum for numeric variables
+- Number of unique values for categorical/nominal variables
+
+You can define validation rules using the package [`validate`](https://cran.r-project.org/web/packages/validate/index.html). 
+
+Missing value analysis is a whole topic in its own right, but I suggest at a minimum you try to plot a missing value map to quickly check if values are missing in a systematic way:
+
+![missing-value-map][missing-value-map]
+
+It is also good practice to show how many rows you remove with each data cleaning step and to save all removed rows in a separate dataset for further analysis. In many cases, missing or wrong information is caused by some underlying problem and therefore non-random.
+
+Before you begin with your exploratory analysis, you need to split your data into a train/validation and an independent(!) test set in order to avoid introducing bias. This is especially relevant for time-series data.
+
+Imagine the following scenario: You are asked to do a sales forecast for 3 different territories and you start by doing some exploratory analysis on the aggregated data from all three territories. You see that sales increased exponentially in the last year and you decide to build a model to account for this phenomenon. You then do some cross-validation and get a very good fit on both train/validation and test datasets. You fell victim to foresight bias: you introduced information into your model that was not available at the point in time where you trained your model, in essence you were looking into the future.
 
 ### Signal/Noise ratio
+Signal refers to an actual deterministic pattern that drives the process of interest. Noise represents all the random shocks that obfuscate the true signal such as:
 
-## Build a simple prototype (minimum viable forecast)
+-  incorrect data (which might not be random) and
+-  random shocks such as a problem at a construction site that causes a traffic jam
+
+A strong and clear signal means ceteris paribus that our work as data scientists is easier. The more noise there is and the weaker the signal, the harder it is to find a model with high predictive power that generalises well.
+
+Using my train/validation set I usually plot the distribution of my target variable along a couple of dimensions (e.g. sales volume distribution by day of week) to get an idea of the variability of my data. With time-series I also like to look at the distribution of changes week-over-week or month-over-month and at the autocorrelation structure. Ceteris paribus, higher variance in the target variable and low autocorrelation means a tougher problem for you to solve. In a clustering context I look at the distribution of the classes along a couple of dimensions and pay attention to class balance.
+
+## Building a simple prototype (minimum viable forecast)
 ### Working with an easy sample
+In the beginning I like to start with a simple example. While we could start with the entire dataset this makes it harder to pin down the source of a problem:
+
+- Is the technique we use not appropriate for the problem?
+- Is there an error in our code?
+- Is the dataset to large to fit into memory while processing?
+- Is the data still fishy?
+- Are there any corner cases we have not though of?
+
+Plus, working with a sample means we can iterate more quickly. 
+
 ### A quick and dirty baseline
+Next, I always try to establish a baseline that I use to compare my models against. Some problems are inherently harder/easier than others so you need a benchmark to compare against. If somebody already build a model in the past, I like to use it as a baseline since my model needs to beat the old benchmark otherwise it is not worth the effort to implement it in many cases.
+
+A few ways to generate baselines are:
+
+#### Time series baselines
+- Martingale baseline: tomorrow equals yesterday or last Monday equals next Monday, etc.
+- Simple regression model using available data
+- Moving-average/Moving-median
+
+#### Clustering baselines
+- Always predict majority class
+- k-means clustering using available data
 
 ## Framing the problem in different ways
 My colleagues and I recently worked on an interesting problem where we had to predict the most likely 1h-arrival time window for each stop point on a given tour. We decided to tackle the problem the following way:
@@ -146,10 +208,4 @@ It's a good idea to include some 'unit tests' to catch strange results early.
 Finally, you should always keep in mind that your solution may need to scale later. I stumbled over this particular issue once. I built a fairly good, but way to resource intensive model that I could not scale quickly enough with the hardware I had available at the time. So I ended up restricting the training time of the model, which resulted in less than optimal performance and still posed quite a few problems infrastructure wise. In hindsight, I should have probably stuck to a simple model in the beginning and gradually switched to a more resource hungry version later on.
 
 
-
-<Communicating with clients: 
-presenting conclusions without showing your work
-scatter brained
-no visual explanation
-correct, but not practical
-how to present your results>
+[missing-value-map]: /static/img/missing-value-map.png "Missing-value-map"
