@@ -27,9 +27,7 @@ While those questions are all relevant they do not really help you in getting a 
 
 I like to divide the questions I ask into 3 categories:
 
-1. Business questions,
-2. data science questions and
-3. deployment questions.
+![business-understanding][business-understanding]
 
 Business questions help you understand the "why". Why are we doing the analysis? How are our results going to be used?
 
@@ -208,4 +206,5 @@ It's a good idea to include some 'unit tests' to catch strange results early.
 Finally, you should always keep in mind that your solution may need to scale later. I stumbled over this particular issue once. I built a fairly good, but way to resource intensive model that I could not scale quickly enough with the hardware I had available at the time. So I ended up restricting the training time of the model, which resulted in less than optimal performance and still posed quite a few problems infrastructure wise. In hindsight, I should have probably stuck to a simple model in the beginning and gradually switched to a more resource hungry version later on.
 
 
-[missing-value-map]: /static/img/missing-value-map.png "Missing-value-map"
+[missing-value-map]: /img/missing-value-map.png "Missing-value-map"
+[business-understanding]: /img/business-understanding.png "Business understanding"
