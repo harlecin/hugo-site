@@ -238,22 +238,22 @@ colnames(out) = c(&quot;coeff&quot;, &quot;OLS&quot;, &quot;Gibbs&quot;, &quot;D
 rownames(out) = NULL
 out</code></pre>
 <pre><code>##          coeff          OLS        Gibbs Delta &lt; 0.01
-## 1  (Intercept) -4.047964950 -4.056624874         TRUE
-## 2  PetrolPrice -2.585395621 -2.490660877        FALSE
-## 3    VanKilled  0.001267367  0.001259797         TRUE
-## 4         law1 -0.135868045 -0.137092168         TRUE
-## 5       month2 -0.093704899 -0.094130943         TRUE
-## 6       month3 -0.247982128 -0.248614086         TRUE
-## 7       month4 -0.294794780 -0.294319475         TRUE
-## 8       month5 -0.325415207 -0.325577337         TRUE
-## 9       month6 -0.287237168 -0.286797212         TRUE
-## 10      month7 -0.364636631 -0.365211832         TRUE
-## 11      month8 -0.389147546 -0.389947455         TRUE
-## 12      month9 -0.208736279 -0.209887233         TRUE
-## 13     month10 -0.035105269 -0.034948636         TRUE
-## 14     month11  0.136652145  0.136919749         TRUE
-## 15     month12  0.226670664  0.226537813         TRUE
-## 16  time_index -0.003399847 -0.003408803         TRUE</code></pre>
+## 1  (Intercept) -4.047964950 -4.059341387        FALSE
+## 2  PetrolPrice -2.585395621 -2.465121145        FALSE
+## 3    VanKilled  0.001267367  0.001243204         TRUE
+## 4         law1 -0.135868045 -0.137033224         TRUE
+## 5       month2 -0.093704899 -0.093548609         TRUE
+## 6       month3 -0.247982128 -0.247540206         TRUE
+## 7       month4 -0.294794780 -0.294062969         TRUE
+## 8       month5 -0.325415207 -0.324937449         TRUE
+## 9       month6 -0.287237168 -0.286454324         TRUE
+## 10      month7 -0.364636631 -0.364423669         TRUE
+## 11      month8 -0.389147546 -0.389364768         TRUE
+## 12      month9 -0.208736279 -0.208740228         TRUE
+## 13     month10 -0.035105269 -0.034379475         TRUE
+## 14     month11  0.136652145  0.137616339         TRUE
+## 15     month12  0.226670664  0.227045610         TRUE
+## 16  time_index -0.003399847 -0.003410663         TRUE</code></pre>
 <p>Pretty similar, but not quite the same. Very important to note here is that due to the small sample size (only 192 observations) the priors have quite a strong say on the posterior! If we were to put stronger prior beliefs into our model the prior would dominate the posterior and the results could be very different!</p>
 <p>So both models suggest that the introduction of the law actually helped reduce the number of driver deaths per km driven.</p>
 <div id="convergence-tests" class="section level4">
@@ -359,9 +359,9 @@ model_vanilla_test = sampling(vanilla_regression, data = list(N = N, K = K, y = 
 ## Iteration: 9000 / 10000 [ 90%]  (Sampling)
 ## Iteration: 10000 / 10000 [100%]  (Sampling)
 ## 
-##  Elapsed Time: 17.28 seconds (Warm-up)
-##                8.699 seconds (Sampling)
-##                25.979 seconds (Total)</code></pre>
+##  Elapsed Time: 15.119 seconds (Warm-up)
+##                7.831 seconds (Sampling)
+##                22.95 seconds (Total)</code></pre>
 <pre class="r"><code># pairs(model_vanilla_test)
 broom::tidyMCMC(model_vanilla_test, conf.int = T)</code></pre>
 <pre><code>##        term     estimate    std.error     conf.low    conf.high
@@ -614,13 +614,13 @@ y = log(data_seatbelts$DriversKilled) - log(data_seatbelts$kms)
 res_serial = gibbs_corr_err(y, X)
 colMeans(res_serial)</code></pre>
 <pre><code>##       beta_0       beta_1       beta_2       beta_3       beta_4 
-## -4.013454724 -2.289515303 -0.001879947 -0.133926174 -0.113767277 
+## -4.016267531 -2.271229459 -0.001852954 -0.132825805 -0.113783488 
 ##       beta_5       beta_6       beta_7       beta_8       beta_9 
-## -0.266487522 -0.314912531 -0.345525206 -0.303426028 -0.383631562 
+## -0.265196096 -0.314381850 -0.344432796 -0.302218115 -0.382562642 
 ##      beta_10      beta_11      beta_12      beta_13      beta_14 
-## -0.409177043 -0.228340674 -0.046955563  0.125408187  0.215846854 
+## -0.408080292 -0.226977665 -0.046327030  0.125931620  0.216191766 
 ##      beta_15       sigma2          rho 
-## -0.003497682  0.016347350  0.264049281</code></pre>
+## -0.003501875  0.016360713  0.264152673</code></pre>
 <p>The coefficients look pretty similar to what we had in the no-autocorrelation sampler, which is reassuring, since autocorrelation should only affect the standard-errors of the coefficients not the coefficients. Let’s compare the results with an ARIMAX model using the same model specification:</p>
 <pre class="r"><code>## Note: be careful to remove intercept!
 X_temp = model.matrix(~ PetrolPrice + VanKilled + law + month + time_index, data = data_seatbelts)[,-1]
@@ -697,8 +697,8 @@ model_extended_vanilla = sampling(extended_vanilla_regression, data = list(N = N
 <pre><code>## 
 ## SAMPLING FOR MODEL &#39;aaa0d39f6a605bd518310da896513842&#39; NOW (CHAIN 1).
 ## 
-## Gradient evaluation took 0 seconds
-## 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+## Gradient evaluation took 0.001 seconds
+## 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
 ## Adjust your expectations accordingly!
 ## 
 ## 
@@ -715,9 +715,9 @@ model_extended_vanilla = sampling(extended_vanilla_regression, data = list(N = N
 ## Iteration: 9000 / 10000 [ 90%]  (Sampling)
 ## Iteration: 10000 / 10000 [100%]  (Sampling)
 ## 
-##  Elapsed Time: 90.769 seconds (Warm-up)
-##                59.619 seconds (Sampling)
-##                150.388 seconds (Total)</code></pre>
+##  Elapsed Time: 80.006 seconds (Warm-up)
+##                54.188 seconds (Sampling)
+##                134.194 seconds (Total)</code></pre>
 <pre class="r"><code>broom::tidyMCMC(model_extended_vanilla, conf.int = T)</code></pre>
 <pre><code>##        term     estimate    std.error     conf.low    conf.high
 ## 1   beta[1] -4.022969354 0.1272765140 -4.272220157 -3.770700778
@@ -754,32 +754,6 @@ traceplot(model_extended_vanilla, pars = c(&quot;beta[4]&quot;, &quot;rho&quot;)
 <h2>Bayesian structural time series models using <code>CausalImpact</code></h2>
 <p>In this section we will use yet another approach to check whether the requirement to wear seatbelts helped reduce driver deaths.</p>
 <p>Let’s begin by splitting our data set into a pre- and posttreatment phase:</p>
-<pre class="r"><code>data_causalimpact = as.zoo(Seatbelts)
-
-pre_period = time(data_causalimpact)[c(1, 169)]
-post_period = time(data_causalimpact)[c(170, 192)]
-
-
-impact = CausalImpact(data_causalimpact, pre_period, post_period, list(niter = 5000))
-
-impact</code></pre>
-<pre><code>## Posterior inference {CausalImpact}
-## 
-##                          Average         Cumulative     
-## Actual                   100             2306           
-## Prediction (s.d.)        101 (204)       2315 (4685)    
-## 95% CI                   [-405, 606]     [-9304, 13928] 
-##                                                         
-## Absolute effect (s.d.)   -0.41 (204)     -9.47 (4685)   
-## 95% CI                   [-505, 505]     [-11622, 11610]
-##                                                         
-## Relative effect (s.d.)   -0.41% (202%)   -0.41% (202%)  
-## 95% CI                   [-502%, 501%]   [-502%, 501%]  
-## 
-## Posterior tail-area probability p:   0.21817
-## Posterior prob. of a causal effect:  78%
-## 
-## For more details, type: summary(impact, &quot;report&quot;)</code></pre>
 <pre class="r"><code>kms = data_seatbelts$kms
 drivers = data_seatbelts$drivers
 petrol_price = data_seatbelts$PetrolPrice
@@ -798,23 +772,23 @@ impact</code></pre>
 ## 
 ##                          Average        Cumulative  
 ## Actual                   100            2306        
-## Prediction (s.d.)        95 (3.3)       2185 (76.9) 
-## 95% CI                   [89, 102]      [2041, 2343]
+## Prediction (s.d.)        95 (3.3)       2185 (76.0) 
+## 95% CI                   [89, 102]      [2040, 2340]
 ##                                                     
-## Absolute effect (s.d.)   5.3 (3.3)      120.8 (76.9)
-## 95% CI                   [-1.6, 12]     [-36.7, 265]
+## Absolute effect (s.d.)   5.3 (3.3)      120.8 (76.0)
+## 95% CI                   [-1.5, 12]     [-34.3, 266]
 ##                                                     
 ## Relative effect (s.d.)   5.5% (3.5%)    5.5% (3.5%) 
-## 95% CI                   [-1.7%, 12%]   [-1.7%, 12%]
+## 95% CI                   [-1.6%, 12%]   [-1.6%, 12%]
 ## 
-## Posterior tail-area probability p:   0.06484
-## Posterior prob. of a causal effect:  94%
+## Posterior tail-area probability p:   0.0537
+## Posterior prob. of a causal effect:  95%
 ## 
 ## For more details, type: summary(impact, &quot;report&quot;)</code></pre>
 <pre class="r"><code>plot(impact)</code></pre>
 <pre><code>## Warning: Removed 192 rows containing missing values (geom_path).</code></pre>
 <pre><code>## Warning: Removed 384 rows containing missing values (geom_path).</code></pre>
-<p><img src="/post/causal-impact-using-bayes-statistics_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="/post/causal-impact-using-bayes-statistics_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>The structural time series model again shows a high likelihood that the introduciton of the seatbelt law helped reduce the number of driver deaths and confirms our previous findings.</p>
 <p>I plan to cover using <a href="https://CRAN.R-project.org/package=greta"><code>greta</code></a>, an alternative to <code>stan</code> that uses tensorflow as its backend, for Bayesian inference in some future blog post.</p>
 <p>I hope you found this analysis interesting!</p>

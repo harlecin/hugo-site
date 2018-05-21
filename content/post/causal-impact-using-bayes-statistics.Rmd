@@ -598,17 +598,6 @@ In this section we will use yet another approach to check whether the requiremen
 
 Let's begin by splitting our data set into a pre- and posttreatment phase:
 ```{r split data into pre- and post-treatment}
-data_causalimpact = as.zoo(Seatbelts)
-
-pre_period = time(data_causalimpact)[c(1, 169)]
-post_period = time(data_causalimpact)[c(170, 192)]
-
-
-impact = CausalImpact(data_causalimpact, pre_period, post_period, list(niter = 5000))
-
-impact
-```
-```{r}
 kms = data_seatbelts$kms
 drivers = data_seatbelts$drivers
 petrol_price = data_seatbelts$PetrolPrice
@@ -624,6 +613,7 @@ impact = CausalImpact(data, pre_period, post_period)
 
 impact
 ```
+
 
 ```{r}
 plot(impact)
