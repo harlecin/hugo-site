@@ -41,7 +41,7 @@ identical(dt_mtcars_shallow_copy, dt_mtcars)</code></pre>
 <p>You can force a deep copy (aka copy an object to its own location in memory) by using <code>copy()</code>:</p>
 <pre class="r"><code># use copy() to create a deep copy
 dt_mtcars_deep_copy = copy(dt_mtcars)</code></pre>
-<pre><code>## tracemem[0x0000000017b31fc8 -&gt; 0x000000001489d6b8]: copy eval eval withVisible withCallingHandlers handle timing_fn evaluate_call &lt;Anonymous&gt; evaluate in_dir block_exec call_block process_group.block process_group withCallingHandlers process_file &lt;Anonymous&gt; &lt;Anonymous&gt; eval eval eval eval eval.parent local</code></pre>
+<pre><code>## tracemem[0x0000000017b31fc8 -&gt; 0x00000000148ad6b8]: copy eval eval withVisible withCallingHandlers handle timing_fn evaluate_call &lt;Anonymous&gt; evaluate in_dir block_exec call_block process_group.block process_group withCallingHandlers process_file &lt;Anonymous&gt; &lt;Anonymous&gt; eval eval eval eval eval.parent local</code></pre>
 <pre class="r"><code>tracemem(dt_mtcars_deep_copy)</code></pre>
 <pre><code>## [1] &quot;&lt;0000000014FE88B8&gt;&quot;</code></pre>
 <pre class="r"><code>tracemem(dt_mtcars)</code></pre>
