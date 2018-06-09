@@ -1,0 +1,127 @@
+---
+title: "Object Oriented Programming in Data Science with R"
+author: "Christoph"
+date: 2018-06-04T14:41:14-05:00
+categories: ["R"]
+tags: ["oop", "R"]
+---
+
+Since R is mostly a functional language and data science work lends itself to be expressed in a functional form you can come by just fine without learning about object-oriented programming.
+
+Personally, I mostly follow a functional programming style (although often not a pure one for reasons like RAM utilization), because expressing mathematical concepts in a functional way is quite natural in my opinion.
+
+However, object-oriented programming offers a lot of benefits in certain use cases. The Python data science community embraces oop, possibly because of its larger background in computer science as opposed to math/stats of the R community. While I think that oop is sometimes taken to far (I do not want to write `numpy.matmul(a, b)` to do matrix multiplication, I prefer `A %*% B`:), I also think that there is a lot to like about it. Oop helps to hide complexity, e.g. by encapsulating the complexity of a prediction algorithm.
+
+In this post I want to show you how to use the S3 class system to load data from different sources into R and a class `myPredictionAlgorithm` with a `fit()` and `predict()` method using R6 as a class system.
+
+
+## Object-oriented programming in R
+R has not one system to implement object-oriented programming, but four. In order of complexity, starting from the simplest:
+
+1. S3 classes,
+2. S4 classes,
+3. Reference classes (~ R5) and 
+4. R6 class system.
+
+In contrast to 'classic' message-passing object-oriented languages like Python, C++ or Java, S3 uses so called generic-function oop. Message-passing oop involves sending messages (= methods) to an object, which then tries to find an appropriate function to call (Hadley Wickham, 'Advanced R'). S3 generic-function oop is actually quite similar to operator overloading. A *generic function* say, `print()`, decides which method to call, such as `print.myClass()`. S3 has no formal class definition. S4 and Reference Classes are more both more formal than S3. R6 is what most programmers coming from say Python expect an oo system to look like.
+
+## S3 generics
+A generic function is a function whose functionality depends on the object they are used on. `print()` is one of the best examples that shows the power of generic functions:
+```{r}
+# print for a vector:
+print(1:10)
+```
+
+```{r}
+# print for a data.frame:
+print(mtcars)
+```
+Depending on the class of the input, `print()` returns a different output. 
+
+Generic functions are also called *polymorphic functions*. When we inspect `print` we can see that it is indeed a S3-generic function:
+
+```{r}
+pryr::ftype(print)
+```
+
+Now, let's use the S3 class system to connect to a data source and extract some data. We start by building a connection class that we can pass to our extraction class to get some data:
+
+```{r}
+create_connection = function(connection_string, type) {
+  class(connection_string) = type
+  
+  return(connection_string)
+}
+```
+
+In S3 we can create a class simply by setting the `class` attribute. In our `create_connection()` function the class depends on the object type, which will be either 'local' or 'database'. Now we define a generic function `extract_data()` to load our data into R depending on the class of the connection object:
+
+```{r}
+# Note: extract() is the function name that dispatches to functions starting with extract.class
+extract = function(object) UseMethod("extract")
+
+# generic.class = function() ...
+extract.local = function(connection_object) cat("Extracting data from local source ...\n")
+extract.database = function(connection_object, getCols = NULL) cat("Extracting data from database ...\n")
+# default if no class specific method is found
+extract.default = function(connection_object) message("unknown connection object")
+```
+
+We define a generic function with `UseMethod()`. When we call `extract_data()`, our function checks the class attribute of the object we passed. Based on the class it searches for a function following the naming convention 'extract.class_name'. If it finds one, it will use it, else it will use our default implementation:
+
+```{r}
+con_local = create_connection("local connection", type = "local")
+con_db = create_connection("database connection", type = "database")
+con_spark = create_connection("spark connection", type = "spark")
+
+# methods for class 'local' and 'database' are defined:
+extract_data(con_local)
+extract_data(con_db)
+
+# there is no method for class 'spark':
+extract_data(con_spark)
+```
+
+You could also rename our function `extract()` to `load()`, but the convention is to use the same name as in our call to 
+UseMethod(). This allows you to easily find all specific implementations of the generic function using `methods()`:
+```{r}
+methods(extract)
+```
+
+We can also use `methods()` to list all methods implemented for a given class:
+```{r}
+methods(class = "local")
+```
+
+
+## R6 
+
+
+
+### Todos:
+- fit.parallel method for distributed
+- compare algorithms using "<"/compare.models (returns which algorithm works better overall, per timeframe, etc)
+- log.metrics
+
+
+### Stuff
+- interfaces & polymorphism
+- abstract & concrete classes
+
+connection-object
+  - local, db, default
+  
+extraction-object
+  - method set.parallel 0/1, workers = 10 (how does work with setting backends in foreach?)
+  - method set.connection
+  - method set.filter
+  - method get.data
+  
+feature-pipeline-object
+  - method add.step(depends on stepX)
+  - method remove.step(check dependency)
+
+model-object
+  inherits from logging
+  - method set.model
+  - method fit.model
