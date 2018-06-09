@@ -1,17 +1,15 @@
 {{ partial "header.html" . }}
-
 <section id=content>
   <ul class=posts_listing>
-    {{ range (where .Data.Pages "Section" "!=" "") }}
-      <li>
-        <h2><a href="{{ .Permalink }}">{{ .Title }}</a></h2>
-        <div id=date>
-          <time>{{ .Date.Format (.Site.Params.dateform | default "January 2006") }}</time>
-        </div>
-      </li>
-    {{ end }}
+  {{ $pag := .Paginate (where .Data.Pages ".Params.hidefromhome" "!=" "true") }} {{ range $pag.Pages }}
+    <li>
+      <h2><a href="{{ .Permalink }}">{{ .Title }}</a></h2>
+      <div id=date>
+        <time>{{ .Date.Format (.Site.Params.dateform | default "January 2006") }}</time>
+      </div>
+    </li>
+    {{ end }} 
   </ul>
 </section>
-
 {{ partial "footer.html" . }}
 

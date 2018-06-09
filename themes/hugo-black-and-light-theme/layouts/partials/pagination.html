@@ -1,0 +1,3 @@
+{{ $pag := $.Paginator }} {{ if gt $pag.TotalPages 1 }}
+Page {{ $pag.PageNumber }} of {{ $pag.TotalPages }} {{ if $pag.HasPrev }} ← Newer Posts {{ end }} {{ if $pag.HasNext }} Older Posts → {{ end }}
+{{ end }} 
