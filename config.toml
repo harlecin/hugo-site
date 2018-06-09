@@ -9,9 +9,6 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 pygmentsstyle       = "bw"
 pygmentscodefences  = true
 
-paginate = 5
-paginatePath  = "posts"
-
 [params]
   sitename = "semper quaerere"
   
