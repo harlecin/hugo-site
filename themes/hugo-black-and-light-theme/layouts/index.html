@@ -1,7 +1,7 @@
 {{ partial "header.html" . }}
 <section id=content>
   <ul class=posts_listing>
-  {{ $pag := .Paginate (where .Data.Pages ".Params.hidefromhome" "!=" "true") }} {{ range $pag.Pages }}
+  {{ $pag := .Paginate (where .Data.Pages "Section" "!=" "") }} {{ range $pag.Pages }}
     <li>
       <h2><a href="{{ .Permalink }}">{{ .Title }}</a></h2>
       <div id=date>
@@ -11,5 +11,6 @@
     {{ end }} 
   </ul>
 </section>
+{{ partial "pagination.html" . }} 
 {{ partial "footer.html" . }}
 
