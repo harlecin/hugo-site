@@ -1,0 +1,170 @@
+---
+title: "Object Oriented Programming in Data Science with R"
+author: "Christoph"
+date: 2018-06-04T14:41:14-05:00
+categories: ["R"]
+tags: ["oop", "R"]
+---
+
+
+
+<p>Since R is mostly a functional language and data science work lends itself to be expressed in a functional form you can come by just fine without learning about object-oriented programming.</p>
+<p>Personally, I mostly follow a functional programming style (although often not a pure one, i.e. w/o side-effects, because of limited RAM). Expressing mathematical concepts in a functional way is quite natural in my opinion.</p>
+<p>However, object-oriented programming offers a lot of benefits in certain use cases. The Python data science community embraces oop, possibly because of its larger background in computer science as opposed to math/stats of the R community. While I think that oop is sometimes taken to far (I do not want to write <code>numpy.matmul(a, b)</code> to do matrix multiplication, I prefer <code>A %*% B</code>:), I also think that there is a lot to like about it. Oop helps to hide complexity, e.g. by encapsulating the complexity of a prediction algorithm.</p>
+<p>In this post I want to show you how to use the S3 class system to load data from different sources into R and how to implement a class <code>myPredictionAlgorithm</code> with a <code>fit()</code> and <code>predict()</code> method using R6 as a class system.</p>
+<div id="object-oriented-programming-in-r" class="section level2">
+<h2>Object-oriented programming in R</h2>
+<p>As already mentioned, R has multiple systems to implement object-oriented programming. In order of complexity, starting from the simplest, they are:</p>
+<ol style="list-style-type: decimal">
+<li>S3 classes,</li>
+<li>S4 classes,</li>
+<li>Reference classes (~ R5) and</li>
+<li>R6 class system.</li>
+</ol>
+<p>In contrast to ‘classic’ message-passing object-oriented languages like Python, C++ or Java, S3 uses so called generic-function oop. Message-passing oop involves sending messages (= methods) to an object, which then tries to find an appropriate function to call (Hadley Wickham, ‘Advanced R’). S3 generic-function oop is actually quite similar to operator overloading. A <em>generic function</em> say, <code>print()</code>, decides which method to call, such as <code>print.myClass()</code>. S3 has no formal class definition. S4 and Reference Classes are more both more formal than S3. R6 is what most programmers coming from say Python expect an oo system to look like.</p>
+</div>
+<div id="s3-generics" class="section level2">
+<h2>S3 generics</h2>
+<p>A generic function is a function whose functionality depends on the object it is used on. <code>print()</code> is one of the best examples that shows the power of generic functions:</p>
+<pre class="r"><code># print for a vector:
+print(1:10)</code></pre>
+<pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<pre class="r"><code># print for a data.frame:
+print(mtcars)</code></pre>
+<pre><code>##                      mpg cyl  disp  hp drat    wt  qsec vs am gear carb
+## Mazda RX4           21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4
+## Mazda RX4 Wag       21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4
+## Datsun 710          22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1
+## Hornet 4 Drive      21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1
+## Hornet Sportabout   18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2
+## Valiant             18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1
+## Duster 360          14.3   8 360.0 245 3.21 3.570 15.84  0  0    3    4
+## Merc 240D           24.4   4 146.7  62 3.69 3.190 20.00  1  0    4    2
+## Merc 230            22.8   4 140.8  95 3.92 3.150 22.90  1  0    4    2
+## Merc 280            19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4
+## Merc 280C           17.8   6 167.6 123 3.92 3.440 18.90  1  0    4    4
+## Merc 450SE          16.4   8 275.8 180 3.07 4.070 17.40  0  0    3    3
+## Merc 450SL          17.3   8 275.8 180 3.07 3.730 17.60  0  0    3    3
+## Merc 450SLC         15.2   8 275.8 180 3.07 3.780 18.00  0  0    3    3
+## Cadillac Fleetwood  10.4   8 472.0 205 2.93 5.250 17.98  0  0    3    4
+## Lincoln Continental 10.4   8 460.0 215 3.00 5.424 17.82  0  0    3    4
+## Chrysler Imperial   14.7   8 440.0 230 3.23 5.345 17.42  0  0    3    4
+## Fiat 128            32.4   4  78.7  66 4.08 2.200 19.47  1  1    4    1
+## Honda Civic         30.4   4  75.7  52 4.93 1.615 18.52  1  1    4    2
+## Toyota Corolla      33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1
+## Toyota Corona       21.5   4 120.1  97 3.70 2.465 20.01  1  0    3    1
+## Dodge Challenger    15.5   8 318.0 150 2.76 3.520 16.87  0  0    3    2
+## AMC Javelin         15.2   8 304.0 150 3.15 3.435 17.30  0  0    3    2
+## Camaro Z28          13.3   8 350.0 245 3.73 3.840 15.41  0  0    3    4
+## Pontiac Firebird    19.2   8 400.0 175 3.08 3.845 17.05  0  0    3    2
+## Fiat X1-9           27.3   4  79.0  66 4.08 1.935 18.90  1  1    4    1
+## Porsche 914-2       26.0   4 120.3  91 4.43 2.140 16.70  0  1    5    2
+## Lotus Europa        30.4   4  95.1 113 3.77 1.513 16.90  1  1    5    2
+## Ford Pantera L      15.8   8 351.0 264 4.22 3.170 14.50  0  1    5    4
+## Ferrari Dino        19.7   6 145.0 175 3.62 2.770 15.50  0  1    5    6
+## Maserati Bora       15.0   8 301.0 335 3.54 3.570 14.60  0  1    5    8
+## Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></pre>
+<p>Depending on the class of the input, <code>print()</code> returns a different output.</p>
+<p>Generic functions are also called <em>polymorphic functions</em>. When we inspect <code>print</code> we can see that it is indeed a S3-generic function:</p>
+<pre class="r"><code>pryr::ftype(print)</code></pre>
+<pre><code>## [1] &quot;s3&quot;      &quot;generic&quot;</code></pre>
+<p>Now, let’s use the S3 class system to connect to a data source and extract some data. We start by building a connection class that we can pass to our extraction class to get some data:</p>
+<pre class="r"><code>create_connection = function(connection_string, type) {
+  class(connection_string) = type
+  
+  return(connection_string)
+}</code></pre>
+<p>In S3 we can create a class simply by setting the <code>class</code> attribute. In our <code>create_connection()</code> function the class depends on the object type, which will be either ‘local’ or ‘database’. Now we define a generic function <code>extract_data()</code> to load our data into R depending on the class of the connection object:</p>
+<pre class="r"><code># Note: extract() is the function name that dispatches to functions starting with extract.class
+extract = function(object) UseMethod(&quot;extract&quot;)
+
+# generic.class = function() ...
+extract.local = function(connection_object) cat(&quot;Extracting data from local source ...\n&quot;)
+extract.database = function(connection_object, getCols = NULL) cat(&quot;Extracting data from database ...\n&quot;)
+# default if no class specific method is found
+extract.default = function(connection_object) message(&quot;unknown connection object&quot;)</code></pre>
+<p>We define a generic function with <code>UseMethod()</code>. When we call <code>extract_data()</code>, our function checks the class attribute of the object we passed. Based on the class it searches for a function following the naming convention ‘extract.class_name’. If it finds one, it will use it, else it will use our default implementation:</p>
+<pre class="r"><code>con_local = create_connection(&quot;local connection&quot;, type = &quot;local&quot;)
+con_db = create_connection(&quot;database connection&quot;, type = &quot;database&quot;)
+con_spark = create_connection(&quot;spark connection&quot;, type = &quot;spark&quot;)
+
+# methods for class &#39;local&#39; and &#39;database&#39; are defined:
+extract(con_local)</code></pre>
+<pre><code>## Extracting data from local source ...</code></pre>
+<pre class="r"><code>extract(con_db)</code></pre>
+<pre><code>## Extracting data from database ...</code></pre>
+<pre class="r"><code># there is no method for class &#39;spark&#39;:
+extract(con_spark)</code></pre>
+<pre><code>## unknown connection object</code></pre>
+<p>You could also rename our function <code>extract()</code> to <code>load()</code>, but the convention is to use the same name as in our call to UseMethod(). This allows you to easily find all specific implementations of the generic function using <code>methods()</code>:</p>
+<pre class="r"><code>methods(extract)</code></pre>
+<pre><code>## [1] extract.database extract.default  extract.local   
+## see &#39;?methods&#39; for accessing help and source code</code></pre>
+<p>We can also use <code>methods()</code> to list all methods implemented for a given class:</p>
+<pre class="r"><code>methods(class = &quot;local&quot;)</code></pre>
+<pre><code>## [1] extract
+## see &#39;?methods&#39; for accessing help and source code</code></pre>
+<p>So essentially we created the following class hierarchy (adapted from: Thomas Mailund, Advanced Object-Oriented Programming in R):</p>
+<p>The abstract class ‘extractData’ defines an interface ‘extract’. We do not explicitly create the abstract class, we only define its method <code>extract()</code> using a generic function. Using this generic function, we implement concrete classes called ‘local’, ‘database’ and ‘default’ by writing corresponding <code>extract.class</code> functions.</p>
+<p>In the S3 class system inheritance works by specifying a character vector as class attribute like so:</p>
+<pre class="r"><code>object = 1
+class(object) = c(&quot;C&quot;, &quot;B&quot;, &quot;A&quot;)
+
+class(object)</code></pre>
+<pre><code>## [1] &quot;C&quot; &quot;B&quot; &quot;A&quot;</code></pre>
+<p>The first element in the class attribute vector is the most specialized and the last the most general.</p>
+</div>
+<div id="r6" class="section level2">
+<h2>R6</h2>
+<p>With a few notable exceptions (e.g. the <code>data.table</code> package) data is immutable in R. R6 is a class system that breaks the immutable-data principle by allowing mutable data structures. This allows us to create methods that actually modify objects and not make a copy. R6 can be seen as an improved version of the reference class system (R5), so I will not cover R5.</p>
+<p>Let’s try to build an R6 class for our prediction algorithm:</p>
+<pre class="r"><code>library(R6)
+
+myPredictionAlgorithm = R6Class(&quot;myPredictionAlgorithm&quot;,
+                                private = list(
+                                  model = NULL
+                                  ),
+                                public = list(
+                                  formula = NULL,
+                                  data = NULL,
+                                  initialize = function(data = NA, formula = NA) {
+                                    self$data = data
+                                    self$formula = formula
+                                    cat(&quot;model object created&quot;)
+                                  },
+                                  print = function() {
+                                    print(paste0(&quot;Formula = &quot;, c(self$formula)))
+                                  },
+                                  fit_lm = function(){
+                                    private$model =lm(formula = self$formula, data = self$data)
+                                    
+                                    print(private$model)
+                                  },
+                                  get_coeff = function(){
+                                    print(coefficients(private$model))
+                                  }
+                                )
+                                )</code></pre>
+<p>To create an object of our class we call <code>$new()</code>, which will call <code>initialize()</code> if it exits:</p>
+<pre class="r"><code>ols_model = myPredictionAlgorithm$new(data = mtcars, formula = mpg ~ cyl + carb)</code></pre>
+<pre><code>## model object created</code></pre>
+<p>Printing our model object gives us:</p>
+<pre class="r"><code>ols_model</code></pre>
+<pre><code>## [1] &quot;Formula = mpg ~ cyl + carb&quot;</code></pre>
+<p>because we specified a custom-print function.</p>
+<p>We can use <code>$</code> to get access to all public methods and values, like so:</p>
+<pre class="r"><code>ols_model$fit_lm()</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = self$formula, data = self$data)
+## 
+## Coefficients:
+## (Intercept)          cyl         carb  
+##     37.8127      -2.6250      -0.5261</code></pre>
+<p>Or so:</p>
+<pre class="r"><code>ols_model$get_coeff()</code></pre>
+<pre><code>## (Intercept)         cyl        carb 
+##   37.812739   -2.625023   -0.526146</code></pre>
+<p>So, public members are accessed using <code>self$</code> and private members using <code>private$</code>. The R6 introduction vignette suggests to have methods return <code>invisible(self)</code>, if you want you want methods to be chainable. Private attributes can be accessed only by methods defined in the class or sub-classes.</p>
+<p>Unfortunately, there is no way to enforce types of fields in R6 except by implementing checks manually (e.g. as a <a href="https://github.com/r-lib/R6/issues/48#issuecomment-339872876">checker class</a>).</p>
+</div>

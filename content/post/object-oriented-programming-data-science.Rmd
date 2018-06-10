@@ -75,11 +75,11 @@ con_db = create_connection("database connection", type = "database")
 con_spark = create_connection("spark connection", type = "spark")
 
 # methods for class 'local' and 'database' are defined:
-extract_data(con_local)
-extract_data(con_db)
+extract(con_local)
+extract(con_db)
 
 # there is no method for class 'spark':
-extract_data(con_spark)
+extract(con_spark)
 ```
 
 You could also rename our function `extract()` to `load()`, but the convention is to use the same name as in our call to 

@@ -34,16 +34,16 @@ identical(dt_mtcars_shallow_copy, dt_mtcars)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 <p>They are! How could that happen? Let’s check the memory location in RAM where our objects are stored:</p>
 <pre class="r"><code>tracemem(dt_mtcars)</code></pre>
-<pre><code>## [1] &quot;&lt;00000000175B49E0&gt;&quot;</code></pre>
+<pre><code>## [1] &quot;&lt;0000000015C320B8&gt;&quot;</code></pre>
 <pre class="r"><code>tracemem(dt_mtcars_shallow_copy)</code></pre>
-<pre><code>## [1] &quot;&lt;00000000175B49E0&gt;&quot;</code></pre>
+<pre><code>## [1] &quot;&lt;0000000015C320B8&gt;&quot;</code></pre>
 <p>Both objects are stored at the same place in our computer’s memory. The reason for this is actually quite simple: When you do an assignment in R, both variables point to the same location in memory until one of them changes. When we change one of the variables using R’s normal functions, R makes a copy of the object. However, since we used <code>data.table</code> to modify the object by reference R never makes a copy and both variables till point to the same address with the changed dataset.</p>
 <p>You can force a deep copy (aka copy an object to its own location in memory) by using <code>copy()</code>:</p>
 <pre class="r"><code># use copy() to create a deep copy
 dt_mtcars_deep_copy = copy(dt_mtcars)</code></pre>
-<pre><code>## tracemem[0x00000000175b49e0 -&gt; 0x00000000148ab908]: copy eval eval withVisible withCallingHandlers handle timing_fn evaluate_call &lt;Anonymous&gt; evaluate in_dir block_exec call_block process_group.block process_group withCallingHandlers process_file &lt;Anonymous&gt; &lt;Anonymous&gt; eval eval eval eval eval.parent local</code></pre>
+<pre><code>## tracemem[0x0000000015c320b8 -&gt; 0x000000001884db18]: copy eval eval withVisible withCallingHandlers handle timing_fn evaluate_call &lt;Anonymous&gt; evaluate in_dir block_exec call_block process_group.block process_group withCallingHandlers process_file &lt;Anonymous&gt; &lt;Anonymous&gt; eval eval eval eval eval.parent local</code></pre>
 <pre class="r"><code>tracemem(dt_mtcars_deep_copy)</code></pre>
-<pre><code>## [1] &quot;&lt;0000000017B82958&gt;&quot;</code></pre>
+<pre><code>## [1] &quot;&lt;0000000018220010&gt;&quot;</code></pre>
 <pre class="r"><code>tracemem(dt_mtcars)</code></pre>
-<pre><code>## [1] &quot;&lt;00000000175B49E0&gt;&quot;</code></pre>
+<pre><code>## [1] &quot;&lt;0000000015C320B8&gt;&quot;</code></pre>
 <p>That’s it, hope you found the post useful:)</p>
