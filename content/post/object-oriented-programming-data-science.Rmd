@@ -8,15 +8,15 @@ tags: ["oop", "R"]
 
 Since R is mostly a functional language and data science work lends itself to be expressed in a functional form you can come by just fine without learning about object-oriented programming.
 
-Personally, I mostly follow a functional programming style (although often not a pure one for reasons like RAM utilization), because expressing mathematical concepts in a functional way is quite natural in my opinion.
+Personally, I mostly follow a functional programming style (although often not a pure one, i.e. w/o side-effects, because of limited RAM). Expressing mathematical concepts in a functional way is quite natural in my opinion.
 
 However, object-oriented programming offers a lot of benefits in certain use cases. The Python data science community embraces oop, possibly because of its larger background in computer science as opposed to math/stats of the R community. While I think that oop is sometimes taken to far (I do not want to write `numpy.matmul(a, b)` to do matrix multiplication, I prefer `A %*% B`:), I also think that there is a lot to like about it. Oop helps to hide complexity, e.g. by encapsulating the complexity of a prediction algorithm.
 
-In this post I want to show you how to use the S3 class system to load data from different sources into R and a class `myPredictionAlgorithm` with a `fit()` and `predict()` method using R6 as a class system.
+In this post I want to show you how to use the S3 class system to load data from different sources into R and how to implement a class `myPredictionAlgorithm` with a `fit()` and `predict()` method using R6 as a class system.
 
 
 ## Object-oriented programming in R
-R has not one system to implement object-oriented programming, but four. In order of complexity, starting from the simplest:
+As already mentioned, R has multiple systems to implement object-oriented programming. In order of complexity, starting from the simplest, they are:
 
 1. S3 classes,
 2. S4 classes,
@@ -26,7 +26,7 @@ R has not one system to implement object-oriented programming, but four. In orde
 In contrast to 'classic' message-passing object-oriented languages like Python, C++ or Java, S3 uses so called generic-function oop. Message-passing oop involves sending messages (= methods) to an object, which then tries to find an appropriate function to call (Hadley Wickham, 'Advanced R'). S3 generic-function oop is actually quite similar to operator overloading. A *generic function* say, `print()`, decides which method to call, such as `print.myClass()`. S3 has no formal class definition. S4 and Reference Classes are more both more formal than S3. R6 is what most programmers coming from say Python expect an oo system to look like.
 
 ## S3 generics
-A generic function is a function whose functionality depends on the object they are used on. `print()` is one of the best examples that shows the power of generic functions:
+A generic function is a function whose functionality depends on the object it is used on. `print()` is one of the best examples that shows the power of generic functions:
 ```{r}
 # print for a vector:
 print(1:10)
@@ -93,12 +93,87 @@ We can also use `methods()` to list all methods implemented for a given class:
 methods(class = "local")
 ```
 
+So essentially we created the following class hierarchy (adapted from: Thomas Mailund, Advanced Object-Oriented Programming in R):
+```{r include = F}
+knitr::include_graphics(path = "../../static/img/class_hierarchy.png")
+```
+
+The abstract class 'extractData' defines an interface 'extract'. We do not explicitly create the abstract class, we only define its method `extract()` using a generic function. Using this generic function, we implement concrete classes called 'local', 'database' and 'default' by writing corresponding `extract.class` functions.
+
+In the S3 class system inheritance works by specifying a character vector as class attribute like so:
+```{r}
+object = 1
+class(object) = c("C", "B", "A")
+
+class(object)
+```
+
+The first element in the class attribute vector is the most specialized and the last the most general.
 
 ## R6 
+With a few notable exceptions (e.g. the `data.table` package) data is immutable in R. R6 is a class system that breaks the immutable-data principle by allowing mutable data structures. This allows us to create methods that actually modify objects and not make a copy. R6 can be seen as an improved version of the reference class system (R5), so I will not cover R5.
 
+Let's try to build an R6 class for our prediction algorithm:
+```{r}
+library(R6)
 
+myPredictionAlgorithm = R6Class("myPredictionAlgorithm",
+                                private = list(
+                                  model = NULL
+                                  ),
+                                public = list(
+                                  formula = NULL,
+                                  data = NULL,
+                                  initialize = function(data = NA, formula = NA) {
+                                    self$data = data
+                                    self$formula = formula
+                                    cat("model object created")
+                                  },
+                                  print = function() {
+                                    print(paste0("Formula = ", c(self$formula)))
+                                  },
+                                  fit_lm = function(){
+                                    private$model =lm(formula = self$formula, data = self$data)
+                                    
+                                    print(private$model)
+                                  },
+                                  get_coeff = function(){
+                                    print(coefficients(private$model))
+                                  }
+                                )
+                                )
+```
+
+To create an object of our class we call `$new()`, which will call `initialize()` if it exits:
+
+```{r}
+ols_model = myPredictionAlgorithm$new(data = mtcars, formula = mpg ~ cyl + carb)
+```
+Printing our model object gives us:
+```{r}
+ols_model
+```
+because we specified a custom-print function.
+
+We can use `$` to get access to all public methods and values, like so:
+```{r}
+ols_model$fit_lm()
+```
+
+Or so:
+```{r}
+ols_model$get_coeff()
+```
+
+So, public members are accessed using `self$` and private members using `private$`. The R6 introduction vignette suggests to have methods return `invisible(self)`, if you want you want methods to be chainable. Private attributes can be accessed only by methods defined in the class or sub-classes.
+
+Unfortunately, there is no way to enforce types of fields in R6 except by implementing checks manually (e.g. as a [checker class](https://github.com/r-lib/R6/issues/48#issuecomment-339872876)).
 
 ### Todos:
+- NextMethod() for inheritance
+- inheritance for R6 and active bindings
+
+
 - fit.parallel method for distributed
 - compare algorithms using "<"/compare.models (returns which algorithm works better overall, per timeframe, etc)
 - log.metrics
