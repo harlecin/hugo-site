@@ -63,6 +63,7 @@ extract = function(object) UseMethod("extract")
 # generic.class = function() ...
 extract.local = function(connection_object) cat("Extracting data from local source ...\n")
 extract.database = function(connection_object, getCols = NULL) cat("Extracting data from database ...\n")
+
 # default if no class specific method is found
 extract.default = function(connection_object) message("unknown connection object")
 ```
