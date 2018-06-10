@@ -168,35 +168,3 @@ ols_model$get_coeff()
 So, public members are accessed using `self$` and private members using `private$`. The R6 introduction vignette suggests to have methods return `invisible(self)`, if you want you want methods to be chainable. Private attributes can be accessed only by methods defined in the class or sub-classes.
 
 Unfortunately, there is no way to enforce types of fields in R6 except by implementing checks manually (e.g. as a [checker class](https://github.com/r-lib/R6/issues/48#issuecomment-339872876)).
-
-### Todos:
-- NextMethod() for inheritance
-- inheritance for R6 and active bindings
-
-
-- fit.parallel method for distributed
-- compare algorithms using "<"/compare.models (returns which algorithm works better overall, per timeframe, etc)
-- log.metrics
-
-
-### Stuff
-- interfaces & polymorphism
-- abstract & concrete classes
-
-connection-object
-  - local, db, default
-  
-extraction-object
-  - method set.parallel 0/1, workers = 10 (how does work with setting backends in foreach?)
-  - method set.connection
-  - method set.filter
-  - method get.data
-  
-feature-pipeline-object
-  - method add.step(depends on stepX)
-  - method remove.step(check dependency)
-
-model-object
-  inherits from logging
-  - method set.model
-  - method fit.model
