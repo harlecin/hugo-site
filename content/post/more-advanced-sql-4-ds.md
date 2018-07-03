@@ -238,6 +238,14 @@ ROLLBACK TRANSACTION    -- rollback the transaction
 
 ```
 
+<create clustered column store index> 
+To shrink a data or log file
+
+    In Object Explorer, connect to an instance of the SQL Server Database Engine and then expand that instance.
+
+    Expand Databases and then right-click the database that you want to shrink.
+
+    Point to Tasks, point to Shrink, and then click Files. 
 <enable read - Albert code here>
 
 <sql server ram/cpu/disk limits>
