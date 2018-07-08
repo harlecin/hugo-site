@@ -25,10 +25,10 @@ Creating indices is more or less synonymous for speeding up queries. A well inde
 Creating indices is pretty simple in SQL Server, all you need to do is:
 ```
 -- non-clustered index
-CREATE INDEX indexName on table (columnName)
+CREATE INDEX indexName on tableName (columnName)
 
 -- clustered index
-CREATE CLUSTERED INDEX indexName on table (columnName)
+CREATE CLUSTERED INDEX indexName on tableName (columnName)
 ```
 
 A clustered index physically reorders the corresponding rows in a table and therefore only one clustered index per table is possible.
@@ -37,8 +37,15 @@ If your queries are still slow, you can change your table from rowstore to colum
 
 Creating a columnstore index is as simple as:
 ```
+-- non-clustered index
+CREATE COLUMNSTORE INDEX indexName ON tableName
 
+-- clustered index
+CREATE CLUSTERED COLUMNSTORE INDEX indexName ON tableName
 ```
+
+As a rule of thumb, columnstore indices work best for analytical workloads and rowstore indices for transactional workloads
+
 
 Please note that while creating an index is simple, working effectively with indices is usually not. There are many nuances and different index types, so if you want to get maximum performance I recommend to talk to a database developer or be prepared to read quite some online documentation:)
 
