@@ -291,7 +291,7 @@ Fortunately, this is really simple:
 
 
 ## Collaborating using Git
-While most database admins and developers really like SQL Server Management Studio, it does not provide Git integration, meaning you need to fire up git in a console or use a source control tool such as Gitkraken. This is where VS Code SQL Operations Studio come to the rescue:)
+While most database admins and developers really like SQL Server Management Studio, it does not provide Git integration, meaning you need to fire up git in a console or use a source control tool such as Gitkraken. This is where VS Code or SQL Operations Studio come to the rescue:)
 
 My preferred workflow is to use VS Code with the `mssql` extension to author my .sql files and put them in version control. I usually create a stored procedure based on the following template:
 ```
@@ -317,5 +317,5 @@ When I am satisfied with the results I add my stored procedure to our feature ge
 I hope you found this post useful:) If you find any errors, please create an issue on Github.
 
 [grouping-sets]: /img/grouping-sets.PNG "Results - grouping sets"
-[pivoting]: /static/img/pivoting.PNG "Pivoting data"
+[pivoting]: /img/pivoting.PNG "Pivoting data"
 
