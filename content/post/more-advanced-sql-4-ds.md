@@ -14,13 +14,39 @@ The topics I will cover include:
 - Programming and error handling
 - Collaborating on a database project and version control
 
-## Indices and columnstore
+## Indices and columnstore tables
+
+You have probably already heard the following quite a lot:
+
+> Our queries are slow, we need to add an index
+
+Creating indices is more or less synonymous for speeding up queries. A well indexed table allows the database to find relevant entries faster and thereby to speed up query processing.
+
+Creating indices is pretty simple in SQL Server, all you need to do is:
+```
+-- non-clustered index
+CREATE INDEX indexName on table (columnName)
+
+-- clustered index
+CREATE CLUSTERED INDEX indexName on table (columnName)
+```
+
+A clustered index physically reorders the corresponding rows in a table and therefore only one clustered index per table is possible.
+
+If your queries are still slow, you can change your table from rowstore to columnstore format. Saving your information in columnstore format allows the database to efficiently compress information along columns and thereby reducing the memory footprint. Moreover, extracting subsets of data is faster, because you do not need to consider unnecessary columns.
+
+Creating a columnstore index is as simple as:
+```
+
+```
+
+Please note that while creating an index is simple, working effectively with indices is usually not. There are many nuances and different index types, so if you want to get maximum performance I recommend to talk to a database developer or be prepared to read quite some online documentation:)
 
 ## Views & Table Variables
 
 Views are simply named queries that we can interact with as if they were normal tables. We are 'viewing' through the view into the tables underneath.
 
-Creating a view is a simple as:
+Creating a view is as simple as:
 ```
 CREATE VIEW dbo.vTestData
 AS 
@@ -52,7 +78,7 @@ VALUES (1, 'asdf'),
 SELECT * 
 FROM @varSomeName
 ```
-Table variables should be only used on very small datasets and are only available during execution of the query (in contrast to temp tables).
+Table variables should only be used on very small datasets and are only available during execution of the query (in contrast to temp tables).
 
 ## Table-valued functions and stored procedures
 
@@ -113,7 +139,16 @@ DECLARE @return_status INT
 EXEC @return_status = dbo.TestProcedure
 SELECT 'Return Status' = @return_status
 ```
-Note that we did not put the parameter in parenthesis in order to pass it to the stored procedure. Replace `CREATE` with `ALTER` to change or update an existing stored procedure.
+Note that we did not put the parameter in parenthesis in order to pass it to the stored procedure. Replace `CREATE` with `ALTER` to change or update an existing stored procedure. Parenthesis in the `CREATE PROCEDURE` statement are optional. You could also define a procedure with variables like so:
+```
+CREATE PROCEDURE dbo.TestProcedure    
+    @variable NVARCHAR(50),   
+    @someOtherVariable NVARCHAR(50)
+AS
+BEGIN
+...
+END
+```
 
 ## Grouping sets and pivoting data
 
@@ -166,7 +201,7 @@ ORDER BY col1, col2
 ```
 Personally, I am not a huge fan of using these functions, because I feel the result sets can be hard to understand. I prefer to use WINDOW functions to give me different aggregation levels.
 
-A rather nice way of using `ROLLUP` is together with `CHOOSE` and `GROUPING_ID` like so:
+A rather nice way of using `ROLLUP` together with `CHOOSE` and `GROUPING_ID` is like so:
 ```
 CHOOSE(1 + GROUPING_ID(col1) + GROUPING_ID(col_2), 
 col1 + 'Subtotal', col2 + 'Subtotal', 'Total') as Level
@@ -191,8 +226,6 @@ FROM (
 PIVOT (SUM(Col2) FOR Col3 IN([A1], [B2], [C3])) AS pvt
 ```
 As you can see, we need to specify all columns that we want to receive in advance. If you want to do that dynamically, you have to look into dynamic SQL (or use R/Python:).
-
-<CHECK!!!>
 
 ## Error handling
 
@@ -238,21 +271,49 @@ ROLLBACK TRANSACTION    -- rollback the transaction
 
 ```
 
-<create clustered column store index> 
-To shrink a data or log file
+## Reducing table sizes
+If you started of with a database containing only tables in rowstore format, you can save lots of disk space by switching to a columnstore format.
 
-    In Object Explorer, connect to an instance of the SQL Server Database Engine and then expand that instance.
+However, SQL Server will not release the disk space until you tell it to.
 
-    Expand Databases and then right-click the database that you want to shrink.
+Fortunately, this is really simple:
 
-    Point to Tasks, point to Shrink, and then click Files. 
-<enable read - Albert code here>
+1. In Object Explorer go to the database you want to shrink
+2. Right click the database and select `Tasks > Shrink > Files'
+3. Reduce disk size in the dialog box
 
-<sql server ram/cpu/disk limits>
+
+## Collaborating using Git
+While most database admins and developers really like SQL Server Management Studio, it does not provide Git integration, meaning you need to fire up git in a console or use a source control tool such as Gitkraken. This is where VS Code SQL Operations Studio come to the rescue:)
+
+My preferred workflow is to use VS Code with the `mssql` extension to author my .sql files and put them in version control. I usually create a stored procedure based on the following template:
+```
+/*
+Description of stored proc
+
+Use CTRL+SHIFT+E to execute only selected block.
+
+Run for debugging/testing:
+EXEC dbo.myStoredProc
+*/
+
+ALTER PROCEDURE dbo.myStoredProc
+AS
+BEGIN
+...
+END
+```
+I make changes to the stored proc, send them to the database and debug it using `EXEC`. 
+
+When I am satisfied with the results I add my stored procedure to our feature generation pipeline script.
+
+I hope you found this post useful:) If you find any errors, please create an issue on Github.
 
 [grouping-sets]: /img/grouping-sets.PNG "Results - grouping sets"
 [pivoting]: /static/img/pivoting.PNG "Pivoting data"
 
 ### ToDos:
-- Check pivot/unpivot
+x Check pivot/unpivot
 - Check Choose structure
+- Albert: allow reads while updating in database
+- sql server ram/cpu/disk limits
