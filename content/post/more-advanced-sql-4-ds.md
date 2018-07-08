@@ -1,5 +1,5 @@
 +++
-date = "2018-05-05"
+date = "2018-07-08"
 title = "More advanced SQL Server for Data Scientists"
 +++
 
@@ -319,8 +319,3 @@ I hope you found this post useful:) If you find any errors, please create an iss
 [grouping-sets]: /img/grouping-sets.PNG "Results - grouping sets"
 [pivoting]: /static/img/pivoting.PNG "Pivoting data"
 
-### ToDos:
-x Check pivot/unpivot
-- Check Choose structure
-- Albert: allow reads while updating in database
-- sql server ram/cpu/disk limits
