@@ -317,5 +317,5 @@ When I am satisfied with the results I add my stored procedure to our feature ge
 I hope you found this post useful:) If you find any errors, please create an issue on Github.
 
 [grouping-sets]: /img/grouping-sets.PNG "Results - grouping sets"
-[pivoting]: /static/img/pivoting.PNG "Pivoting data"
+[pivoting]: /img/pivoting.PNG "Pivoting data"
 
