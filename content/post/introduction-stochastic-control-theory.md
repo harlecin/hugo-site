@@ -18,10 +18,10 @@ The following section closely follows the chapter "Stochastic Control Theory" fr
 
 A fairly general class of stochastic control problems can be written like this:
 
-`$$\begin{align*}
+$$\begin{align*}
   dX_t &= \mu(t, X_t, u_t)dt + \sigma(t, X_t, u_t)dW_t \\
   X_0 &= x_0,
-\end{align*}$$`
+\end{align*}$$
 
 where `$\mu, \sigma$` are the drift and volatility of the stochastic differential equation and `$u_t$` is the control law that is used to control or steer the state process X.
 
