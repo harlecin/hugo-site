@@ -19,7 +19,7 @@ The following section closely follows the chapter "Stochastic Control Theory" fr
 A fairly general class of stochastic control problems can be written like this:
 
 $$\begin{align}
-  dX_t &= \mu(t, X_t, u_t)dt + \sigma(t, X_t, u_t)dW_t \\
+  dX_t &= \mu(t, X_t, u_t)dt + \sigma(t, X_t, u_t)dW_t \newline
   X_0 &= x_0,
 \end{align}$$
 
