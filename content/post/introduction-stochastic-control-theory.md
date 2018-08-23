@@ -3,26 +3,29 @@ date = "2018-08-09"
 title = "Introduction to Stochastic Control Theory"
 +++
 
+I had my first contact with stochastic control theory in one of my Master's courses about Continuous Time Finance. I found the subject really interesting and decided to write my thesis about optimal dividend policy which is mainly about solving stochastic control problems.
 
-The following is an excerpt from my Master thesis:
+In this post I want to give you a brief overview of stochastic control theory based on excerpts form my thesis. Let's get started.
 
-Stochastic control theory helps us to find the optimal decision when the future is uncertain and is heavily used in optimal dividend policy research. Optimal stopping theory is concerned with finding, as the name implies, the optimal point to stop a process. In our specific setting, we want to find the optimal point where we should invest in the growth option if we invest at all.  
+## What is stochastic control theory?
 
+<Remove?>
+Imagine, you are an astronaut and you have to fly a rocket to the moon. Obviously, you know the direction you have to go, but there are a multitude of factors that you do not know in advance such as strong winds at take-off, small thrust differentials in your rocket and so on. You have to decide when you need to increase or decrease thrust as a consequence while all the time keeping in mind that you only have a limited amount of fuel to spend.
 
-We will start with an overview stochastic of control theory and then present an introduction to optimal stopping theory.
-
-## Stochastic control theory
 Imagine, you are a CEO and want to decide if you should pay dividends and if yes, what should the dividend payout ratio be? You will probably start by looking at your cash balance. Then you ask yourself: How much cash can I actually pay as dividend without risking to become insolvent? You remember that last year, raw material prices rose unexpectedly and unplanned repairs had to be made that squeezed the company wallet quite a lot, but sales of an old product also rose. Most of these events were not really foreseeable and therefore random from the company's perspective. This is where stochastic control theory comes into play. Stochastic control theory helps us find a dividend policy, i.e. a control law, so that we maximize the expected value of all future discounted dividend payments, i.e. the value function. The evolution of the company cash reserve is called the state process.
 
 The following section closely follows the chapter "Stochastic Control Theory" from Björk (2009).
 
-\noindent
 A fairly general class of stochastic control problems can be written like this:
-\begin{align*}
+
+`$$\begin{align*}
   dX_t &= \mu(t, X_t, u_t)dt + \sigma(t, X_t, u_t)dW_t \\
   X_0 &= x_0,
-\end{align*}
-where $\mu, \sigma$ are the drift and volatility of the stochastic differential equation and $u_t$ is the control law that is used to control or steer the state process X. \\
+\end{align*}$$`
+
+where `$\mu, \sigma$` are the drift and volatility of the stochastic differential equation and `$u_t$` is the control law that is used to control or steer the state process X.
+
+
 
 \noindent
 Before we continue, we need to define which type of control law we allow in our problems. It is quite natural to demand that the control law should only depend on past values of the state process. Feedback control laws are one class of control laws that satisfy this property and also the one we will consider. Formally, we can write feedback control laws the following way: 
