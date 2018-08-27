@@ -20,7 +20,7 @@ $$\begin{align}
   X_0 &= x_0,
 \end{align}$$
 
-where $\mu, \sigma$ are the drift and volatility of the stochastic differential equation and $u_t$ is the control law that is used to control or steer the state process X.
+where $ \mu, \sigma $ are the drift and volatility of the stochastic differential equation and $u_t$ is the control law that is used to control or steer the state process X.
 
 Before we continue, we need to define which type of control law we allow in our problems. It is quite natural to demand that the control law should only depend on past values of the state process. Feedback control laws are one class of control laws that satisfy this property and also the one we will consider. Formally, we can write feedback control laws the following way: 
 
