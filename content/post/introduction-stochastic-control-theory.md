@@ -25,9 +25,9 @@ where $\mu, \sigma$ are the drift and volatility of the stochastic differential 
 Before we continue, we need to define which type of control law we allow in our problems. It is quite natural to demand that the control law should only depend on past values of the state process. Feedback control laws are one class of control laws that satisfy this property and also the one we will consider. Formally, we can write feedback control laws the following way: 
 
 $$\begin{align}
-  u&:~ \mathbb{R}_+ \times \mathbb{R}^n \to \mathbb{R}^k \newline
+  u &:~ \mathbb{R}_+ \times \mathbb{R}^n \to \mathbb{R}^k \newline
   u_t &:=~u(t, X_t) \text{ ... feedback control law}
-\end{align}
+\end{align}$$
 
 
 In most practical circumstances, the control law will likely have to obey additional control constraints. We will call the class of admissible control laws $\mathcal{U} \subset \mathbb{R}^k$ and make the following definition:
