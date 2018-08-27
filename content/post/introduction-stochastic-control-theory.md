@@ -31,18 +31,17 @@ $$\begin{align}
 
 
 In most practical circumstances, the control law will likely have to obey additional control constraints. We will call the class of admissible control laws $\mathcal{U} \subset \mathbb{R}^k$ and make the following definition:
-\begin{definition}
-  A control law $u$ is called admissible if:
-  \begin{enumerate}
-    \item $u(t,x) \in \mathcal{U},~\forall t \geq 0,~\forall x \in \mathbb{R}^n$.
-    \item For any starting point $(t, x)$ the stochastic differential equation 
-    $$dX_t = \mu(t, X_t, u_t)dt + \sigma(t, X_t, u_t)dW_t, ~X_t = x$$
-    \noindent
-    has a unique solution.
-  \end{enumerate}
-\end{definition}
 
-\noindent
+
+A control law $u$ is called admissible if:
+
+    - $u(t,x) \in \mathcal{U},~\forall t \geq 0,~\forall x \in \mathbb{R}^n$.
+    - For any starting point $(t, x)$ the stochastic differential equation 
+    $$dX_t = \mu(t, X_t, u_t)dt + \sigma(t, X_t, u_t)dW_t, ~X_t = x$$
+
+has a unique solution.
+
+
 The value function given control $u$ is given by:
 \begin{align*}
   V^u &: \mathcal{U} \to \mathbb{R} \\
