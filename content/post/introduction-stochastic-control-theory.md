@@ -9,9 +9,6 @@ In this post I want to give you a brief overview of stochastic control theory ba
 
 ## What is stochastic control theory?
 
-<Remove?>
-Imagine, you are an astronaut and you have to fly a rocket to the moon. Obviously, you know the direction you have to go, but there are a multitude of factors that you do not know in advance such as strong winds at take-off, small thrust differentials in your rocket and so on. You have to decide when you need to increase or decrease thrust as a consequence while all the time keeping in mind that you only have a limited amount of fuel to spend.
-
 Imagine, you are a CEO and want to decide if you should pay dividends and if yes, what should the dividend payout ratio be? You will probably start by looking at your cash balance. Then you ask yourself: How much cash can I actually pay as dividend without risking to become insolvent? You remember that last year, raw material prices rose unexpectedly and unplanned repairs had to be made that squeezed the company wallet quite a lot, but sales of an old product also rose. Most of these events were not really foreseeable and therefore random from the company's perspective. This is where stochastic control theory comes into play. Stochastic control theory helps us find a dividend policy, i.e. a control law, so that we maximize the expected value of all future discounted dividend payments, i.e. the value function. The evolution of the company cash reserve is called the state process.
 
 The following section closely follows the chapter "Stochastic Control Theory" from Björk (2009).
@@ -23,17 +20,16 @@ $$\begin{align}
   X_0 &= x_0,
 \end{align}$$
 
-where `$\mu, \sigma$` are the drift and volatility of the stochastic differential equation and `$u_t$` is the control law that is used to control or steer the state process X.
+where $\mu, \sigma$ are the drift and volatility of the stochastic differential equation and $u_t$ is the control law that is used to control or steer the state process X.
 
-
-
-\noindent
 Before we continue, we need to define which type of control law we allow in our problems. It is quite natural to demand that the control law should only depend on past values of the state process. Feedback control laws are one class of control laws that satisfy this property and also the one we will consider. Formally, we can write feedback control laws the following way: 
-\begin{align*}
-  u&:~ \mathbb{R}_+ \times \mathbb{R}^n \to \mathbb{R}^k \\
+
+$$\begin{align}
+  u&:~ \mathbb{R}_+ \times \mathbb{R}^n \to \mathbb{R}^k \newline
   u_t &:=~u(t, X_t) \text{ ... feedback control law}
-\end{align*}
-\noindent
+\end{align}
+
+
 In most practical circumstances, the control law will likely have to obey additional control constraints. We will call the class of admissible control laws $\mathcal{U} \subset \mathbb{R}^k$ and make the following definition:
 \begin{definition}
   A control law $u$ is called admissible if:
