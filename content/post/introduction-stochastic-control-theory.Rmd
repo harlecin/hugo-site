@@ -236,4 +236,4 @@ for all admissible $u$. Furthermore, from the boundary condition we know that $H
 
 ## References
 Björk, T (2009). *Arbitrage Theory in Continuous Time.* Oxford University Press 3 Third Edition
-Bodner, C (2017). *Optimal Dividend Policy & growth option - Mathematical review & discussion*
+Bodner, C (2017). *Optimal dividend policy & growth option - Mathematical review & discussion*
