@@ -20,7 +20,7 @@ pygmentscodefences  = true
     url  = "/about/"
 [[menu.main]]
     name = "Projects"
-    url  = "/projects/projects"
+    url  = "/projects/"
 [[menu.main]]
     name = "Talks"
     url  = "/talks/"
