@@ -1,8 +1,8 @@
-+++
+---
 date = "2018-08-09"
 title = "Introduction to Stochastic Control Theory"
 markup: mmark
-+++
+---
 
 I had my first contact with stochastic control theory in one of my Master's courses about Continuous Time Finance. I found the subject really interesting and decided to write my thesis about optimal dividend policy which is mainly about solving stochastic control problems.
 
