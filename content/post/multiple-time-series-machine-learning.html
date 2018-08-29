@@ -1,0 +1,22 @@
+---
+title: "Efficient learning from multiple time series"
+author: "Christoph"
+date: 2018-07-03T14:41:14-05:00
+categories: ["R"]
+tags: ["R", "time series analysis"]
+---
+
+
+
+<pre class="r"><code>library(DBI)</code></pre>
+<pre class="r"><code>## connect to database using Active Directory authentification
+con_string = &quot;Driver={ODBC Driver 13 for SQL Server};server=localhost;database=OTBW;trusted_connection=yes&quot;
+con = odbc::dbConnect(odbc::odbc(), .connection_string = con_string)
+
+dt_database = dplyr::tbl(con, dbplyr::in_schema(&quot;dbo&quot;, &quot;VDE_EventMengen&quot;))</code></pre>
+<div id="todos" class="section level2">
+<h2>TODOS:</h2>
+<ul>
+<li>move connection settings to external file not in git?</li>
+</ul>
+</div>

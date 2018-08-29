@@ -148,20 +148,21 @@ gridExtra::grid.arrange(p_normal, p_log, ncol = 2, top = &quot;QQ-Plots: Drivers
 <li>observation equation (aka likelihood): <span class="math inline">\(\textbf{y}|\beta, \sigma \sim \mathcal{N}(\textbf{X}\beta, \sigma^2\textbf{I})\)</span></li>
 <li>prior distributions: <span class="math inline">\(\beta|\sigma^2 \sim \mathcal{N}(\textbf{b}_0, \sigma^2\textbf{B}_0)\)</span>, <span class="math inline">\(\sigma^2 \sim \mathcal{IG}(c_0, C_0)\)</span></li>
 </ul>
-<p>By Bayes’ formula, the posterior density is then given by: <span class="math display">\[p(\beta, \sigma|y) \sim p(\textbf{y}|\beta, \sigma)p(\beta, \sigma^2) = p(\textbf{y}|\beta, \sigma)p(\beta|\sigma^2)p(\sigma^2)\]</span></p>
+<p>By Bayes’ formula, the posterior density is then given by:
+<span class="math display">\[p(\beta, \sigma|y) \sim p(\textbf{y}|\beta, \sigma)p(\beta, \sigma^2) = p(\textbf{y}|\beta, \sigma)p(\beta|\sigma^2)p(\sigma^2)\]</span></p>
 <p>Since a normal-inverse-gamma prior is conjugate to a normal likelihood, the posterior is again a normal-inverse-gamma distribution. So we could either calculate the parameters of the posterior distribution and use it directly or we could use Gibbs sampling to approximate the posterior through simulation. We will do the latter here.</p>
 <p>It can be shown that the full conditional distributions of <span class="math inline">\(\beta\)</span> and <span class="math inline">\(\sigma\)</span> are given by:</p>
 <ul>
 <li><span class="math inline">\(\beta|\textbf{y}, \sigma^2 \sim \mathcal{N}(b_n, B_n)\)</span> with<br />
 <span class="math display">\[\begin{align*}
-  B_n &amp;= (\frac{1}{\sigma^2}X&#39;X+\frac{1}{\sigma^2}B_0^{-1})^{-1}\\
-  b_n &amp;= B_n (\frac{1}{\sigma^2}X&#39;y+B_0^{-1}b_0)
-  \end{align*}\]</span></li>
+B_n &amp;= (\frac{1}{\sigma^2}X&#39;X+\frac{1}{\sigma^2}B_0^{-1})^{-1}\\
+b_n &amp;= B_n (\frac{1}{\sigma^2}X&#39;y+B_0^{-1}b_0)
+\end{align*}\]</span></li>
 <li><span class="math inline">\(\sigma^2|\textbf{y}, \beta \sim \mathcal{c_n, C_n}\)</span> with<br />
 <span class="math display">\[\begin{align*}
-  c_n &amp;= c_0 + \frac{n}{2} + \frac{p}{2} \\
-  C_n &amp;= C_0 + \frac{1}{2}[(y-X\beta)&#39;(y-X\beta) + (\beta - b_0)&#39;B_0^{-1}(\beta-b_0)]
-  \end{align*}\]</span></li>
+c_n &amp;= c_0 + \frac{n}{2} + \frac{p}{2} \\
+C_n &amp;= C_0 + \frac{1}{2}[(y-X\beta)&#39;(y-X\beta) + (\beta - b_0)&#39;B_0^{-1}(\beta-b_0)]
+\end{align*}\]</span></li>
 </ul>
 <p>This gives us the following vanilla Gibbs sampler:</p>
 <pre class="r"><code>gibbs_nig = function(y, X, B0_diag = 10^2, b0_mu = 0, c0 = 1, C0 = 1) {
@@ -238,22 +239,22 @@ colnames(out) = c(&quot;coeff&quot;, &quot;OLS&quot;, &quot;Gibbs&quot;, &quot;D
 rownames(out) = NULL
 out</code></pre>
 <pre><code>##          coeff          OLS        Gibbs Delta &lt; 0.01
-## 1  (Intercept) -4.047964950 -4.059341387        FALSE
-## 2  PetrolPrice -2.585395621 -2.465121145        FALSE
-## 3    VanKilled  0.001267367  0.001243204         TRUE
-## 4         law1 -0.135868045 -0.137033224         TRUE
-## 5       month2 -0.093704899 -0.093548609         TRUE
-## 6       month3 -0.247982128 -0.247540206         TRUE
-## 7       month4 -0.294794780 -0.294062969         TRUE
-## 8       month5 -0.325415207 -0.324937449         TRUE
-## 9       month6 -0.287237168 -0.286454324         TRUE
-## 10      month7 -0.364636631 -0.364423669         TRUE
-## 11      month8 -0.389147546 -0.389364768         TRUE
-## 12      month9 -0.208736279 -0.208740228         TRUE
-## 13     month10 -0.035105269 -0.034379475         TRUE
-## 14     month11  0.136652145  0.137616339         TRUE
-## 15     month12  0.226670664  0.227045610         TRUE
-## 16  time_index -0.003399847 -0.003410663         TRUE</code></pre>
+## 1  (Intercept) -4.047964950 -4.057938297         TRUE
+## 2  PetrolPrice -2.585395621 -2.479176367        FALSE
+## 3    VanKilled  0.001267367  0.001225611         TRUE
+## 4         law1 -0.135868045 -0.136430294         TRUE
+## 5       month2 -0.093704899 -0.093276611         TRUE
+## 6       month3 -0.247982128 -0.247318427         TRUE
+## 7       month4 -0.294794780 -0.294143484         TRUE
+## 8       month5 -0.325415207 -0.324281320         TRUE
+## 9       month6 -0.287237168 -0.286592816         TRUE
+## 10      month7 -0.364636631 -0.363347731         TRUE
+## 11      month8 -0.389147546 -0.388439936         TRUE
+## 12      month9 -0.208736279 -0.208575525         TRUE
+## 13     month10 -0.035105269 -0.034252927         TRUE
+## 14     month11  0.136652145  0.137447998         TRUE
+## 15     month12  0.226670664  0.227844203         TRUE
+## 16  time_index -0.003399847 -0.003413644         TRUE</code></pre>
 <p>Pretty similar, but not quite the same. Very important to note here is that due to the small sample size (only 192 observations) the priors have quite a strong say on the posterior! If we were to put stronger prior beliefs into our model the prior would dominate the posterior and the results could be very different!</p>
 <p>So both models suggest that the introduction of the law actually helped reduce the number of driver deaths per km driven.</p>
 <div id="convergence-tests" class="section level4">
@@ -277,7 +278,8 @@ ggplot(gibbs_gather, aes(x = i, y = val)) +
 <span class="math display">\[p(law | \sigma^2) \sim \mathcal{N}(0.1, \sigma^2 0.001)\]</span></li>
 <li>undecided case: we are not sure what we should expect (this is the scenario we considered above)<br />
 <span class="math display">\[p(law | \sigma^2) \sim \mathcal{N}(0, \sigma^2 1000)\]</span></li>
-<li>easy-to-convince case: we are pretty sure that wearing seatbelts is a good idea <span class="math display">\[p(law | \sigma^2) \sim \mathcal{N}(-1, \sigma^2 0.01)\]</span></li>
+<li>easy-to-convince case: we are pretty sure that wearing seatbelts is a good idea
+<span class="math display">\[p(law | \sigma^2) \sim \mathcal{N}(-1, \sigma^2 0.01)\]</span></li>
 </ol>
 <p>We will assume a constant prior for <span class="math inline">\(\sigma^2\)</span> given by <span class="math inline">\(\sigma^2 \sim \mathcal{IG}(1,1)\)</span> in all cases.</p>
 <p>There are again 2 options to get the results: we could either use Gibbs sampling again or we could calculate the posterior distribution of the law coefficient directly. We will stick to using Gibbs sampling, because deriving the marginals analytically is quite messy.</p>
@@ -359,9 +361,9 @@ model_vanilla_test = sampling(vanilla_regression, data = list(N = N, K = K, y = 
 ## Iteration: 9000 / 10000 [ 90%]  (Sampling)
 ## Iteration: 10000 / 10000 [100%]  (Sampling)
 ## 
-##  Elapsed Time: 15.119 seconds (Warm-up)
-##                7.831 seconds (Sampling)
-##                22.95 seconds (Total)</code></pre>
+##  Elapsed Time: 11.773 seconds (Warm-up)
+##                6.56 seconds (Sampling)
+##                18.333 seconds (Total)</code></pre>
 <pre class="r"><code># pairs(model_vanilla_test)
 broom::tidyMCMC(model_vanilla_test, conf.int = T)</code></pre>
 <pre><code>##        term     estimate    std.error     conf.low    conf.high
@@ -488,13 +490,15 @@ ggplot(data_plot) +
 </div>
 <div id="extending-vanilla-model" class="section level4">
 <h4>Extending vanilla model</h4>
-<p>While the model appears to perform quite well, we will nevertheless extend it by allowing first-order serial correlation: <span class="math display">\[\begin{align*}
+<p>While the model appears to perform quite well, we will nevertheless extend it by allowing first-order serial correlation:
+<span class="math display">\[\begin{align*}
 Y_t &amp;= \beta_0 + \beta_1 X_{1,t} + \dots + \beta_k X_{k,t} + u_t \\
 u_t &amp; = \rho u_{t-1} + v_t,~~v_t \sim \mathcal{N}(0, \sigma^2)
 \end{align*}\]</span></p>
 <p>Like in the previous section we will start with coding our own Gibbs sampler and then we will implement the model in Stan.</p>
-<p>The following derivation closely follows the ‘CCBS Technical Handbook No. 4 - Applied Bayesian econometrics for central bankers’ by Blake and Mumatz (2012) from the Bank of England.</p>
-<p>From the model above we can already see that if we knew <span class="math inline">\(\rho\)</span> than we could get easily get rid of the serial correlation by doing the following: <span class="math display">\[\begin{align*}
+<p>The following derivation closely follows the ‘CCBS Technical Handbook No. 4 - Applied Bayesian econometrics for central bankers’ by Blake and Mumatz (2012) from the Bank of England.</p>
+<p>From the model above we can already see that if we knew <span class="math inline">\(\rho\)</span> than we could get easily get rid of the serial correlation by doing the following:
+<span class="math display">\[\begin{align*}
 Y_t &amp;= \beta_0 + \beta_1 X_{1,t} + \dots + \beta_k X_{k,t} + u_t \\
 - \rho Y_{t-1} &amp;= \rho \beta_0 + \rho \beta_1 X_{1,t-1} + \dots + \rho \beta_k X_{k,t-1} + \rho u_{t-1} \\
  \hline  \\
@@ -527,9 +531,9 @@ p_n &amp;= P_n\left(\frac{1}{\sigma^2}u_{t-1}&#39;u_t + P_0^{-1}p_0\right)
 \end{align}\]</span></li>
 <li><span class="math inline">\(\sigma^2|\textbf{y}, \beta, \rho \sim \mathcal{IG}(c_n, C_n)\)</span> with<br />
 <span class="math display">\[\begin{align*}
-  c_n &amp;= c_0 + \frac{n}{2} + \frac{p}{2} \\
-  C_n &amp;= C_0 + \frac{1}{2}[(y^*-X^*\beta)&#39;(y^*-X^*\beta) + (\beta - b_0)&#39;B_0^{-1}(\beta-b_0)]
-  \end{align*}\]</span></li>
+c_n &amp;= c_0 + \frac{n}{2} + \frac{p}{2} \\
+C_n &amp;= C_0 + \frac{1}{2}[(y^*-X^*\beta)&#39;(y^*-X^*\beta) + (\beta - b_0)&#39;B_0^{-1}(\beta-b_0)]
+\end{align*}\]</span></li>
 </ul>
 <p>Where <span class="math inline">\(y_t^* = y_t - \rho y_{t-1}\)</span> and <span class="math inline">\(X_t^* = X_t - \rho X_{t-1}\)</span>.</p>
 <p>Using the same priors as in the previous Gibbs sampler would also work, but the estimates of <span class="math inline">\(\rho\)</span> would be lower on average compared to the estimates you would get when running an ARIMAX model.</p>
@@ -614,13 +618,13 @@ y = log(data_seatbelts$DriversKilled) - log(data_seatbelts$kms)
 res_serial = gibbs_corr_err(y, X)
 colMeans(res_serial)</code></pre>
 <pre><code>##       beta_0       beta_1       beta_2       beta_3       beta_4 
-## -4.016267531 -2.271229459 -0.001852954 -0.132825805 -0.113783488 
+## -4.013813641 -2.287443648 -0.001896979 -0.133093040 -0.114328305 
 ##       beta_5       beta_6       beta_7       beta_8       beta_9 
-## -0.265196096 -0.314381850 -0.344432796 -0.302218115 -0.382562642 
+## -0.266532851 -0.315350748 -0.345077648 -0.302582377 -0.383045366 
 ##      beta_10      beta_11      beta_12      beta_13      beta_14 
-## -0.408080292 -0.226977665 -0.046327030  0.125931620  0.216191766 
+## -0.408607646 -0.227457867 -0.046336094  0.125867092  0.215834683 
 ##      beta_15       sigma2          rho 
-## -0.003501875  0.016360713  0.264152673</code></pre>
+## -0.003500920  0.016327711  0.264551998</code></pre>
 <p>The coefficients look pretty similar to what we had in the no-autocorrelation sampler, which is reassuring, since autocorrelation should only affect the standard-errors of the coefficients not the coefficients. Let’s compare the results with an ARIMAX model using the same model specification:</p>
 <pre class="r"><code>## Note: be careful to remove intercept!
 X_temp = model.matrix(~ PetrolPrice + VanKilled + law + month + time_index, data = data_seatbelts)[,-1]
@@ -715,9 +719,9 @@ model_extended_vanilla = sampling(extended_vanilla_regression, data = list(N = N
 ## Iteration: 9000 / 10000 [ 90%]  (Sampling)
 ## Iteration: 10000 / 10000 [100%]  (Sampling)
 ## 
-##  Elapsed Time: 80.006 seconds (Warm-up)
-##                54.188 seconds (Sampling)
-##                134.194 seconds (Total)</code></pre>
+##  Elapsed Time: 71.754 seconds (Warm-up)
+##                45.159 seconds (Sampling)
+##                116.913 seconds (Total)</code></pre>
 <pre class="r"><code>broom::tidyMCMC(model_extended_vanilla, conf.int = T)</code></pre>
 <pre><code>##        term     estimate    std.error     conf.low    conf.high
 ## 1   beta[1] -4.022969354 0.1272765140 -4.272220157 -3.770700778
@@ -772,17 +776,17 @@ impact</code></pre>
 ## 
 ##                          Average        Cumulative  
 ## Actual                   100            2306        
-## Prediction (s.d.)        95 (3.3)       2185 (76.0) 
-## 95% CI                   [89, 102]      [2040, 2340]
+## Prediction (s.d.)        95 (3.3)       2185 (75.4) 
+## 95% CI                   [89, 102]      [2048, 2343]
 ##                                                     
-## Absolute effect (s.d.)   5.3 (3.3)      120.8 (76.0)
-## 95% CI                   [-1.5, 12]     [-34.3, 266]
+## Absolute effect (s.d.)   5.3 (3.3)      120.8 (75.4)
+## 95% CI                   [-1.6, 11]     [-36.6, 258]
 ##                                                     
 ## Relative effect (s.d.)   5.5% (3.5%)    5.5% (3.5%) 
-## 95% CI                   [-1.6%, 12%]   [-1.6%, 12%]
+## 95% CI                   [-1.7%, 12%]   [-1.7%, 12%]
 ## 
-## Posterior tail-area probability p:   0.0537
-## Posterior prob. of a causal effect:  95%
+## Posterior tail-area probability p:   0.05674
+## Posterior prob. of a causal effect:  94%
 ## 
 ## For more details, type: summary(impact, &quot;report&quot;)</code></pre>
 <pre class="r"><code>plot(impact)</code></pre>

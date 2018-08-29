@@ -81,6 +81,7 @@ extract = function(object) UseMethod(&quot;extract&quot;)
 # generic.class = function() ...
 extract.local = function(connection_object) cat(&quot;Extracting data from local source ...\n&quot;)
 extract.database = function(connection_object, getCols = NULL) cat(&quot;Extracting data from database ...\n&quot;)
+
 # default if no class specific method is found
 extract.default = function(connection_object) message(&quot;unknown connection object&quot;)</code></pre>
 <p>We define a generic function with <code>UseMethod()</code>. When we call <code>extract_data()</code>, our function checks the class attribute of the object we passed. Based on the class it searches for a function following the naming convention ‘extract.class_name’. If it finds one, it will use it, else it will use our default implementation:</p>
@@ -96,7 +97,8 @@ extract(con_local)</code></pre>
 <pre class="r"><code># there is no method for class &#39;spark&#39;:
 extract(con_spark)</code></pre>
 <pre><code>## unknown connection object</code></pre>
-<p>You could also rename our function <code>extract()</code> to <code>load()</code>, but the convention is to use the same name as in our call to UseMethod(). This allows you to easily find all specific implementations of the generic function using <code>methods()</code>:</p>
+<p>You could also rename our function <code>extract()</code> to <code>load()</code>, but the convention is to use the same name as in our call to
+UseMethod(). This allows you to easily find all specific implementations of the generic function using <code>methods()</code>:</p>
 <pre class="r"><code>methods(extract)</code></pre>
 <pre><code>## [1] extract.database extract.default  extract.local   
 ## see &#39;?methods&#39; for accessing help and source code</code></pre>
