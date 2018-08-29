@@ -133,17 +133,15 @@ with boundary condition <span class="math display">\[V(T, x) = \Phi(x), ~\forall
 <p>Different Hamilton-Jacobi-Bellman equations need different verification theorems. For example, the HJBE associated with the optimal dividend problem is slightly different and requires a different verification theorem (e.g. Schmidli: ‘Stochastic Control in Insurance’ in case you are interested). We continue to follow Bjork and present a verification theorem for the HJBE above.</p>
 <p><strong>Verification theorem</strong>:</p>
 <p>Suppose we have <span class="math inline">\(H(t,x)\)</span> and <span class="math inline">\(g(t,x)\)</span> s.t.:</p>
-<ul>
-<li><p><span class="math inline">\(H\)</span> is sufficiently integrable and solves the Hamilton-Jacobi-Bellman equation:</p>
-<span class="math display">\[\begin{align}
-  H_t(t,x) &amp;+ \sup_{u \in \mathcal{U}}\{F(t,xu,) + \mathcal{L}^u H(t,x)\} = 0,~\forall (t,x) \in (0,T) \times \mathbb{R}^n\\
-  H_T(T,x) &amp;= \Phi(x),~\forall x \in \mathbb{R}
-  \end{align}\]</span>
-<span class="math inline">\(g\)</span> is an admissible control law
-<p><span class="math inline">\(\forall (t,x)\)</span> the supremum in
-<span class="math display">\[\sup_{u \in \mathcal{U}}\{F(t,x,u) + \mathcal{L}^u H(t,x)\}\]</span>
-is attained by <span class="math inline">\(u = g(t,x)\)</span>.</p></li>
-</ul>
+<p><span class="math inline">\(H\)</span> is sufficiently integrable and solves the Hamilton-Jacobi-Bellman equation:</p>
+<pre><code>$$\begin{align}
+H_t(t,x) &amp;+ \sup_{u \in \mathcal{U}}\{F(t,xu,) + \mathcal{L}^u H(t,x)\} = 0,~\forall (t,x) \in (0,T) \times \mathbb{R}^n\\
+H_T(T,x) &amp;= \Phi(x),~\forall x \in \mathbb{R}
+\end{align}$$
+\item $g$ is an admissible control law
+\item $\forall (t,x)$ the supremum in 
+$$\sup_{u \in \mathcal{U}}\{F(t,x,u) + \mathcal{L}^u H(t,x)\}$$
+is attained by $u = g(t,x)$.</code></pre>
 <p>Then the following holds:</p>
 <ul>
 <li>The optimal value function <span class="math inline">\(V\)</span> to the control problem is given by
