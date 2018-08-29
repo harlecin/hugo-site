@@ -185,7 +185,7 @@ Different Hamilton-Jacobi-Bellman equations need different verification theorems
 
 Suppose we have $H(t,x)$ and $g(t,x)$ s.t.:
 
-- $H$ is sufficiently integrable and solves the Hamilton-Jacobi-Bellman equation:
+$H$ is sufficiently integrable and solves the Hamilton-Jacobi-Bellman equation:
 
     $$\begin{align}
     H_t(t,x) &+ \sup_{u \in \mathcal{U}}\{F(t,xu,) + \mathcal{L}^u H(t,x)\} = 0,~\forall (t,x) \in (0,T) \times \mathbb{R}^n\\
