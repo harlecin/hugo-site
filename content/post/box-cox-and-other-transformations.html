@@ -1,0 +1,262 @@
+---
+title: "Box Cox Transformation"
+author: "Christoph"
+date: 2018-09-01T14:41:14-05:00
+categories: ["R"]
+tags: ["box cox", "R", "forecasting"]
+---
+
+
+
+<p>When we do time series analysis, we are usually interested either in</p>
+<ul>
+<li>uncovering causal relationships (Does <span class="math inline">\(X_t\)</span> influence <span class="math inline">\(Y_{t+1}\)</span>?) or</li>
+<li>in getting the most accurate forecast possible.</li>
+</ul>
+<p>Especially in the second case it can be beneficial to adjust our historical data to make it easier to extract a signal.</p>
+<p>A very common transformation is to take logs. By taking logs we can often stabilize the variance of our series and hopefully make a non-stationary series stationary. Furthermore, taking logs has a nice interpretation as approximate percentage changes. However, taking logs requires that our data is strictly positive, which although true for many practical applications, might not hold in our particular situation.</p>
+<p>A more general class of transformations are power transformations such as the Box Cox transformation that includes logs as a special case:</p>
+<p><span class="math display">\[y_{i}^{(\lambda)} = \begin{cases}
+  \frac{y_{i}^{(\lambda)} - 1}{\lambda} &amp; \text{ if } \lambda \neq 0 \\
+  ln(y_{i}) &amp; \text{ if } \lambda = 0
+\end{cases}
+\]</span></p>
+<p>The Box Cox transformation was designed to help make data more ‘normally’ distributed and thus help stabilize its variance. Forecasting the transformed series can be substantially simpler.</p>
+<p>Note that when we use the Box Cox transformation and forecast on the transformed scale we cannot simple reverse the transformation to get the mean forecast on the original scale since
+for our convex backtransformation function <span class="math inline">\(f\)</span> Jensen’s inequality tells us that:</p>
+<p><span class="math display">\[f(\mathbb{E}[X]) \leq \mathbb{E}[f(X)]\]</span>
+If the data on the transformed scale is symmetric, we will get the forecast median on the original scale instead of the mean, since medians are not affected by monotonic transformations.</p>
+<p>So if we simply backtransform our mean forecast without bias adjustment, our forecast will be systematically too low. To correct the bias we can use a Taylor expansion of our backtransformation function <span class="math inline">\(f\)</span>:</p>
+<p><span class="math display">\[\begin{align}
+\mathbb{E}[f(X)] &amp;= \mathbb{E}[f(\mu_X + (X - \mu_X))] \\
+&amp; \approx \mathbb{E}[f(\mu_X) + f&#39;(\mu_X)(X-\mu_X) + \frac{1}{2}f&#39;&#39;(\mu_X)(X-\mu_X)^2] \\
+&amp; = f(\mu_X) + \underbrace{\frac{f&#39;&#39;(\mu_X)}{2}\sigma_X^2}_{\text{bias adjustment}}
+\end{align}
+\]</span></p>
+<p>Fortunately, R’s forecast package allows us to easily apply this bias correction without having to calculate it manually.</p>
+<p>No time series example in R is complete without taking a look at the <code>AirPassengers</code> dataset:)</p>
+<p>We will start by visually comparing the original and the Box Cox tranformed time series. Then I will fit SARIMA and ETS models to the original and the transformed series and check if the Box Cox transformation helps to improve forecasting accuracy.</p>
+<div id="does-the-box-cox-transformation-help-improve-forecasts" class="section level2">
+<h2>Does the Box Cox transformation help improve forecasts?</h2>
+<p>I will rely on the following libraries:</p>
+<pre class="r"><code>library(data.table)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(forecast)</code></pre>
+<pre><code>## 
+## Attache Paket: &#39;forecast&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     autolayer</code></pre>
+<pre class="r"><code>library(magrittr)
+library(future)</code></pre>
+<p>The <code>AirPassengers</code> dataset shows the growth in passenger numbers over time on a monthly basis. Let’s create a quick plot comparing the original with the Box Cox transformed dataset. We choose lambda automatically based on minimizing the coefficient of variation (<span class="math inline">\(\sigma/\mu\)</span>) of the subseries of the <code>Airpassengers</code> series (see <a href="https://pkg.robjhyndman.com/forecast/reference/BoxCox.lambda.html">Hyndman</a>).</p>
+<pre class="r"><code>## Original dataset
+air_orig = AirPassengers %&gt;%
+  autoplot() +
+  geom_smooth() +
+  ggtitle(&quot;Original scale&quot;)
+
+## Transformed dataset
+AirPassengersBoxCox = BoxCox(AirPassengers, lambda = &quot;auto&quot;)
+
+air_box = AirPassengersBoxCox %&gt;%
+  autoplot() +
+  geom_smooth() +
+  ggtitle(paste0(&quot;Box Cox with lambda = &quot;, 
+                 round(attributes(AirPassengersBoxCox)$lambda,2))
+          )
+  
+## Comparision
+grid.arrange(air_orig, air_box, ncol = 2, 
+             top = textGrob(&quot;Airpassenger numbers over time&quot;, 
+                            gp = gpar(fontsize = 16))
+             )</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;
+## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="/post/box-cox-and-other-transformations_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>We can clealy see that the original series has a trend and increasing volatility, so it is not stationary. Applying a Box Cox transformation helped us get near constant volatility over the entire time period. We can also see the seasonal pattern of both series.</p>
+<p>Let’s quickly look at a histogram to check if the transformation actually helped to make our data more normal:</p>
+<pre class="r"><code>df_hist = data.frame(passengers = as.double(AirPassengers), type = &quot;Original&quot;)
+
+df_hist = rbind(df_hist, data.frame(passengers = as.double(AirPassengersBoxCox), type = &quot;BoxCox&quot;))
+
+ggplot(df_hist, aes(sample = passengers)) +
+  geom_qq() +
+  geom_qq_line() +
+  facet_grid(type ~ ., scales = &quot;free_y&quot;) +
+  ggtitle(&quot;QQ plot: Original and transformed passenger numbers&quot;,
+          &quot;BoxCox transform did not improve normality markedly&quot;)</code></pre>
+<p><img src="/post/box-cox-and-other-transformations_files/figure-html/unnamed-chunk-2-1.png" width="672" />
+So, while the Box Cox transformation helped to stablize variance, it did not really help a lot with improving normality.</p>
+<p>As already mentioned, we are now going to fit two types of models to the series:</p>
+<ul>
+<li>exponential smoothing (ETS) and</li>
+<li>SARIMA models</li>
+</ul>
+<p>with and without a Box Cox transformation and see how they compare.</p>
+<p>We will start off by training models on all years including 1956 and predicting the following year, i.e. 12 periods ahead to get a feeling for the different models:</p>
+<pre class="r"><code>AirPassengersTrain = window(AirPassengers, start = c(1949, 1), end = c(1956, 12))
+AirPassengersTest = window(AirPassengers, start = c(1957, 1), end = c(1957, 12))</code></pre>
+<p>Let’s train the models and create some plots:</p>
+<pre class="r"><code>plot_arima = forecast(auto.arima(AirPassengersTrain),  h = 12) %&gt;%
+  autoplot() + 
+  autolayer(AirPassengersTest)
+
+plot_arima_box = forecast(auto.arima(AirPassengersTrain, lambda = &quot;auto&quot;, biasadj = T), h = 12) %&gt;%
+  autoplot() + 
+  autolayer(AirPassengersTest)
+
+grid.arrange(plot_arima, plot_arima_box, ncol = 1, 
+             top = textGrob(&quot;ARIMA (top) / ARIMA BoxCox (bottom)&quot;, 
+                            gp = gpar(fontsize = 16)))</code></pre>
+<p><img src="/post/box-cox-and-other-transformations_files/figure-html/unnamed-chunk-4-1.png" width="672" />
+The models picked up on the yearly seasonality in both cases and overall both models perform similarly.</p>
+<pre class="r"><code>plot_ets = forecast(ets(AirPassengersTrain, allow.multiplicative.trend = T),  
+                    h = 12) %&gt;%
+  autoplot() + 
+  autolayer(AirPassengersTest)
+
+plot_ets_box = forecast(ets(AirPassengersTrain, 
+                            allow.multiplicative.trend = T, 
+                            lambda = &quot;auto&quot;, biasadj = T),  
+                        h = 12) %&gt;%
+  autoplot() + 
+  autolayer(AirPassengersTest)
+
+grid.arrange(plot_ets, plot_ets_box, ncol = 1, 
+             top = textGrob(&quot;ETS (top) / ETS BoxCox (bottom)&quot;, 
+                            gp = gpar(fontsize = 16)))</code></pre>
+<p><img src="/post/box-cox-and-other-transformations_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>We can see that the vanilla ETS model is performing clearly worse than the ETS-BoxCox version. This suggests that whether a Box Cox transformation helps, depends in large parts on the model in question.</p>
+<p>To get a more accurate picture of model performance with(out) Box Cox transformation, we will run a time series cross-validation:</p>
+<p>Before we start, we define a few helper functions:</p>
+<pre class="r"><code>rmse_horizon = function(errors, start = c(1950, 1)) {
+  ## removing the first year because of insufficient data
+  errors = window(errors, start = start)
+  rmse = function(x) sqrt(mean(x^2, na.rm = T))
+  
+  apply(errors, MARGIN = 2, FUN = rmse)
+}</code></pre>
+<p>Since the computations take quite some time we will run them async so the current R session is not blocked. We use a ‘multisession’ execution plan, i.e. each core gets to execute one R session in the background. As soon as all cores are busy, evaluation of other futures is blocked.</p>
+<pre class="r"><code>plan(multisession, workers = 2)</code></pre>
+<p>Let’s get started:</p>
+<pre class="r"><code>## setup
+data = AirPassengers
+h = 12
+
+##ets
+forecastfunction = function(x, h) forecast(ets(x, allow.multiplicative.trend = T), h = h)
+
+rmse_ets  %&lt;-% {
+    tsCV(data, forecastfunction = forecastfunction, h = h) %&gt;%
+    rmse_horizon()
+  }
+
+##ets box
+forecastfunction = function(x, h) forecast(ets(x, allow.multiplicative.trend = T, 
+                                           lambda = &quot;auto&quot;, biasadj = T), h = h)
+
+rmse_ets_box  %&lt;-% {
+    tsCV(data, forecastfunction = forecastfunction, h = h) %&gt;%
+    rmse_horizon()
+  }
+
+
+##Comparison chart:
+rmse_ets_compare = data.frame(rbind(rmse_ets, rmse_ets_box))
+
+rmse_ets_compare %&gt;% 
+  cbind(model = c(&quot;ets&quot;, &quot;ets_box&quot;), .) %&gt;%
+  tidyr::gather(key = &quot;h&quot;, value = &quot;rmse&quot;, 2:13) %&gt;%
+  dplyr::mutate(horizon = rep(1:12, each = 2)) %&gt;%
+  ggplot(., aes(x = horizon, y = rmse, color = model)) +
+  geom_line() +
+  ggtitle(&quot;RMSE for different forecasting horizons&quot;,
+         &quot;Box Cox transformation improves forecasts fore most horizons&quot;)</code></pre>
+<p><img src="/post/box-cox-and-other-transformations_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>As we can see in the chart above, applying a Box Cox transformation helped to improve performance for most forecasting horizons as we already expected based on the chart in the beginning.</p>
+<p>Now let’s try again with SARIMA models:</p>
+<pre class="r"><code>## setup
+data = AirPassengers
+h = 12
+
+##arima
+forecastfunction = function(x, h) forecast(auto.arima(x), h = h)
+
+rmse_arima  %&lt;-% {
+    tsCV(data, forecastfunction = forecastfunction, h = h) %&gt;%
+    rmse_horizon()
+  }
+
+##arima box
+forecastfunction = function(x, h) forecast(auto.arima(x, lambda = &quot;auto&quot;, biasadj = T), h = h)
+
+rmse_arima_box  %&lt;-% {
+    tsCV(data, forecastfunction = forecastfunction, h = h) %&gt;%
+    rmse_horizon()
+  }
+
+
+##Comparison chart:
+rmse_arima_compare = data.frame(rbind(rmse_arima, rmse_arima_box))
+
+rmse_arima_compare %&gt;% 
+  cbind(model = c(&quot;arima&quot;, &quot;arima_box&quot;), .) %&gt;%
+  tidyr::gather(key = &quot;h&quot;, value = &quot;rmse&quot;, 2:13) %&gt;%
+  dplyr::mutate(horizon = rep(1:12, each = 2)) %&gt;%
+  ggplot(., aes(x = horizon, y = rmse, color = model)) +
+  geom_line() +
+  ggtitle(&quot;RMSE for different forecasting horizons&quot;,
+         &quot;Box Cox transformation gives mixed results&quot;)</code></pre>
+<p><img src="/post/box-cox-and-other-transformations_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>In the SARIMA case, the result is not really clear cut: the Box Cox transformation helps slightly for some time horizons, while making it worse for others. Since there is no clear winner, we stick to the simpler plain-vanilla SARIMA model. Again, this confirms what we saw during our initial exploration in the beginning where ARIMA with(out) Box Cox performed more or less the same.</p>
+<p>How does the SARIMA model compare with the Box Cox ETS model?
+<img src="/post/box-cox-and-other-transformations_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>So in this case, a plain vanilla ARIMA model actually works best.</p>
+<p>For a final test, let’s add a STL decomposition to our models and see how it affects performance with(out) Box Cox transformation.</p>
+</div>
+<div id="stl-decomposition-in-combination-with-box-cox-transformation" class="section level2">
+<h2>STL decomposition in combination with Box Cox transformation</h2>
+<p>We are now running the same experiment again, but this time we are going to:</p>
+<ol style="list-style-type: decimal">
+<li>Apply a STL decomposition,</li>
+<li>forecast the deseasonalised series after a Box Cox transformation and</li>
+<li>backtransform and re-seasonalise the data</li>
+</ol>
+<p><img src="/post/box-cox-and-other-transformations_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="/post/box-cox-and-other-transformations_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>Again, applying a Box Cox transformation helps a lot for most forecasting horizons.</p>
+<p>How do the STL with Box Cox perform compared to the plain-vanilla sARIMA model?</p>
+<pre class="r"><code>rmse_best_arima_ets = data.frame(rbind(rmse_arima, rmse_arima_stl_box, rmse_ets_stl_box))
+
+rmse_best_arima_ets %&gt;% 
+  cbind(model = c(&quot;arima&quot;, &quot;arima_stl_box&quot;,&quot;ets_stl_box&quot;), .) %&gt;%
+  tidyr::gather(key = &quot;h&quot;, value = &quot;rmse&quot;, 2:13) %&gt;%
+  dplyr::mutate(horizon = rep(1:12, each = 3)) %&gt;%
+  ggplot(., aes(x = horizon, y = rmse, color = model)) +
+  geom_line() +
+  ggtitle(&quot;Comparison SARIMA vs BoxCox STL+ETS and STL+SARIMA&quot;,
+         &quot;Box Cox + STL + SARIMA beats other models on all horizons&quot;)</code></pre>
+<p><img src="/post/box-cox-and-other-transformations_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>We can see that the combination BoxCox+STL+SARIMA outperforms all other models.</p>
+<p>So what is our conclusion? Should we apply a Box Cox transformation or not?</p>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>We saw that in certain cases applying a Box Cox transformation can drastically improve performance while in others it decreased performance a bit. The Box Cox transformation really shined in combination with STL.</p>
+<p>So to sum up: Box Cox transformations can help with forecasting and should be in every practitioners toolbelt, but with any technique, there is no free-lunch so check your data. As always the answer is: it depends, but based on the experiments it does not seem to hurt much (at least in this case:)</p>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>Rob Hyndman’s excellent book:
+- Forecasting: Principles &amp; Practices, Second Edition</p>
+<p>The derivation of the Box Cox Bias correction is based on:
+- <a href="https://en.wikipedia.org/wiki/Taylor_expansions_for_the_moments_of_functions_of_random_variables" class="uri">https://en.wikipedia.org/wiki/Taylor_expansions_for_the_moments_of_functions_of_random_variables</a>
+- <a href="https://robjhyndman.com/hyndsight/backtransforming" class="uri">https://robjhyndman.com/hyndsight/backtransforming</a></p>
+<p>You can find an analytic derivation based on log-normal r.v. here:
+- <a href="https://davegiles.blogspot.com/2013/08/forecasting-from-log-linear-regressions.html" class="uri">https://davegiles.blogspot.com/2013/08/forecasting-from-log-linear-regressions.html</a></p>
+<p>There is also an interesting section about using transformations to restrict forecasting ranges:
+- <a href="https://otexts.org/fpp2/transformations.html" class="uri">https://otexts.org/fpp2/transformations.html</a></p>
+</div>
