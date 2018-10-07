@@ -13,7 +13,7 @@ tags: ["box cox", "R", "forecasting"]
 <li>uncovering causal relationships (Does <span class="math inline">\(X_t\)</span> influence <span class="math inline">\(Y_{t+1}\)</span>?) or</li>
 <li>in getting the most accurate forecast possible.</li>
 </ul>
-<p>Especially in the second case it can be beneficial to adjust our historical data to make it easier to extract a signal.</p>
+<p>Especially in the second case it can be beneficial to transform our historical data to make it easier to extract a signal.</p>
 <p>A very common transformation is to take logs. By taking logs we can often stabilize the variance of our series and hopefully make a non-stationary series stationary. Furthermore, taking logs has a nice interpretation as approximate percentage changes. However, taking logs requires that our data is strictly positive, which although true for many practical applications, might not hold in our particular situation.</p>
 <p>A more general class of transformations are power transformations such as the Box Cox transformation that includes logs as a special case:</p>
 <p><span class="math display">\[y_{i}^{(\lambda)} = \begin{cases}
@@ -250,13 +250,21 @@ rmse_best_arima_ets %&gt;%
 </div>
 <div id="references" class="section level2">
 <h2>References</h2>
-<p>Rob Hyndman’s excellent book:
-- Forecasting: Principles &amp; Practices, Second Edition</p>
-<p>The derivation of the Box Cox Bias correction is based on:
-- <a href="https://en.wikipedia.org/wiki/Taylor_expansions_for_the_moments_of_functions_of_random_variables" class="uri">https://en.wikipedia.org/wiki/Taylor_expansions_for_the_moments_of_functions_of_random_variables</a>
-- <a href="https://robjhyndman.com/hyndsight/backtransforming" class="uri">https://robjhyndman.com/hyndsight/backtransforming</a></p>
-<p>You can find an analytic derivation based on log-normal r.v. here:
-- <a href="https://davegiles.blogspot.com/2013/08/forecasting-from-log-linear-regressions.html" class="uri">https://davegiles.blogspot.com/2013/08/forecasting-from-log-linear-regressions.html</a></p>
-<p>There is also an interesting section about using transformations to restrict forecasting ranges:
-- <a href="https://otexts.org/fpp2/transformations.html" class="uri">https://otexts.org/fpp2/transformations.html</a></p>
+<p>Rob Hyndman’s excellent book:</p>
+<ul>
+<li>Forecasting: Principles &amp; Practices, Second Edition</li>
+</ul>
+<p>The derivation of the Box Cox Bias correction is based on:</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Taylor_expansions_for_the_moments_of_functions_of_random_variables" class="uri">https://en.wikipedia.org/wiki/Taylor_expansions_for_the_moments_of_functions_of_random_variables</a></li>
+<li><a href="https://robjhyndman.com/hyndsight/backtransforming" class="uri">https://robjhyndman.com/hyndsight/backtransforming</a></li>
+</ul>
+<p>You can find an analytic derivation based on log-normal r.v. here:</p>
+<ul>
+<li><a href="https://davegiles.blogspot.com/2013/08/forecasting-from-log-linear-regressions.html" class="uri">https://davegiles.blogspot.com/2013/08/forecasting-from-log-linear-regressions.html</a></li>
+</ul>
+<p>There is also an interesting section about using transformations to restrict forecasting ranges:</p>
+<ul>
+<li><a href="https://otexts.org/fpp2/transformations.html" class="uri">https://otexts.org/fpp2/transformations.html</a></li>
+</ul>
 </div>

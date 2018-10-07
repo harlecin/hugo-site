@@ -12,7 +12,7 @@ When we do time series analysis, we are usually interested either in
 - uncovering causal relationships (Does $X_t$ influence $Y_{t+1}$?) or
 - in getting the most accurate forecast possible.
 
-Especially in the second case it can be beneficial to adjust our historical data to make it easier to extract a signal. 
+Especially in the second case it can be beneficial to transform our historical data to make it easier to extract a signal. 
 
 A very common transformation is to take logs. By taking logs we can often stabilize the variance of our series and hopefully make a non-stationary series stationary. Furthermore, taking logs has a nice interpretation as approximate percentage changes. However, taking logs requires that our data is strictly positive, which although true for many practical applications, might not hold in our particular situation.
 
@@ -375,14 +375,18 @@ So to sum up: Box Cox transformations can help with forecasting and should be in
 ## References
 
 Rob Hyndman's excellent book:
+
 - Forecasting: Principles & Practices, Second Edition
 
 The derivation of the Box Cox Bias correction is based on:
+
 - https://en.wikipedia.org/wiki/Taylor_expansions_for_the_moments_of_functions_of_random_variables
 - https://robjhyndman.com/hyndsight/backtransforming
 
 You can find an analytic derivation based on log-normal r.v. here:
+
 - https://davegiles.blogspot.com/2013/08/forecasting-from-log-linear-regressions.html
 
 There is also an interesting section about using transformations to restrict forecasting ranges:
+
 - https://otexts.org/fpp2/transformations.html
