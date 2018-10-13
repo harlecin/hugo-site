@@ -40,7 +40,7 @@ with</p>
 </ol>
 <p>Both assumptions hold, if we use the squared loss, aka a quantratic cost function.</p>
 <p>We will now create a slightly more complex example than the linear regression model from above by adding a single hidden layers to our network:
-<div id="htmlwidget-2" style="width:672px;height:480px;" class="grViz html-widget"></div>
+<div id="htmlwidget-2" style="width:672px;height:800px;" class="grViz html-widget"></div>
 <script type="application/json" data-for="htmlwidget-2">{"x":{"diagram":"\n  digraph rmarkdown {\n  \n  # nodes\n    b1    [label = 1,\n           shape = square,\n           style = filled,\n           fillcolor = grey\n           ]\n    a0    [label = <a<FONT POINT-SIZE=\"8\"><SUP>(L-2)<\/SUP><\/FONT>>]\n    z1    [label = <z<FONT POINT-SIZE=\"8\"><SUP>(L-1)<\/SUP><\/FONT>>]\n    b2    [label = 1,\n           shape = square,\n           style = filled,\n           fillcolor = grey\n           ]\n    alm1  [label = <a<FONT POINT-SIZE=\"8\"><SUP>(L-1)<\/SUP><\/FONT>>]\n    z2    [label = <z<FONT POINT-SIZE=\"8\"><SUP>(L)<\/SUP><\/FONT>>]\n    alm0  [label = <a<FONT POINT-SIZE=\"8\"><SUP>(L)<\/SUP><\/FONT>>]\n    C    \n\n  # edges\n    b1 -> z1      [label = <b<FONT POINT-SIZE=\"8\"><SUP>(L-1)<\/SUP><\/FONT>>]\n    b2 -> z2      [label = <b<FONT POINT-SIZE=\"8\"><SUP>(L-1)<\/SUP><\/FONT>>]\n    a0 -> z1      [label = <w<FONT POINT-SIZE=\"8\"><SUP>(L-1)<\/SUP><\/FONT>>]\n    z1 -> alm1    [label = <&sigma;(z<FONT POINT-SIZE=\"8\"><SUP>(L-1)<\/SUP><\/FONT>)>]\n    alm1 -> z2    [label = <w<FONT POINT-SIZE=\"8\"><SUP>(L)<\/SUP><\/FONT>>]\n    z2 -> alm0    [label = <&sigma;(z<FONT POINT-SIZE=\"8\"><SUP>(L)<\/SUP><\/FONT>)>]\n    alm0 -> C\n    y -> C\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script></p>
 <p>So, now the question is: How do we find the optimal weights <span class="math inline">\(w^{(1)} \dots w^{(L)}\)</span> and biases <span class="math inline">\(b^{(1)} \dots b^{(L)}\)</span>in our network such that we minimize our cost function <span class="math inline">\(C\)</span>? We need to solve an optimization problem and to do that we need to calculate the gradient of the cost function:
 <span class="math display">\[
@@ -96,8 +96,8 @@ a^{(L)} &amp; = \sigma(z^{(L)})
 \]</span>
 We define the error <span class="math inline">\(\delta^{(L)} := \frac{\partial C^{(L)}}{\partial z^{(L)}}\)</span>, because it tells us how strongly the cost function changes based on changes to <span class="math inline">\(z^{(L)}\)</span>.</p>
 <p>We have:</p>
-<p>$$
-<span class="math display">\[\begin{align}
+<p><span class="math display">\[
+\begin{align}
   \delta^{(L)} &amp;:= \frac{\partial C}{\partial z^{(L)}} 
     = 
     \frac{\partial C}{\partial a^{(L)}}
@@ -110,30 +110,28 @@ We define the error <span class="math inline">\(\delta^{(L)} := \frac{\partial C
     \underbrace{
       \frac{\partial C}{\partial a^{(L)}}
       \frac{\partial a^{(L)}}{\partial z^{(L)}}
-      
-      
     }_{=\delta^{(L)}}
     \underbrace{
       \frac{\partial z^{(L)}}{\partial a^{(L-1)}}
     }_{w^{(L)}}
     \sigma&#39;(z^{(L)})\\
     &amp;=  \delta^{(L)} w^{(L)}\sigma&#39;(z^{(L)}) 
-    &amp;\text{... error hidden layer} \\
-\end{align}\]</span>
-<span class="math display">\[
+    &amp;\text{... error hidden layer}
+\end{align}
+\]</span>
 or more generally:
-\]</span>
-^{(l)} = = ^{(l+1)} w<sup>{(l+1)}’(z</sup>{(l)})
 <span class="math display">\[
+\delta^{(l)} = \frac{\partial C}{\partial z^{(l)}}=  \delta^{(l+1)} w^{(l+1)}\sigma&#39;(z^{(l)})\text{ ... l-th error hidden layer}
+\]</span>
 So:
-\]</span>
- = <sup>{(l)}a</sup>{(l-1)}
 <span class="math display">\[
-Now we repeat the steps from above to get:
+\frac{\partial C}{\partial w^{(l)}} = \delta^{(l)}a^{(l-1)}
 \]</span>
- = 
-=^{(l)}1
-$$</p>
+Now we repeat the steps from above to get:
+<span class="math display">\[
+\frac{\partial C}{\partial b^{(l)}} = \frac{\partial C}{\partial a^{(l)}}
+    \frac{\partial a^{(l)}}{\partial z^{(l)}}\frac{\partial z^{(l)}}{\partial b^{(l)}}=\delta^{(l)}1
+\]</span></p>
 <p>We can now calculate our gradient above if we walk backwards from the output the the input layer, hence the name ‘backpropagation’:)</p>
 <p>The backprop equations for a ‘multivariate’ setting are:
 <span class="math display">\[

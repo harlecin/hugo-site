@@ -103,7 +103,8 @@ DiagrammeR::grViz("
     alm0 -> C
     y -> C
   }
-  "
+  ",
+  height = 800
 )
 ```
 
@@ -179,15 +180,13 @@ $$
     \underbrace{
       \frac{\partial C}{\partial a^{(L)}}
       \frac{\partial a^{(L)}}{\partial z^{(L)}}
-      
-      
     }_{=\delta^{(L)}}
     \underbrace{
       \frac{\partial z^{(L)}}{\partial a^{(L-1)}}
     }_{w^{(L)}}
     \sigma'(z^{(L)})\\
     &=  \delta^{(L)} w^{(L)}\sigma'(z^{(L)}) 
-    &\text{... error hidden layer} \\
+    &\text{... error hidden layer}
 \end{align}
 $$
 or more generally:
