@@ -1,0 +1,245 @@
+---
+title: "Neural Nets: From Linear Regression to Deep Nets"
+author: "Christoph"
+date: 2018-10-07T14:41:14-05:00
+categories: ["R"]
+tags: ["R", "neural networks"]
+---
+
+```{r setup, echo=FALSE}
+library(DiagrammeR)
+```
+
+Neural networks, especially deep neural networks, have received a lot of attention over the last couple of years. They perform remarkably well on image and speech recognition and form the backbone of the technology used for self-driving cars.
+
+What many people find hard to believe is that the mathematics of neural networks have been around for quite some time already. For example, Kurt Hornik proofed the *universal approximation theorem* of neural networks in 1991 (see [Approximation capabilities of multilayer feedforward networks](https://www.sciencedirect.com/science/article/pii/089360809190009T)). The theorem states that neural networks can under mild assumptions approximate arbitrary functions. As we will see, training a neural network is equivalent to solving a very complex multi-dimensional optimization problem. The backpropagation algorithm used to train many neural networks has been around since about the 1960s, but only the vast increase in compute power from cpus and gpus over the last years made training more complex neural networks computationally feasible.
+
+The mathematical reasons for why neural networks perform so well in practice for many tasks such as image classification are still poorly understood though. A very interesting article by Quanta Magazine ['Machine Learning Confronts the Elephant in the Room'](https://www.quantamagazine.org/machine-learning-confronts-the-elephant-in-the-room-20180920/) highlights a very fundamental issue with neural nets: they can easily be confused in potentially serious ways. Researchers found that a neural network that was able to classify objects in a room correctly with high confidence was derailed when they added an elephant to the picture. The network misidentified a chair as a couch and failed to spot objects it found earlier. While might seem funny at first glance, imagine a self-driving car suddenly ignoring a child, because it saw a person in an elefant costume before.
+
+So getting an understanding of how neural nets work is essential to get a feeling for when they might not work so well or even fail completely at a given task.
+
+In this blog post, I want to show you that if trained linear regression models, you where already training neural nets (although super simple ones:). I will then go on to build a more complex neural network from scratch to give an insight into the mechanics. Let's get started:
+
+## Linear regression - the simplest neural network
+
+Suppose we have the following simple linear regression model:
+
+$$y_i =  b + \omega_1 x_{i, 1} + \epsilon_i$$
+with 
+
+$$y^* = b + \omega_1 x_{i, 1}$$
+
+Graphically, our model looks like this:
+```{r}
+DiagrammeR::grViz("
+  digraph rmarkdown { 
+  # using different ways to get subscripts to work:)
+  
+  rankdir = LR
+  # nodes
+    1
+    x1 [label = <x<FONT POINT-SIZE='8'><SUB>1</SUB></FONT>>]
+
+  # edges
+    1  -> 'node' [label = 'b']
+    x1 -> 'node' [label = 'w@_{1}']
+    'node' -> 'y*'  [label = '&sigma;(x@_{1}w@_{1}+b)']
+  }
+  "
+)
+```
+
+The activation function $\sigma$ decides how a neuron/node 'fires' given its activation. In the linear regression case $\sigma = id$, the identity function.
+
+The constant input `1` with coefficient $b$ is called the bias in neural network literature and the model is usually represented like this after some changes in notation:
+```{r}
+DiagrammeR::grViz("
+  digraph rmarkdown { 
+  # using different ways to get subscripts to work:)
+  
+  rankdir = LR
+  # nodes
+    x1   [label = 'a@^{(0)}']
+    'y*' [label = 'a@^{(1)}=&sigma;(a@^{(0)}w@^{(1)}+b@^{(1)})']
+
+  # edges
+    x1 -> 'y*' [label = 'w@^{(1)}']  
+  }
+  "
+)
+```
+Here $a^{(L)}$ refers to the activation of layer $L$. We will also set $z_{(L)} := w^{(L)}a^{(L-1)}+b^{(L)}$ since we will work with this term a lot. 
+
+The standard way to 'learn' the coefficients ($w^{(1)}$ and $b^{(1)}$ in this case) for a linear regression model is to use OLS as our training algorithm, assuming that we want to minimize the squared loss $$(a^{(1)} - y)^2$$ between our prediction $a^{(1)}$ and actual results $y$. However, since linear regression is basically just a very simple neural network, we can also find our coefficients using backpropagation.
+
+## Training Neural Nets with Backpropagation
+
+Before we start to look at the backpropagation algorithm in detail, we need to introduce two important assumptions for our cost function for backprop to work:
+
+1. The cost function can be written as an average over the cost for individual training points $x$: $C = \frac{1}{n}\sum_x C_x$
+2. The cost function can be written as a function of the neural net outputs.
+
+Both assumptions hold, if we use the squared loss, aka a quantratic cost function.
+
+We will now create a slightly more complex example than the linear regression model from above by adding two hidden layers to our network:
+```{r}
+DiagrammeR::grViz("
+  digraph rmarkdown {
+  
+  rankdir = LR
+  # nodes
+    a0    [label = 'a@^{(0)}']
+    alm1  [label = 'a@^{(L-1)}']
+    alm0  [label = 'a@^{(L)}']
+
+  # edges
+    a0 -> alm1 -> alm0 
+  }
+  "
+)
+```
+
+With:
+$$
+\begin{align}
+C_0(...) & = (a^{(L)} - y)^2 \newline
+z^{(L)} & = w^{(L)}a^{(L-1)}+b^{(L)} \newline
+a^{(L)} & = \sigma(z^{(L)})
+\end{align}
+$$
+So we get the following dependency structure:
+```{r}
+DiagrammeR::grViz("
+  digraph rmarkdown {
+  
+  # nodes
+    wlm0  [label = 'w@^{(L)}']
+    blm0  [label = 'b@^{(L)}']
+    alm1  [label = 'a@^{(L-1)}']
+    zlm0  [label = 'z@^{(L)}']  
+    alm0  [label = 'a@^{(L)}']
+    C0    [label = 'C@_{0}']
+
+  # edges
+    wlm0 -> zlm0
+    alm1 -> zlm0
+    blm0 -> zlm0
+
+    zlm0 -> alm0
+    y -> C0
+    alm0 -> C0
+    
+  }
+  "
+)
+```
+
+The following exposition is based on the excellent explanation of backpropagation by [3Blue1Brown](https://www.youtube.com/watch?v=tIeHLnjs5U8).
+
+As we can see from our graph, there are 3 ways how we can change the output from our network:
+
+1. We can change the weight $w^{(L)}$.
+2. We can change the bias $b^{(L)}$ or
+3. we change the inputs from previous layers $a^{(L-1)}$.
+
+To find out how a change in one of the inputs affects our cost function, we calculate the partial derivatives using the chain rule:
+
+$$
+\frac{\partial C_0}{\partial w^{(L)}} = \frac{\partial C_0}{\partial a^{(L)}}
+\frac{\partial a^{(L)}}{\partial z^{(L)}}
+\frac{\partial z^{(L)}}{\partial w^{(L)}}
+$$
+where:
+$$
+\begin{align}
+\frac{\partial C_0}{\partial a^{(L)}} &= \frac{\partial}{\partial a^{(L)}}(a^{(L)} - y)^2 = 2(a^{(L)}-y)\newline
+\frac{\partial a^{(L)}}{\partial z^{(L)}} &= \frac{\partial}{\partial z^{(L)}}\sigma(z^{(L)}) =\sigma'(z^{(L)})\newline
+\frac{\partial z^{(L)}}{\partial w^{(L)}} &= \frac{\partial}{\partial w^{(L)}} (w^{(L)}a^{(L-1)}+b^{(L)})=a^{(L-1)}
+\end{align}
+$$
+So we get that:
+$$
+\frac{\partial C_0}{\partial w^{(L)}} = 2(a^{(L)}-y)\sigma'(z^{(L)})a^{(L-1)}
+$$
+In order to get the derivative for the total cost $C$ we simply average the individual derivatives:
+$$
+\frac{\partial C}{\partial w^{(L)}} = \frac{1}{n}\sum_{k=0}^{n-1}\frac{\partial C_k}{\partial w^{(L)}}
+$$
+
+
+
+The gradient vector of the cost function is given by:
+$$
+\nabla C = 
+\begin{bmatrix}
+  \frac{\partial C}{\partial w^{(1)}} \\
+  \frac{\partial C}{\partial b^{(1)}} \\
+  \vdots \\
+  \frac{\partial C}{\partial w^{(L)}} \\
+  \frac{\partial C}{\partial b^{(L)}} \\
+\end{bmatrix}
+$$
+The partial derivative of the cost function with respect to the bias is given by:
+$$
+\begin{align}
+  \frac{\partial C_0}{\partial b^{(L)}} &= \frac{\partial C_0}{\partial a^{(L)}}
+  \frac{\partial a^{(L)}}{\partial z^{(L)}}
+  \frac{\partial z^{(L)}}{\partial b^{(L)}} \\
+   &=  2(a^{(L)}-y)\sigma'(z^{(L)})1
+\end{align}
+$$
+
+Finally, the partial derivative of the cost funciton wrt. the activation in the previous layer is:
+$$
+\begin{align}
+  \frac{\partial C_0}{\partial a^{(L-1)}} &= \frac{\partial C_0}{\partial a^{(L)}}
+  \frac{\partial a^{(L)}}{\partial z^{(L)}}
+  \frac{\partial z^{(L)}}{\partial a^{(L-1)}} \\
+   &=  2(a^{(L)}-y)\sigma'(z^{(L)})w^{(L)}
+\end{align}
+$$
+Let's define the error of a neuron in a layer as:
+$$
+\delta_j^l \equiv \frac{\partial C}{\partial z_j^l}
+$$
+Note that the error is different in the output layer compared to the hidden layers. For the output layer we get:
+$$
+\delta_j^L \equiv \frac{\partial C}{\partial z_j^L} =\frac{\partial C_0}{\partial a^{(L)}}
+\frac{\partial a^{(L)}}{\partial z^{(L)}} =
+\frac{\partial C_0}{\partial a^{(L)}} \sigma'(z^{L}_j) = 2(a^{(L)}-y) \sigma'(z^{L}_j)
+$$
+For a hidden layer we get:
+
+$$
+\delta_j^{L-1} \equiv \frac{\partial C}{\partial z_j^{L-1}} =\frac{\partial C_0}{\partial a^{(L-1)}}
+\frac{\partial a^{(L-1)}}{\partial z^{(L-1)}} =
+\frac{\partial C_0}{\partial a^{(L-1)}} \sigma'(z^{L-1}_j) = \underbrace{2(a^{(L)}-y)\sigma'(z^{(L)})}_{\delta^{(L)}} w^{(L)}\sigma'(z^{L-1}_j)
+$$
+
+Then we get:
+$$
+\frac{\partial C_0}{\partial w^{(L-1)}} = \underbrace{\frac{\partial C_0}{\partial a^{(L-1)}}
+\frac{\partial a^{(L-1)}}{\partial z^{(L-1)}}}_{\delta^{(L-1)}}
+\underbrace{\frac{\partial z^{(L-1)}}{\partial w^{(L-1)}}}_{a^{(L-2)}}
+$$
+
+
+Good explanation:
+https://medium.com/@erikhallstrm/backpropagation-from-the-beginning-77356edf427d
+
+
+Now, let's try to predict miles per gallon of a car based on its displacement using the `mtcars` dataset. Using a plain-vanilla regression model we get:
+```{r}
+summary(lm(mpg ~ disp, mtcars))
+```
+
+Using our neural network backpropagation implementation we get:
+```{r}
+print("finish")
+```
+
+
+## Open:
+- Why the assumptions?
+https://stats.stackexchange.com/questions/359369/should-a-cost-function-in-ml-always-be-written-as-an-average-over-all-training-s
+
