@@ -30,7 +30,7 @@ with
 $$z = b + \omega_1 x_{i, 1}$$
 
 Graphically, our model looks like this:
-```{r}
+```{r, echo =FALSE}
 DiagrammeR::grViz("
   digraph rmarkdown { 
   # using different ways to get subscripts to work:)
@@ -71,11 +71,10 @@ Before we start to look at the backpropagation algorithm in detail, we need to i
 Both assumptions hold, if we use the squared loss, aka a quantratic cost function.
 
 We will now create a slightly more complex example than the linear regression model from above by adding a single hidden layers to our network:
-```{r}
+```{r, echo = FALSE}
 DiagrammeR::grViz("
   digraph rmarkdown {
   
-  rankdir = LR
   # nodes
     b1    [label = 1,
            shape = square,
@@ -165,6 +164,7 @@ $$
 We define the error $\delta^{(L)} := \frac{\partial C^{(L)}}{\partial z^{(L)}}$, because it tells us how strongly the cost function changes based on changes to $z^{(L)}$.
 
 We have:
+
 $$
 \begin{align}
   \delta^{(L)} &:= \frac{\partial C}{\partial z^{(L)}} 
@@ -188,7 +188,6 @@ $$
     \sigma'(z^{(L)})\\
     &=  \delta^{(L)} w^{(L)}\sigma'(z^{(L)}) 
     &\text{... error hidden layer} \\
- 
 \end{align}
 $$
 or more generally:
