@@ -39,9 +39,11 @@ with</p>
 <li>The cost function can be written as a function of the neural net outputs.</li>
 </ol>
 <p>Both assumptions hold, if we use the squared loss, aka a quantratic cost function.</p>
-<p>We will now create a slightly more complex example than the linear regression model from above by adding a single hidden layers to our network:
-<div id="htmlwidget-2" style="width:672px;height:800px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-2">{"x":{"diagram":"\n  digraph rmarkdown {\n  \n  # nodes\n    b1    [label = 1,\n           shape = square,\n           style = filled,\n           fillcolor = grey\n           ]\n    a0    [label = <a<FONT POINT-SIZE=\"8\"><SUP>(L-2)<\/SUP><\/FONT>>]\n    z1    [label = <z<FONT POINT-SIZE=\"8\"><SUP>(L-1)<\/SUP><\/FONT>>]\n    b2    [label = 1,\n           shape = square,\n           style = filled,\n           fillcolor = grey\n           ]\n    alm1  [label = <a<FONT POINT-SIZE=\"8\"><SUP>(L-1)<\/SUP><\/FONT>>]\n    z2    [label = <z<FONT POINT-SIZE=\"8\"><SUP>(L)<\/SUP><\/FONT>>]\n    alm0  [label = <a<FONT POINT-SIZE=\"8\"><SUP>(L)<\/SUP><\/FONT>>]\n    C    \n\n  # edges\n    b1 -> z1      [label = <b<FONT POINT-SIZE=\"8\"><SUP>(L-1)<\/SUP><\/FONT>>]\n    b2 -> z2      [label = <b<FONT POINT-SIZE=\"8\"><SUP>(L-1)<\/SUP><\/FONT>>]\n    a0 -> z1      [label = <w<FONT POINT-SIZE=\"8\"><SUP>(L-1)<\/SUP><\/FONT>>]\n    z1 -> alm1    [label = <&sigma;(z<FONT POINT-SIZE=\"8\"><SUP>(L-1)<\/SUP><\/FONT>)>]\n    alm1 -> z2    [label = <w<FONT POINT-SIZE=\"8\"><SUP>(L)<\/SUP><\/FONT>>]\n    z2 -> alm0    [label = <&sigma;(z<FONT POINT-SIZE=\"8\"><SUP>(L)<\/SUP><\/FONT>)>]\n    alm0 -> C\n    y -> C\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script></p>
+<p>We will now create a slightly more complex example than the linear regression model from above by adding a single hidden layers to our network:</p>
+<div class="figure">
+<img src="img/one-hidden-layer-network.PNG" title="One-hidden-layer network" alt="one-hidden-layer-network" />
+<p class="caption">one-hidden-layer-network</p>
+</div>
 <p>So, now the question is: How do we find the optimal weights <span class="math inline">\(w^{(1)} \dots w^{(L)}\)</span> and biases <span class="math inline">\(b^{(1)} \dots b^{(L)}\)</span>in our network such that we minimize our cost function <span class="math inline">\(C\)</span>? We need to solve an optimization problem and to do that we need to calculate the gradient of the cost function:
 <span class="math display">\[
 \nabla C = 
@@ -101,12 +103,12 @@ We define the error <span class="math inline">\(\delta^{(L)} := \frac{\partial C
   \delta^{(L)} &amp;:= \frac{\partial C}{\partial z^{(L)}} 
     = 
     \frac{\partial C}{\partial a^{(L)}}
-    \frac{\partial a^{(L)}}{\partial z^{(L)}}
-    =2(a^{(L)} - y) \sigma&#39;(z^{(L)}) &amp;\text{... error output layer} \\
+    \frac{\partial a^{(L)}}{\partial z^{(L)}} \\
+    &amp;=2(a^{(L)} - y) \sigma&#39;(z^{(L)}) &amp;\text{... error output layer} \\
   \delta^{(L-1)} &amp;= \frac{\partial C}{\partial z^{(L-1)}} 
     =
-    \frac{\partial C}{\partial a^{(L-1)}}  \sigma&#39;(z^{(L)}) 
-    =
+    \frac{\partial C}{\partial a^{(L-1)}}  \sigma&#39;(z^{(L)}) \\
+    &amp;=
     \underbrace{
       \frac{\partial C}{\partial a^{(L)}}
       \frac{\partial a^{(L)}}{\partial z^{(L)}}

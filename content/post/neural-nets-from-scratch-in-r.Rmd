@@ -71,7 +71,9 @@ Before we start to look at the backpropagation algorithm in detail, we need to i
 Both assumptions hold, if we use the squared loss, aka a quantratic cost function.
 
 We will now create a slightly more complex example than the linear regression model from above by adding a single hidden layers to our network:
-```{r, echo = FALSE}
+
+![one-hidden-layer-network](img/one-hidden-layer-network.PNG "One-hidden-layer network")
+```{r, echo = FALSE, eval=FALSE}
 DiagrammeR::grViz("
   digraph rmarkdown {
   
@@ -103,8 +105,7 @@ DiagrammeR::grViz("
     alm0 -> C
     y -> C
   }
-  ",
-  height = 800
+  "
 )
 ```
 
@@ -171,12 +172,12 @@ $$
   \delta^{(L)} &:= \frac{\partial C}{\partial z^{(L)}} 
     = 
     \frac{\partial C}{\partial a^{(L)}}
-    \frac{\partial a^{(L)}}{\partial z^{(L)}}
-    =2(a^{(L)} - y) \sigma'(z^{(L)}) &\text{... error output layer} \\
+    \frac{\partial a^{(L)}}{\partial z^{(L)}} \\
+    &=2(a^{(L)} - y) \sigma'(z^{(L)}) &\text{... error output layer} \\
   \delta^{(L-1)} &= \frac{\partial C}{\partial z^{(L-1)}} 
     =
-    \frac{\partial C}{\partial a^{(L-1)}}  \sigma'(z^{(L)}) 
-    =
+    \frac{\partial C}{\partial a^{(L-1)}}  \sigma'(z^{(L)}) \\
+    &=
     \underbrace{
       \frac{\partial C}{\partial a^{(L)}}
       \frac{\partial a^{(L)}}{\partial z^{(L)}}
