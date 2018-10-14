@@ -6,10 +6,6 @@ categories: ["R"]
 tags: ["R", "neural networks"]
 ---
 
-<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
-<script src="/rmarkdown-libs/viz/viz.js"></script>
-<link href="/rmarkdown-libs/DiagrammeR-styles/styles.css" rel="stylesheet" />
-<script src="/rmarkdown-libs/grViz-binding/grViz.js"></script>
 
 
 <p>Neural networks, especially deep neural networks, have received a lot of attention over the last couple of years. They perform remarkably well on image and speech recognition and form the backbone of the technology used for self-driving cars.</p>
@@ -24,8 +20,7 @@ tags: ["R", "neural networks"]
 with</p>
 <p><span class="math display">\[z = b + \omega_1 x_{i, 1}\]</span></p>
 <p>Graphically, our model looks like this:
-<div id="htmlwidget-1" style="width:672px;height:480px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"diagram":"\n  digraph rmarkdown { \n  # using different ways to get subscripts to work:)\n  \n  rankdir = LR\n  # nodes\n    1  [shape = square,\n        style = filled,\n        fillcolor = grey]\n    x1 [label = <x<FONT POINT-SIZE=\"8\"><SUB>1<\/SUB><\/FONT>>]\n    z  [label = \"z\"]\n    \n\n  # edges\n    1  -> \"z\" [label = \"b\" ]\n    x1 -> \"z\" [label = <w<FONT POINT-SIZE=\"8\"><SUB>1<\/SUB><\/FONT>>]\n    \"z\" -> \"a\"  [label = \"&sigma;(z)\"]\n  }\n  ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script></p>
+<img src="/img/zero-hidden-layer-network.PNG" alt="zero-hidden-layer network" /></p>
 <p>The activation function <span class="math inline">\(\sigma\)</span> decides how a neuron/node ‘fires’ given its activation. In the linear regression case we have <span class="math inline">\(\sigma() = id()\)</span>, i.e. <span class="math inline">\(\sigma()\)</span> equals the identity function.</p>
 <p>The constant input <code>1</code> with coefficient <span class="math inline">\(b\)</span> is called the bias in neural network literature and the model and <span class="math inline">\(w\)</span> is called weight.</p>
 <p>The standard way to ‘learn’ the coefficients (<span class="math inline">\(w^{(1)}\)</span> and <span class="math inline">\(b\)</span> in this case) for a linear regression model is to use OLS as our training algorithm, assuming that we want to minimize the squared loss <span class="math display">\[(a - y)^2\]</span> between our prediction <span class="math inline">\(a\)</span> and actual results <span class="math inline">\(y\)</span>. However, since linear regression is basically just a very simple neural network, we can also find our coefficients using backpropagation.</p>

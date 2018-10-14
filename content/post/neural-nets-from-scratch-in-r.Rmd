@@ -30,7 +30,8 @@ with
 $$z = b + \omega_1 x_{i, 1}$$
 
 Graphically, our model looks like this:
-```{r, echo =FALSE}
+![zero-hidden-layer network](/img/zero-hidden-layer-network.PNG)
+```{r, echo =FALSE, eval = FALSE}
 DiagrammeR::grViz("
   digraph rmarkdown { 
   # using different ways to get subscripts to work:)
