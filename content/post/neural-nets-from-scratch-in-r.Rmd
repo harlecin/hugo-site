@@ -72,9 +72,6 @@ Both assumptions hold, if we use the squared loss, aka a quantratic cost functio
 
 We will now create a slightly more complex example than the linear regression model from above by adding a single hidden layers to our network:
 ![one-hidden-layer network](/img/one-hidden-layer-network.PNG)
-```{r echo = FALSE}
-knitr::include_graphics('img/one-hidden-layer-network.PNG')
-```
 
 ```{r, echo = FALSE, eval=FALSE}
 DiagrammeR::grViz("
