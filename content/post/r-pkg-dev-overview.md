@@ -16,7 +16,7 @@ YourPackageName/
     NAMESPACE
     R/
 ```
-You can also use RStudio to create a package with `File > New Project ... > New Directory > Create R Package using devtools`.
+You can also use RStudio to create a package with `File > New Project ... > New Directory > Create R Package using devtools`. This is the way I actually prefer!
 
 Before you continue, make sure you run `install.packages("devtools")` as we will be using this package a lot.
 
@@ -24,7 +24,7 @@ In the following few sections I will show you the essentials you need to build a
 
 Working with packages requires a bit of an investment up-front, but the payoffs are huge, especially if you use RStudio. You will get:
 
-- Near effortless unit testing with `testthat` (or as effortless as unit testing can be:),
+- Near effortless unit testing with `testthat` (or as effortless as unit testing can be :),
 - function and dataset documentation with `roxygen2` and
 - most importantly: reproducibility.
 
@@ -53,7 +53,7 @@ Imports:
     dbplyr
 ```
 
-The `Suggests`part specifies which packages are nice to have:
+The `Suggests` part specifies which packages are nice to have:
 ```
 Suggests:
     ggplot2
@@ -124,8 +124,8 @@ devtools::use_testthat()
 
 This command will set you up to work with the `testthat` unit testing framework. Not coming from a software engineering background, I only did adhoc tests in the beginning mostly in the console to debug my code. Nothing automated at all. That caused two big problems:
 
-1. Massive time waste making sure that everything still works as expected after code changes
-2. Never feeling quite sure if changing a function might lead to failures (especially if you do not remember your 'console' tests:)
+1. Massive time waste making sure that everything still works as expected after code changes.
+2. Never feeling quite sure if changing a function might lead to failures - especially if you do not remember your 'console' tests :)
 
 Using `testhat` is super simple and while it does make sense in some cases to relax some parts of the [test-driven-development](https://en.wikipedia.org/wiki/Test-driven_development){:target="_blank"} framework in a data science setting (e.g. writing lots of tests for a feature that is probably not going to make it into the final model is quite time consuming), I cannot stress enought how important it is to properly unit test your code. You should even think about [unit testing your machine learning models](https://medium.com/@keeper6928/how-to-unit-test-machine-learning-code-57cf6fd81765){:target="_blank"}.
 

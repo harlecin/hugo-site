@@ -1,0 +1,180 @@
+---
+title: "Introduction to stochastic control theory"
+author: "Christoph"
+date: 2018-08-29T14:41:14-05:00
+categories: ["R"]
+tags: ["stochastic control theory"]
+---
+
+
+
+<p>I had my first contact with stochastic control theory in one of my Master’s courses about Continuous Time Finance. I found the subject really interesting and decided to write my thesis about optimal dividend policy which is mainly about solving stochastic control problems.</p>
+<p>In this post I want to give you a brief overview of stochastic control theory based on excerpts form my thesis. Let’s get started.</p>
+<div id="what-is-stochastic-control-theory" class="section level2">
+<h2>What is stochastic control theory?</h2>
+<p>Imagine, you are a CEO and want to decide if you should pay dividends and if yes, what should the dividend payout ratio be? You will probably start by looking at your cash balance. Then you ask yourself: How much cash can I actually pay as dividend without risking to become insolvent? You remember that last year, raw material prices rose unexpectedly and unplanned repairs had to be made that squeezed the company wallet quite a lot, but sales of an old product also rose. Most of these events were not really foreseeable and therefore random from the company’s perspective. This is where stochastic control theory comes into play. Stochastic control theory helps us find a dividend policy, i.e. a control law, so that we maximize the expected value of all future discounted dividend payments, i.e. the value function. The evolution of the company cash reserve is called the state process.</p>
+<p>The following section closely follows the chapter “Stochastic Control Theory” from Björk (2009).</p>
+<p>A fairly general class of stochastic control problems can be written like this:</p>
+<p><span class="math display">\[\begin{align}
+  dX_t &amp;= \mu(t, X_t, u_t)dt + \sigma(t, X_t, u_t)dW_t \newline
+  X_0 &amp;= x_0,
+\end{align}\]</span></p>
+<p>where <span class="math inline">\(\mu, \sigma\)</span> are the drift and volatility of the stochastic differential equation and <span class="math inline">\(u_t\)</span> is the control law that is used to control or steer the state process <span class="math inline">\(X\)</span>.</p>
+<p>Before we continue, we need to define which type of control law we allow in our problems. It is quite natural to demand that the control law should only depend on past values of the state process. Feedback control laws are one class of control laws that satisfy this property and also the one we will consider. Formally, we can write feedback control laws the following way:</p>
+<p><span class="math display">\[\begin{align}
+  u &amp;:~ \mathbb{R}_+ \times \mathbb{R}^n \to \mathbb{R}^k \newline
+  u_t &amp;:=~u(t, X_t) \text{ ... feedback control law}
+\end{align}\]</span></p>
+<p>In most practical circumstances, the control law will likely have to obey additional control constraints. We will call the class of admissible control laws <span class="math inline">\(\mathcal{U} \subset \mathbb{R}^k\)</span> and make the following definition:</p>
+<p>A control law <span class="math inline">\(u\)</span> is called admissible if:</p>
+<ul>
+<li><span class="math inline">\(u(t,x) \in \mathcal{U},~\forall t \geq 0,~\forall x \in \mathbb{R}^n\)</span>.</li>
+<li>For any starting point <span class="math inline">\((t, x)\)</span> the stochastic differential equation
+<span class="math display">\[dX_t = \mu(t, X_t, u_t)dt + \sigma(t, X_t, u_t)dW_t, ~X_t = x\]</span></li>
+</ul>
+<p>has a unique solution.</p>
+<p>The value function given control <span class="math inline">\(u\)</span> is given by:
+<span class="math display">\[\begin{align}
+  V^u &amp;: \mathcal{U} \to \mathbb{R} \\
+  V^u(t, x) &amp;= \mathbb{E}\left[ \int_t^T F(t, X_t^u, u_t)dt + \Phi(X_T^u)|\mathcal{F}_t\right],
+\end{align}\]</span>
+where <span class="math inline">\(F\)</span> is a pay-off function for <span class="math inline">\(t \in [0, T)\)</span> and <span class="math inline">\(\Phi\)</span> is a pay-off function at time <span class="math inline">\(t = T\)</span>, both mapping to <span class="math inline">\(\mathbb{R}\)</span>.</p>
+<p>The optimal value function is therefore given by:
+<span class="math display">\[V(t,x) = \sup_{u\in\mathcal{U}}V^u(t,x)\]</span></p>
+<p>or equivalently by:
+<span class="math display">\[V(t,x) = V^{u^*}(t,x).\]</span></p>
+<p>We call <span class="math inline">\(u^*\)</span> the optimal control law for the given problem. But how do we actually find the optimal value function and the associated control law?</p>
+<p>In essence, we are interested in answering two questions:</p>
+<ul>
+<li>Does an optimal control law exist?</li>
+<li>If yes, how can we find it?</li>
+</ul>
+<p>We will focus on the second part and to find the optimal control law, we will rely on <em>dynamic programming</em>. To deal with some technical problems, we make the following (sometimes rather strong) assumption:</p>
+<p>The following is assumed to hold:</p>
+<ul>
+<li>An optimal control law <span class="math inline">\(u^*\)</span> exists</li>
+<li>The optimal value function is <span class="math inline">\(C^{1,2}\)</span></li>
+<li>Interchanging limits and expectations is justified</li>
+</ul>
+</div>
+<div id="dynamic-programming-principle" class="section level2">
+<h2>Dynamic programming principle</h2>
+<p>The idea of dynamic programming can be summarized as follows:</p>
+<p>Consider two strategies:
+- Strategy I: Use the optimal control law <span class="math inline">\(u^*\)</span> and
+- Strategy II: Use an arbitrary control law <span class="math inline">\(u\)</span> on <span class="math inline">\([t, t+h]\)</span> and then switch to the optimal control law <span class="math inline">\(u^*\)</span> for the remaining time interval <span class="math inline">\((t+h, T]\)</span>.</p>
+<p>Then compute the expected value of both strategies. Strategy II by definition cannot be better than strategy I. If we let <span class="math inline">\(h \to 0\)</span>, we obtain a partial differential equation, called <em>Hamilton-Jacobi-Bellman equation</em> that we can use to solve our problem.</p>
+<p>Strategy II is given by the control law <span class="math inline">\(\tilde{u}\)</span>
+<span class="math display">\[\tilde{u}(s, y) = 
+\begin{cases}
+  u(s, y), &amp; (s, y) \in [t, t+h] \times \mathbb{R}^n \\
+  u^*(s, y), &amp; (s, y) \in (t+h, T] \times \mathbb{R}^n
+\end{cases}\]</span></p>
+<p>The expected value for strategy I is simply <span class="math inline">\(V(t, x)\)</span>. To find the expected value for strategy II we consider the two time spans <span class="math inline">\([t, t+h)\)</span> and <span class="math inline">\((t+h, T]\)</span> separately:
+<span class="math display">\[\begin{align}
+  \mathbb{E}(\text{strategy II }[t, t+h]) &amp;= \mathbb{E}_{t,x}\left[ \int_t^{t+h} F(s, X_s^u, u_s)\right]\\
+  \mathbb{E}(\text{strategy II }(t+h, T]) &amp;= \mathbb{E}_{t,x}\left[ V(t+h, X_{t+h}^u)\right] ,
+\end{align}\]</span></p>
+<p>where <span class="math inline">\(\mathbb{E}_{t,x}\)</span> is short for <span class="math inline">\(\mathbb{E}(.|t,x)\)</span>.</p>
+<p>The expected value of strategy II is the sum of those two expected values:
+<span class="math display">\[\mathbb{E}(\text{strategy II)} = \mathbb{E}_{t,x}\left[\int_t^{t+h} F(s, X_s^u, u_s) + V(t+h, X_{t+h}^u)\right].\]</span></p>
+<p>Comparing strategy I and II gives us:
+<span class="math display">\[\begin{equation}
+  V(t, x) \geq \mathbb{E}_{t,x}\left[\int_t^{t+h} F(s, X_s^u, u_s) + V(t+h, X_{t+h}^u)\right].
+\end{equation}\]</span></p>
+<p>Before we continue, let’s define the following operator:
+<span class="math display">\[\mathcal{L}^u V(t, X_t^u) := V_x(t, X_t^u)\mu^u+\frac{1}{2}V_{xx}\sigma_u^2.\]</span></p>
+<p>Equality holds if and only if strategy II is optimal over the entire time period. Since we assumed that <span class="math inline">\(V \in C^{1,2}\)</span> we can simply apply Ito’s formula to <span class="math inline">\(V(t+h, X_{t+h}^u)\)</span> in inequality () to get:
+<span class="math display">\[\begin{align}
+  V(t+h, X_{t+h}^u) &amp;= V(t, x) + \int_t^{t+h}V_s(s, X_s^u)ds + \int_t^{t+h}V_x(s, X_s^u)dX_s \\
+  &amp;+\frac{1}{2}\underbrace{\int_t^{t+h}V_{tt}d[s]}_{{=0 \text{ cont. + finite variation}}} + \frac{1}{2}\int_t^{t+h}V_{xx}\underbrace{d[X]_s}_{=\sigma_u^2ds} + \underbrace{\int_t^{t+h}V_{tx}d[X,s]}_{=0}\\
+  &amp;=V(t, x) + \int_t^{t+h}V_s(s, X_s^u) \\&amp;+ \underbrace{V_x(s, X_s^u)\mu^u+\frac{1}{2}V_{xx}\sigma_u^2}_{:= \mathcal{L}^uV(s, X_s^u)} ds + \int_t^{t+h}V_x \sigma^u dW_s \\
+  &amp;= V(t, x) + \int_t^{t+h}V_s(s, X_s^u) + \mathcal{L}^u(s, X_s^u)ds + \int_t^{t+h}V_x \sigma^u dW_s \\
+  \mathbb{E}_{t,x}(V(t+h, X_{t+h}^u)) &amp;= \underbrace{V(t,x)}_{{\mathcal{F}_t-measurable}} + \mathbb{E}_{t, x}\left[\int_t^{t+h}V_s(s, X_s^u) + \mathcal{L}^u(s, X_s^u)ds
+\right] \\&amp;+ \underbrace{\mathbb{E}_{t,x} \left[ \int_t^{t+h}V_x \sigma^u dW_s \right]}_{=0\text{ given suff. integrability}}.
+\end{align}\]</span></p>
+<p>It can be shown that if any component of <span class="math inline">\([A, B]_t\)</span> is continuous (here: <span class="math inline">\(s\)</span>) and any component is of finite variation (again <span class="math inline">\(s\)</span>), the quadratic variation is zero.
+The same logic applies to <span class="math inline">\([X,s]\)</span>. When we applied the conditional expectation, we used the fact that given <span class="math inline">\((t,x)\)</span> we know the term <span class="math inline">\(V(t,x)\)</span> (i.e. it is <span class="math inline">\(\mathcal{F}_t\)</span>-measurable), so we can bring it outside of the conditional expectation operator. Sufficient integrability means that <span class="math inline">\(V_x \sigma^u\)</span> needs to be bounded so that we get a martingale with expectation zero in our case. Plugin this result back into the inequality from before gives us:</p>
+<p><span class="math display">\[\begin{align}
+ V(t, x) &amp;\geq \mathbb{E}_{t,x}\left[\int_t^{t+h} F(s, X_s^u, u_s) + V(t+h, X_{t+h}^u)\right]  \\
+ &amp; =\mathbb{E}_{t,x}\left[\int_t^{t+h} F(s, X_s^u, u_s) + \mathbb{E}_{t,x}[V(t+h, X_{t+h}^u)]\right] \\
+ V(t, x) &amp;\geq \mathbb{E}_{t,x}\left[\int_t^{t+h} F(.)ds + V(t, x) + \mathbb{E}_{t,x}\left[ \int_t^{t+h}V_s(s, X_s^u) + \mathcal{L}^uV(s,X_s^u)ds\right]\right] \\
+ 0 &amp;\geq \mathbb{E}_{t,x}\left[\int_t^{t+h} F(.)ds  + V_s(s, X_s^u) + \mathcal{L}^uV(s,X_s^u)ds\right].
+ \end{align}\]</span></p>
+<p>Dividing by <span class="math inline">\(h\)</span> and taking limits yields:</p>
+<p><span class="math display">\[\begin{align}
+ 0 &amp; \geq \lim_{h\to 0} \frac{1}{h}\mathbb{E}_{t,x}\left[\int_t^{t+h} F(.)ds  + V_s(s, X_s^u) + \mathcal{L}^uV(s,X_s^u)ds\right].
+ \end{align}\]</span>
+Assuming we can interchange limits and expectation gives us:</p>
+<p><span class="math display">\[\begin{align}
+0 &amp;\geq \mathbb{E}_{t,x}\left[ \lim_{h\to0} \frac{1}{h}\int_t^{t+h} F(.)ds  + V_s(s, X_s^u) + \mathcal{L}^uV(s,X_s^u)ds ds\right].
+\end{align}\]</span></p>
+<p>By the fundamental theorem of calculus we get:
+<span class="math display">\[\begin{align}
+0 &amp;\geq F(t, x, u) + \frac{\partial}{\partial t}V(t,x) + \mathcal{L}^u V(t,x).
+\end{align}\]</span></p>
+<p>Since <span class="math inline">\(u\)</span> was arbitrary, the above inequality holds for all <span class="math inline">\(u \in \mathcal{U}\)</span> and we have equality if and only if <span class="math inline">\(u = u^*\)</span>:
+<span class="math display">\[\begin{equation}
+  \label{hamilton}
+  0 = \frac{\partial}{\partial t}V(t,x) + \sup\{ F(t, x, u) + \mathcal{L}^u V(t, x)\}
+\end{equation}\]</span>
+with boundary condition <span class="math display">\[V(T, x) = \Phi(x), ~\forall x \in \mathbb{R}^n.\]</span></p>
+<p>The partial differential equation is called <em>Hamilton-Jacobi-Bellman equation</em>.</p>
+</div>
+<div id="hamilton-jacobi-bellman-equation" class="section level2">
+<h2>Hamilton-Jacobi-Bellman equation</h2>
+<p><strong>Hamilton-Jacobi-Bellman equation</strong>:</p>
+<p>Under our assumptions (see above) the following holds:</p>
+<ul>
+<li>V satisfies the HJB equation with boundary condition <span class="math inline">\(V(T, x) = \Phi(x), ~\forall x \in \mathbb{R}^n\)</span>.</li>
+<li>For each <span class="math inline">\((t, x) \in [0,T] \times \mathbb{R}^n\)</span> the supremum in the HJBE is obtained by <span class="math inline">\(u = u^*\)</span>.</li>
+</ul>
+<p>This means, that the optimal value function <span class="math inline">\(V\)</span> solves the Hamilton-Jacobi-Bellman equation, but not all functions that solve the HJBE need to be optimal. Solving the HJBE is therefore only necessary, but not sufficient for a solution to be optimal. However, the HJBE is also a sufficient condition for the optimal control problem in certain cases: This is known as the <em>verification theorem</em> for dynamic programming.</p>
+<p>Different Hamilton-Jacobi-Bellman equations need different verification theorems. For example, the HJBE associated with the optimal dividend problem is slightly different and requires a different verification theorem (e.g. Schmidli: ‘Stochastic Control in Insurance’ in case you are interested). We continue to follow Bjork and present a verification theorem for the HJBE above.</p>
+<p><strong>Verification theorem</strong>:</p>
+<p>Suppose we have <span class="math inline">\(H(t,x)\)</span> and <span class="math inline">\(g(t,x)\)</span> s.t.:</p>
+<p><span class="math inline">\(H\)</span> is sufficiently integrable and solves the Hamilton-Jacobi-Bellman equation:</p>
+<p><span class="math display">\[\begin{align}
+    H_t(t,x) &amp;+ \sup_{u \in \mathcal{U}}\{F(t,xu,) + \mathcal{L}^u H(t,x)\} = 0,~\forall (t,x) \in (0,T) \times \mathbb{R}^n\\
+    H_T(T,x) &amp;= \Phi(x),~\forall x \in \mathbb{R}
+    \end{align}\]</span></p>
+<p>and <span class="math inline">\(g\)</span> is an admissible control law and <span class="math inline">\(\forall (t,x)\)</span> the supremum in</p>
+<p><span class="math display">\[\sup_{u \in \mathcal{U}}\{F(t,x,u) + \mathcal{L}^u H(t,x)\}\]</span>
+is attained by <span class="math inline">\(u = g(t,x)\)</span>.</p>
+<p>Then the following holds:</p>
+<ul>
+<li>The optimal value function <span class="math inline">\(V\)</span> to the control problem is given by
+<span class="math display">\[V(t,x) = H(t,x).\]</span></li>
+<li><span class="math inline">\(\exists\)</span> optimal control law <span class="math inline">\(u^*\)</span> s.t. <span class="math inline">\(u^*(t,x) = g(t,x)\)</span>.</li>
+</ul>
+<p>Assume <span class="math inline">\(H\)</span> and <span class="math inline">\(g\)</span> are given as above. Choose some arbitrary <span class="math inline">\(u \in \mathcal{U}\)</span> and fix <span class="math inline">\((t,x)\)</span>. Define <span class="math inline">\(X_t^u\)</span> on <span class="math inline">\([t,T]\)</span> as the solution to the stochastic differential equation:
+<span class="math display">\[dX_s^u = \mu^u(s, X_s^u)ds + \sigma^u(s, X_s^u)dW_s,~X_t = x.\]</span></p>
+<p>Plugin this into <span class="math inline">\(H\)</span> and using Ito’s formula we get:</p>
+<p><span class="math display">\[\begin{align}
+   H(T, X_T^u) = H(t,x) &amp;+ \int_t^T \left[ \frac{\partial H}{\partial t}(s, X_s^u) + (\mathcal{L}^uH)(s,X_s^u)\right]ds \\
+   &amp;+ \int_t^T \nabla_x H(s,X_s^u)\sigma^u(s,X_s^u)dW_s. 
+  \end{align}\]</span>
+Since <span class="math inline">\(H\)</span> solves the Hamilton-Jacobi-Bellman equation we get:</p>
+<p><span class="math display">\[\frac{\partial H}{\partial t}(s,X_s^u) + (\mathcal{L}^uH)(s,X_s^u) \leq -F^u(s, X_s^u)\]</span></p>
+<p>for all admissible <span class="math inline">\(u\)</span>. Furthermore, from the boundary condition we know that <span class="math inline">\(H(T, X_T^u) = \Phi(X_T^u)\)</span> and therefore:</p>
+<p><span class="math display">\[\begin{align}
+    -H(t,x) &amp;= -\Phi(X_t^u) + \overbrace{\int (.) ds}^{\leq -F^u(s, X_s^u)} + \int (.) dW_s \\
+    -H(t,x) &amp;\leq -\Phi(X_t^u) - \int_t^T F^u(s,X_s)ds + \int_t^T(.) dW_s \\
+    H(t,x) &amp;\geq \int_t^T F^u(s, X_s) ds + \Phi(X_T^u) + \int_t^T (.) dW_s\\
+    \underbrace{\mathbb{E}_{t,x}(H(t,x))}_{=H(t,x)} &amp;\geq \underbrace{\mathbb{E}_{t,x}\left[\int_t^T F^u(s, X_s^u)ds + \Phi(X_T^u) \right]}_{=V^u(t,x)} + \underbrace{\mathbb{E}_{t,x}\left[\int_t^T (.) dW_s\right]}_{=0 \text{ if } (.) \in \mathcal{L}^2}.
+  \end{align}\]</span></p>
+<p>Since <span class="math inline">\(u\)</span> was arbitrary we get:
+<span class="math display">\[H(t,x) \geq \sup_{u \in \mathcal{U}}V^u(t,x) = V(t,x).\]</span>
+To get <span class="math inline">\(V(t,x) \leq H(t,x)\)</span> and hence equality, we choose <span class="math inline">\(u(t,x) = g(t,x)\)</span>. Repeating the calculations from above and using that by assumption we have that:
+<span class="math display">\[\frac{\partial H}{\partial t}(t,x) + F^g(t,x) + \mathcal{L}^gH(t,x) = 0.\]</span>
+We get:
+<span class="math display">\[H(t,x) = \mathbb{E}_{t,x}\left[\int_t^T F^g(s, X_s^g)ds + \Phi(X_T^g)\right] = V^g(t,x).\]</span>
+Since
+<span class="math display">\[H(t,x) \geq V(t,x) \geq V^g(t,x) = H(t,x),\]</span>
+we are done, QED:)</p>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>Björk, T (2009). <em>Arbitrage Theory in Continuous Time.</em> Oxford University Press 3 Third Edition
+Bodner, C (2017). <em>Optimal dividend policy &amp; growth option - Mathematical review &amp; discussion</em></p>
+</div>
