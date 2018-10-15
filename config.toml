@@ -9,9 +9,6 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 pygmentsstyle       = "bw"
 pygmentscodefences  = true
 
-paginate = 5
-paginatePath  = "posts"
-
 [params]
   sitename = "semper quaerere"
   
@@ -23,8 +20,8 @@ paginatePath  = "posts"
     url  = "/about/"
 [[menu.main]]
     name = "Projects"
-    url  = "/projects/project_1"
+    url  = "/projects/"
 [[menu.main]]
-    name = "Resume"
-    url  = "/projects/project_1"
+    name = "Talks"
+    url  = "/talks/"
 
