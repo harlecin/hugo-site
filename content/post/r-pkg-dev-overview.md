@@ -49,7 +49,7 @@ But most importantly, it also specifies which other packages your package depend
 The `Imports` part specifies which packages are essential for your package to work, with version number if required:
 ```
 Imports:
-    data.table (>= 1.10.4)
+    data.table (>= 1.10.4),
     dbplyr
 ```
 
@@ -61,7 +61,7 @@ Suggests:
 
 There is also the possibility to add packages to `Depends`, which differs from `Imports` in one crucial aspect:
 
-- `Depends` loads packages into the Global Environment when the user uses `library(your-package) while `Imports` does not.
+- `Depends` loads packages into the Global Environment when the user uses `library(your-package)` while `Imports` does not.
 
 Because naming conflicts become exponentially more likely the more packages you load, the best practice is to use `Imports`.
 
@@ -78,7 +78,7 @@ devtools::use_package("package-to-add-to-DESCRIPTION-file-in-Imports-section")
 - The hard way, aka manually.
 - The easy way, using the `roxygen2` package.
 
-The easy way is, you guessed it, easy:) Writing function documentation works using tags:
+The easy way is, you guessed it, easy :) Writing function documentation works using tags:
 ```
 #' Function caption here
 #'
@@ -89,7 +89,7 @@ The easy way is, you guessed it, easy:) Writing function documentation works usi
 #' @return y
 #' @import data.table
 #' @importFrom dplyr `%>%`
-my_function = function(data, x, y) {
+my_function = function(data, x) {
     y = data[,.(sum_x = sum(x))]
 
     return(y)
@@ -127,7 +127,7 @@ This command will set you up to work with the `testthat` unit testing framework.
 1. Massive time waste making sure that everything still works as expected after code changes
 2. Never feeling quite sure if changing a function might lead to failures (especially if you do not remember your 'console' tests:)
 
-Using `testhat` is super simple and while it does make sense in some cases to relax some parts of the [test-driven-development](https://en.wikipedia.org/wiki/Test-driven_development) framework in a data science setting (e.g. writing lots of tests for a feature that is probably not going to make it into the final model is quite time consuming), I cannot stress enought how important it is to properly unit test your code. You should even think about [unit testing your machine learning models](https://medium.com/@keeper6928/how-to-unit-test-machine-learning-code-57cf6fd81765).
+Using `testhat` is super simple and while it does make sense in some cases to relax some parts of the [test-driven-development](https://en.wikipedia.org/wiki/Test-driven_development){:target="_blank"} framework in a data science setting (e.g. writing lots of tests for a feature that is probably not going to make it into the final model is quite time consuming), I cannot stress enought how important it is to properly unit test your code. You should even think about [unit testing your machine learning models](https://medium.com/@keeper6928/how-to-unit-test-machine-learning-code-57cf6fd81765){:target="_blank"}.
 
 I will only give you a brief overview, but that should already cover 90% of all use cases. Unit tests have to be placed in placed in `/tests/testthat/` and the file name must start with `test_[your_function_name].R`. 
 
@@ -167,9 +167,9 @@ devtools::install_deps(pkg = "/path/to/your/pkg/")
 ## Further reading
 You can find additional information in:
 
-- [R Packages](http://r-pkgs.had.co.nz/) from Hadley Wickham (if you never heard of Hadley before, his books and packages are amazing!).
-- [Writing R extensions](https://cran.r-project.org/doc/manuals/r-release/R-exts.html), the official guideline on CRAN.
-- You might also be interested in reading about [semantic versioning](https://en.wikipedia.org/wiki/Software_versioning) or versioning more generally.
+- [R Packages](http://r-pkgs.had.co.nz/){:target="_blank"} from Hadley Wickham (if you never heard of Hadley before, his books and packages are amazing!).
+- [Writing R extensions](https://cran.r-project.org/doc/manuals/r-release/R-exts.html){:target="_blank"}, the official guideline on CRAN.
+- You might also be interested in reading about [semantic versioning](https://en.wikipedia.org/wiki/Software_versioning){:target="_blank"} or versioning more generally.
 
 
 I hope you found this short post helpful!
