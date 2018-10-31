@@ -27,4 +27,6 @@ Still, the ability to easily scale our server was a huge plus so we decided to g
 
 In the next sections I want to give you a few tips on how to work with SQL Server Managed Instance.
 
-## Some Tips
+## Authentication 
+
+
