@@ -65,19 +65,64 @@ If you do not see the ODBC Driver listed here, you need to head to Microsoft's d
 
 When the wizard asks you how you want to authenticate with your database, select *With integrated Active Directory Authentication* and that is it. You can also specify a default database to connect to.
 
+Now head over to SSMS and connect to the server where you want to add the managed instance as a linked server.
+
+1. In the Database View window select `Serverobjects`
+2. Right-click `Linked-Server` and add a new server
+3. Enter the name of your connection profile in the `Linked Server` box:
+
+![linked-server-setup](../../static/img/linked-server.PNG)
+
+4. Select `Microsoft OLE DB Provider for ODBC Driver`
+5. Head to `Security` and select to use the security context of the current user (this is important, because otherwise you would need to grant your admin user access to MI as well and login as admin everytime to use AD authentication, which is a pain and a security bad practice:)
+
+![linked-server-sec](../../static/img/linked-server-sec.PNG)
+
+Now you can simply query your linked server using:
+```
+SELECT TOP 10 *
+FROM <LINKED_SERVER_NAME>.<LINKED_SERVER_DB>.<LINKED_SERVER_TABLE>
+```
+
+and use it for example with your local database:)
+
+### ODBC
+
+To connect using ODBC using R (with `DBI`) or Python (using `pyodbc`) simply use the following connection string (removing `\` at line end in R):
+```
+con_string_py = 'DRIVER={ODBC Driver 13 for SQL Server}; \
+                 SERVER=<server_address>; \
+                 DATABASE=<db_name>;
+                 TimeOut = 30; \
+                 Authentication=ActiveDirectoryIntegrated'
+```
 
 
+## Import/export data
 
-Creating a linked server is quite easy in SSMS:
+Sometimes we want to quickly import/export some data from our MI. One way to do this is to use the linked server we created above.
 
-If you want to connect using ODBC
+To import data from MI to your local database you can simply run:
+```
+SELECT TOP 10 *
+INTO <LOCAL_SERVER_TABLE>
+FROM <LINKED_SERVER_NAME>.<LINKED_SERVER_DB>.<LINKED_SERVER_TABLE>
+```
 
+To export data from your local database to MI using linked server you first need to create the table on MI and then you can insert into your table using:
 
-From R
+```
+INSERT INTO <MI_TABLE>
+SELECT TOP 10 *
+FROM <LOCAL_SERVER_TABLE>
+```
 
-From SSMS
+Alternatively, we can simply use the SQL Import/Export Wizard. Note that you need to run the 64bit Wizard if you created a 64bit ODBC connection profile. By default, SSMS (32bit) launches the 32bit Wizard if you click `Task > Import/Export Data`.
 
-## Copying data
+In the Wizard simply specify the following:
 
-- linked server
-- sql server import export wizard
+![sql-import-export-wizard](../../static/img/sql-import-export-wizard.PNG)
+
+where `DSN (=Data Source Name)` is the name of your ODBC connection profile. You can then simply paste the ODBC connection string (without the `\` ) in the connection field box and you are done:) Thx to my colleague Martin here for helping me figure out that just specifying the `DSN` is not enough:)
+
+I hope you found this post 
