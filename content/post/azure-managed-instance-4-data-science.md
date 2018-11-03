@@ -125,4 +125,5 @@ In the Wizard simply specify the following:
 
 where `DSN (=Data Source Name)` is the name of your ODBC connection profile. You can then simply paste the ODBC connection string (without the `\` ) in the connection field box and you are done:) Thx to my colleague Martin here for helping me figure out that just specifying the `DSN` is not enough:)
 
-I hope you found this post 
+I hope you found this post helpful! 
+
