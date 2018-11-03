@@ -57,7 +57,7 @@ Before we can create a linked server in SSMS, we are going to create an ODBC con
 
 After launching the wizard you need to add a connection profile on the `System-DSN` tab and select the ODBC Driver for SQL Server.
 
-![ODBC-Sys-DSN](../../static/img/odbc-system-dsn.PNG)
+![ODBC-Sys-DSN](/static/img/odbc-system-dsn.PNG)
 
 If you do not see the ODBC Driver listed here, you need to head to Microsoft's download center to install it first. Then you simply need to follow the setup wizard. 
 
@@ -71,12 +71,12 @@ Now head over to SSMS and connect to the server where you want to add the manage
 2. Right-click `Linked-Server` and add a new server
 3. Enter the name of your connection profile in the `Linked Server` box:
 
-![linked-server-setup](../../static/img/linked-server.PNG)
+![linked-server-setup](/static/img/linked-server.PNG)
 
 4. Select `Microsoft OLE DB Provider for ODBC Driver`
 5. Head to `Security` and select to use the security context of the current user (this is important, because otherwise you would need to grant your admin user access to MI as well and login as admin everytime to use AD authentication, which is a pain and a security bad practice:)
 
-![linked-server-sec](../../static/img/linked-server-sec.PNG)
+![linked-server-sec](/static/img/linked-server-sec.PNG)
 
 Now you can simply query your linked server using:
 ```
@@ -121,7 +121,7 @@ Alternatively, we can simply use the SQL Import/Export Wizard. Note that you nee
 
 In the Wizard simply specify the following:
 
-![sql-import-export-wizard](../../static/img/sql-import-export-wizard.PNG)
+![sql-import-export-wizard](/static/img/sql-import-export-wizard.PNG)
 
 where `DSN (=Data Source Name)` is the name of your ODBC connection profile. You can then simply paste the ODBC connection string (without the `\` ) in the connection field box and you are done:) Thx to my colleague Martin here for helping me figure out that just specifying the `DSN` is not enough:)
 
