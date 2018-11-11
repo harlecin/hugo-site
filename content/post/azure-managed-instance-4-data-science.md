@@ -1,6 +1,6 @@
 +++
 date = "2018-10-31"
-title = "Azure SQL Server Managed Instance - A Primer for Data Science"
+title = "Getting started - Azure SQL Server Managed Instance"
 +++
 
 There are a lot of options for data scientists to store data in the Azure cloud. In this blog post I will cover the pros and cons of Azure SQL Server Managed Instance and will provide a few tips so you can hit the ground running if you decide to take it for a test drive.
