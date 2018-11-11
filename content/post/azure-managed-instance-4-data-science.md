@@ -45,7 +45,7 @@ Unlike in 'classic' SQL Server you do not need to create a separate database log
 
 ## Connecting
 
-In this section I want to briefly cover how to connect to your Managed Instance (MI) using ODBC, SSMS and SSMS with linked server.
+In this section I want to briefly cover how to connect to your Managed Instance (MI) using ODBC, ADO.NET,  SSMS and SSMS with linked server.
 
 ### SSMS
 Since MI relies on Azure Active Directory you need to upgrade SSMS to version 17.9 or higher. After you upgraded, you will see a new authentication option called *Active Directory: integrated*. Just select this option instead of *Windows-Authentication* and you are ready to go:)
@@ -97,6 +97,14 @@ con_string_py = 'DRIVER={ODBC Driver 13 for SQL Server}; \
                  Authentication=ActiveDirectoryIntegrated'
 ```
 
+### ADO.NET
+
+I experienced some issues using ODBC, mostly in connection with specific datetime types. For that reason, I usually use ADO.NET with the SQL Import/Export Wizard (see below).
+
+The ADO.NET connection string is:
+```
+Server=tcp:<your-server-name>.database.windows.net,1433;Persist Security Info=False;Initial Catalog=<your-database>;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Authentication="Active Directory Integrated";
+```
 
 ## Import/export data
 
@@ -125,5 +133,12 @@ In the Wizard simply specify the following:
 
 where `DSN (=Data Source Name)` is the name of your ODBC connection profile. You can then simply paste the ODBC connection string (without the `\` ) in the connection field box and you are done:) Thx to my colleague Martin here for helping me figure out that just specifying the `DSN` is not enough:)
 
+My prefered way to connect to our MI is using ADO.NET by selecting `.Net Framework Data Provider for SqlServer` in the Wizard:
+
+![sql-import-export-wizard-ado-net](/img/sql-import-export-wizard-ado-net.PNG)
+
+This avoids many troubles with column type conversions and works more smoothly in general.
+
 I hope you found this post helpful! 
 
+ado.net:
