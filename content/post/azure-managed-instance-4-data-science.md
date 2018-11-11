@@ -146,5 +146,3 @@ My prefered way to connect to our MI is using ADO.NET by selecting `.Net Framewo
 This avoids many troubles with column type conversions and works more smoothly in general.
 
 I hope you found this post helpful! 
-
-ado.net:
