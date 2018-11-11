@@ -103,7 +103,13 @@ I experienced some issues using ODBC, mostly in connection with specific datetim
 
 The ADO.NET connection string is:
 ```
-Server=tcp:<your-server-name>.database.windows.net,1433;Persist Security Info=False;Initial Catalog=<your-database>;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Authentication="Active Directory Integrated";
+    Server=tcp:<your-server-name>.database.windows.net,1433;
+    Persist Security Info=False;
+    Initial Catalog=<your-database>;
+    MultipleActiveResultSets=False;
+    Encrypt=True;
+    TrustServerCertificate=False;
+    Authentication="Active Directory Integrated";
 ```
 
 ## Import/export data
