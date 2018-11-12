@@ -11,3 +11,4 @@ Outline:
     - Trend stationary vs difference stationary: https://www.mathworks.com/help/econ/trend-stationary-vs-difference-stationary.html
 - why is important?
     - Implications for forecasting?
+    - cointegration: https://stats.stackexchange.com/questions/71873/practically-handling-many-non-stationary-forecasting-predictors
