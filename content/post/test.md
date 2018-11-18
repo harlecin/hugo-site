@@ -7,7 +7,7 @@ title = "Jupyter Test"
 # Markdown Test
 
 
-```python
+```
 print('test')
 ```
 
