@@ -33,7 +33,7 @@ jupyter nbconvert --to markdown <notebook-name>.ipynb
 ```
 
 
-```python
+```
 ## This gets rendered as code:
 print('test')
 ```
@@ -44,7 +44,7 @@ print('test')
 Now let's try some graphs:
 
 
-```python
+```
 from plotnine import *
 from plotnine.data import *
 import warnings
@@ -52,7 +52,7 @@ warnings.filterwarnings('ignore')
 ```
 
 
-```python
+```
 mtcars.head()
 ```
 
@@ -174,7 +174,7 @@ mtcars.head()
 
 
 
-```python
+```
 (ggplot(mtcars, aes(x='disp',y='mpg'))
     + geom_point()
     + geom_smooth()
