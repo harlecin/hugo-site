@@ -94,13 +94,13 @@ f(w^Tx + b) \text{ with } f(x) = \begin{cases}
 </tbody>
 </table>
 <p>How can we represent these operators using a <code>Perceptron</code>? Graphically, we want to find the following lines:
-<img src="../../static/img/Perceptron-Operators.png" width="100%" /></p>
+<img src="/img/Perceptron-Operators.png" width="100%" /></p>
 <p>Obviously there are multiple solutions that give the same answer. How can we find one of the solutions?</p>
 <p>In <span class="math inline">\(\mathbb{R}^2\)</span> we can simply rewrite <span class="math inline">\(w_1x_1 + w_2x_2 + b = 0\)</span> as <span class="math inline">\(x_2 = -w_1/w_2x_1 - b/w_2\)</span> and solve the problem graphically. We could also solve the associated system of inequalities to get our solution.</p>
 <p>But how can we find a ‘solution’ if it is not possible to classify all points correctly using a linear classifier? In math speak, how can we find a solution to an <a href="https://en.wikipedia.org/wiki/Overdetermined_system#Exact_solutions">overdetermined</a> and most likely inconsistent system?</p>
 <p>This is were the perceptron trick comes in.</p>
 <p>Suppose we misclasify a point. Say we predict label +1 for point <span class="math inline">\((0,1)\)</span>, but the point actually has label -1, how can we update the line?</p>
-<p><img src="../../static/img/perceptron-algorithm.png" width="100%" /></p>
+<p><img src="/img/perceptron-algorithm.png" width="100%" /></p>
 <p>Intuitively, the line should move closer to the misclassified point and ideally move past it. How can we do that? We can increase/decrease the bias and thereby affect the intercept of the line and we can increase/decrease the weights to change the slope of the line. The idea carries over to higher dimensonal spaces, with the only exception being that we don’t have a line separating the space, but a hyperplane.</p>
 <p>We will now code the Perceptron algorithm to iteratively update the weights and the bias either until all points are classified correctly or up to a certain number of rounds.</p>
 <pre><code>## Perceptron Algorithm
