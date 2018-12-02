@@ -9,14 +9,17 @@ $$\sigma(\underbrace{w^T}_{weights}x + \overbrace{b}^{bias}) = a$$
 
 and that a linear regression model is one of the most basic neural networks where the activation function $\sigma$ is the identity function:
 
-- Linear Regression: $id(w^Tx + b) = a$
+- Linear Regression: $$id(w^Tx + b) = a$$
 
 In this post I will show you how you can use a model called a `Perceptron` to classify points and thereby build the operators AND, OR and NOT. Furthermore, by combining multiple Perceptrons we can also model the XOR operator, which allows us to build more complex classifiers. A perceptron is defined as follows:
 
-- Perceptron: $f(w^Tx + b)$ with $f(x) = \begin{cases}
+- Perceptron: 
+$$
+f(w^Tx + b) \text{ with } f(x) = \begin{cases}
 1 & \text{ if } w^Tx + b > 0,\\
 0 & \text{ else}
-\end{cases}$
+\end{cases}
+$$
 
 The activation function $f$ is also called [Heaviside step function](https://en.wikipedia.org/wiki/Heaviside_step_function). Note that this function is not differentiable at $x = 0$ and the derivative is 0 everywhere else. Since neural nets are trained using gradient descent this activation function is rarely used except in simple cases that can be calculated without gradient descent. 
 
@@ -67,7 +70,7 @@ Intuitively, the line should move closer to the misclassified point and ideally 
 We will now code the Perceptron algorithm to iteratively update the weights and the bias either until all points are classified correctly or up to a certain number of rounds.
 
 
-```python
+```
 ## Perceptron Algorithm
 import numpy as np
 
@@ -134,6 +137,7 @@ I hope you found the post interesting!
 ## References:
 
 The Perceptron algorithm above is based on the Pseudo Code from:
+
 - [The Perceptron, and All the Things it Can't Perceive](https://jeremykun.com/2011/08/11/the-perceptron-and-all-the-things-it-cant-perceive/)
 
 with small adaptions.
