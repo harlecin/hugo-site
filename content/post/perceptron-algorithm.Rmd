@@ -147,3 +147,4 @@ The Perceptron algorithm above is based on the Pseudo Code from:
 - [The Perceptron, and All the Things it Can't Perceive](https://jeremykun.com/2011/08/11/the-perceptron-and-all-the-things-it-cant-perceive/)
 
 with small adaptions.
+
