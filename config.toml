@@ -25,3 +25,5 @@ pygmentscodefences  = true
     name = "Talks"
     url  = "/talks/"
 
+[params]
+    custom_css = ["css/harlecin.css"]
