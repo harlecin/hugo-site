@@ -1,0 +1,594 @@
+---
+title: "Pandas for data.table Users"
+author: "Christoph"
+date: 2018-12-13T14:41:14-05:00
+categories: ["R", "Python"]
+tags: ["data.table", "Pandas"]
+---
+
+
+
+<p>R and Python are both great languages for data analysis. While they are remarkably
+similar in some aspects, they are drastically different in others. In this post,
+I will focus on the similarities and differences between <code>Pandas</code> and <code>data.table</code>,
+two of the most prominent data manipulation packages in Python/R.</p>
+<p>There is alreay an excellent post that nicely compares basic data manipulations by Fisseha Berhane,
+which you can find on this <a href="https://datascience-enthusiast.com/R/pandas_datatable.html">website</a></p>
+<p>I want to focus on how more advanced <code>data.table</code> operations map to <code>Pandas</code>,
+such as inplace modifications etc.</p>
+<p>Let’s get started by setting up our environment. I will use the <a href="https://rstudio.github.io/reticulate/index.html"><code>reticulate</code></a>
+package to work with both R and Python in tandem.</p>
+<pre class="r"><code>library(data.table)
+library(reticulate)</code></pre>
+<p>We will use the following super simple dataset:</p>
+<pre class="r"><code>df_r = data.table(a = 1:6, 
+                b = 7:12,
+                c = c(&#39;q&#39;, &#39;q&#39;, &#39;q&#39;, &#39;q&#39;, &#39;w&#39;, &#39;w&#39;)
+                )
+
+setDT(df_r)</code></pre>
+<div id="assignment-copy-vs-in-place" class="section level2">
+<h2>Assignment: copy vs in-place</h2>
+<p>R is a functional language and therefore data is generally immutable, e.g. ‘changing’ a
+dataframe is not possible. R will copy the original dataframe, apply your updates
+and store it as a new dataframe. While immutable data makes it easier to reason
+about your code, it takes more time and memory to perform computations compared to
+modifying data in-place. This is one of the primary reasons why <code>data.table</code> is
+so blazzing fast and memory efficient. It avoids unnecessary copies and directly
+modifies your original data.frame (see my post <a href="https://harlecin.netlify.com/post/2018-05-12-data-table-deep-copy/">“Using data.table deep copy”</a> for more
+infos).</p>
+<p>So how can add a column by reference?</p>
+<div id="new-column-in-place-copy" class="section level3">
+<h3>New column: in-place &amp; copy</h3>
+<p>We will start by adding a new column that is simply a multiple of an existing one:</p>
+<pre class="r"><code>df_add_col = copy(df_r)
+tracemem(df_add_col)</code></pre>
+<pre><code>## [1] &quot;&lt;00000000198074A8&gt;&quot;</code></pre>
+<pre class="r"><code>df_add_col[, new_col := a * 2] 
+
+df_add_col</code></pre>
+<pre><code>##    a  b c new_col
+## 1: 1  7 q       2
+## 2: 2  8 q       4
+## 3: 3  9 q       6
+## 4: 4 10 q       8
+## 5: 5 11 w      10
+## 6: 6 12 w      12</code></pre>
+<pre class="r"><code>tracemem(df_add_col)</code></pre>
+<pre><code>## [1] &quot;&lt;00000000198074A8&gt;&quot;</code></pre>
+<pre class="python"><code>import pandas as pd
+df_py = r.df_r
+print(&#39;Old memory location: &#39;+str(id(df_py)),&#39;\n&#39;)</code></pre>
+<pre><code>## Old memory location: 517604352</code></pre>
+<pre class="python"><code>df_py[&#39;new_col&#39;] = df_py[&#39;a&#39;] * 2
+print(df_py,&#39;\n&#39;)</code></pre>
+<pre><code>##    a   b  c  new_col
+## 0  1   7  q        2
+## 1  2   8  q        4
+## 2  3   9  q        6
+## 3  4  10  q        8
+## 4  5  11  w       10
+## 5  6  12  w       12</code></pre>
+<pre class="python"><code>print(&#39;New memory location: &#39;+str(id(df_py)))</code></pre>
+<pre><code>## New memory location: 517604352</code></pre>
+<p>In both cases, we can see that the memory location did not change.</p>
+<p>If we want to return a new dataframe (and allocate new memory), we have to do it like this:</p>
+<pre class="r"><code>df_add_col = copy(df_r)
+tracemem(df_add_col)</code></pre>
+<pre><code>## [1] &quot;&lt;000000001F9A94C0&gt;&quot;</code></pre>
+<pre class="r"><code>df_add_col = df_add_col[, .(a, b, c, new_col = a * 2)] 
+
+df_add_col</code></pre>
+<pre><code>##    a  b c new_col
+## 1: 1  7 q       2
+## 2: 2  8 q       4
+## 3: 3  9 q       6
+## 4: 4 10 q       8
+## 5: 5 11 w      10
+## 6: 6 12 w      12</code></pre>
+<pre class="r"><code>tracemem(df_add_col)</code></pre>
+<pre><code>## [1] &quot;&lt;000000001FABF538&gt;&quot;</code></pre>
+<p>Likewise with Pandas we have to use:</p>
+<pre class="python"><code>import pandas as pd
+df_py = r.df_r
+print(&#39;Old memory location: &#39;+str(id(df_py)),&#39;\n&#39;)</code></pre>
+<pre><code>## Old memory location: 525783280</code></pre>
+<pre class="python"><code>df_py = df_py.assign(new_col = df_py[&#39;a&#39;]*2)
+print(df_py,&#39;\n&#39;)</code></pre>
+<pre><code>##    a   b  c  new_col
+## 0  1   7  q        2
+## 1  2   8  q        4
+## 2  3   9  q        6
+## 3  4  10  q        8
+## 4  5  11  w       10
+## 5  6  12  w       12</code></pre>
+<pre class="python"><code>print(&#39;New Memory location: &#39;+str(id(df_py)))</code></pre>
+<pre><code>## New Memory location: 525784288</code></pre>
+<p>Using <code>assign</code> copies the entire dataframe and assigns it to a new memory location.</p>
+</div>
+<div id="new-column-grouped-calculation" class="section level3">
+<h3>New column grouped calculation</h3>
+<p>We often want to add additional columns based on groups in our dataframe. Let’s
+take a look:</p>
+<pre class="r"><code>df_add_group_col = copy(df_r)
+tracemem(df_add_group_col)</code></pre>
+<pre><code>## [1] &quot;&lt;000000001F9A94C0&gt;&quot;</code></pre>
+<pre class="r"><code>df_add_group_col[, group_col := sum(a) / sum(b), by = c] 
+
+df_add_group_col</code></pre>
+<pre><code>##    a  b c group_col
+## 1: 1  7 q 0.2941176
+## 2: 2  8 q 0.2941176
+## 3: 3  9 q 0.2941176
+## 4: 4 10 q 0.2941176
+## 5: 5 11 w 0.4782609
+## 6: 6 12 w 0.4782609</code></pre>
+<pre class="r"><code>tracemem(df_add_group_col)</code></pre>
+<pre><code>## [1] &quot;&lt;000000001F9A94C0&gt;&quot;</code></pre>
+<p>In Pandas we have to do the following:</p>
+<pre class="python"><code>df_py = r.df_r
+print(&#39;Old memory location: &#39;+str(id(df_py)),&#39;\n&#39;)</code></pre>
+<pre><code>## Old memory location: 525786640</code></pre>
+<pre class="python"><code>df_gd = df_py.groupby(&#39;c&#39;)
+df_py[&#39;group_col&#39;] = df_gd[&#39;a&#39;].transform(lambda x: sum(x))/df_gd[&#39;b&#39;].transform(&#39;sum&#39;)
+print(df_py,&#39;\n&#39;)</code></pre>
+<pre><code>##    a   b  c  group_col
+## 0  1   7  q   0.294118
+## 1  2   8  q   0.294118
+## 2  3   9  q   0.294118
+## 3  4  10  q   0.294118
+## 4  5  11  w   0.478261
+## 5  6  12  w   0.478261</code></pre>
+<pre class="python"><code>print(&#39;New memory location: &#39;+str(id(df_py)))</code></pre>
+<pre><code>## New memory location: 525786640</code></pre>
+<p>In Pandas <code>transform</code> is used to broadcast a groupby result back to the original
+dataframe, i.e. <code>transform</code> is similar to SQL window functions. I used a lambda
+function in my code above, but you could simply write <code>transform('sum')</code> in this
+simple case as well.</p>
+<p>Unfortunately, <code>transform</code> works on columns in sequence, i.e. first column <code>a</code> is
+passed to our lambda function and then column <code>b</code>. So this code will fail:</p>
+<pre class="python"><code>df_py = r.df_r
+# This will fail:
+df_tmp = df_py.groupby(&#39;c&#39;)[[&#39;a&#39;, &#39;b&#39;]].transform(lambda x: sum(x[&#39;a&#39;]))</code></pre>
+<p>Alternatively, you could use <code>apply</code>:</p>
+<pre class="python"><code>df_py = r.df_r
+# This will fail:
+df_tmp = df_py.groupby(&#39;c&#39;)[[&#39;a&#39;, &#39;b&#39;]].apply(lambda x: sum(x[&#39;a&#39;])/sum(x[&#39;b&#39;]))
+print(df_tmp)</code></pre>
+<pre><code>## c
+## q    0.294118
+## w    0.478261
+## dtype: float64</code></pre>
+<p>Apply takes a dataframe as input, so it ‘sees’ all columns. What is left is to
+merge the results back to the original dataframe.</p>
+</div>
+</div>
+<div id="merging" class="section level2">
+<h2>Merging</h2>
+<p>Merging in data.table can be done in two ways:</p>
+<ol style="list-style-type: decimal">
+<li>Creating a new object containing the merged results</li>
+<li>Merging in-place</li>
+</ol>
+<p>In data.table merging is quite easy. I will only show LEFT JOINS here. For more
+info checkout <a href="https://rstudio-pubs-static.s3.amazonaws.com/52230_5ae0d25125b544caab32f75f0360e775.html">this link</a>.</p>
+<pre class="r"><code>df_merge = copy(df_r)
+tracemem(df_merge)</code></pre>
+<pre><code>## [1] &quot;&lt;0000000018C1C1E8&gt;&quot;</code></pre>
+<pre class="r"><code>df_merge = df_r[df_r, on = &quot;a&quot;]
+tracemem(df_merge)</code></pre>
+<pre><code>## [1] &quot;&lt;0000000019C069C0&gt;&quot;</code></pre>
+<pre class="r"><code>df_merge</code></pre>
+<pre><code>##    a  b c i.b i.c
+## 1: 1  7 q   7   q
+## 2: 2  8 q   8   q
+## 3: 3  9 q   9   q
+## 4: 4 10 q  10   q
+## 5: 5 11 w  11   w
+## 6: 6 12 w  12   w</code></pre>
+<p>As expected, a copy is created and new memory is assigned. Now let’s do the same
+by reference:</p>
+<pre class="r"><code>df_merge = copy(df_r)
+tracemem(df_merge)</code></pre>
+<pre><code>## [1] &quot;&lt;000000001FD4D538&gt;&quot;</code></pre>
+<pre class="r"><code>## Get all column names from df for merging without merge key
+key = &quot;a&quot;
+cols_merge = setdiff(colnames(df_r), key)
+cols_name = paste0(cols_merge,&quot;_m&quot;)
+
+df_merge[df_r, (cols_name) := mget(cols_merge), on = key]
+df_merge</code></pre>
+<pre><code>##    a  b c b_m c_m
+## 1: 1  7 q   7   q
+## 2: 2  8 q   8   q
+## 3: 3  9 q   9   q
+## 4: 4 10 q  10   q
+## 5: 5 11 w  11   w
+## 6: 6 12 w  12   w</code></pre>
+<pre class="r"><code>tracemem(df_merge)</code></pre>
+<pre><code>## [1] &quot;&lt;000000001FD4D538&gt;&quot;</code></pre>
+<p>How can we do that in Pandas? Let’s take a look.</p>
+<p>In Pandas you will find <code>DataFrame.merge</code> and <code>DataFrame.join</code>. <code>DataFrame.join</code> is just a
+convenience function that saves you some typing when you want to join on dataframe
+indices. We will stick to <code>merge</code>.</p>
+<pre class="python"><code>df_py = r.df_r
+print(id(df_py),&#39;\n&#39;)</code></pre>
+<pre><code>## 452735048</code></pre>
+<pre class="python"><code>df_merge = df_py.merge(right=df_py, how=&#39;left&#39;, on=&#39;a&#39;,copy=False)
+print(df_merge,&#39;\n&#39;)</code></pre>
+<pre><code>##    a  b_x c_x  b_y c_y
+## 0  1    7   q    7   q
+## 1  2    8   q    8   q
+## 2  3    9   q    9   q
+## 3  4   10   q   10   q
+## 4  5   11   w   11   w
+## 5  6   12   w   12   w</code></pre>
+<pre class="python"><code>print(id(df_merge))</code></pre>
+<pre><code>## 534060168</code></pre>
+<p>Pandas has an option <code>copy=False</code> to avoid unnecessary copies, but you still need
+to allocate new memory for the merged result as far as I saw.</p>
+</div>
+<div id="updating" class="section level2">
+<h2>Updating</h2>
+<p>Updating in data.table is easy:</p>
+<pre class="r"><code>df_update = copy(df_r)
+
+df_update[a &gt;= 3, b := 3] 
+df_update</code></pre>
+<pre><code>##    a b c
+## 1: 1 7 q
+## 2: 2 8 q
+## 3: 3 3 q
+## 4: 4 3 q
+## 5: 5 3 w
+## 6: 6 3 w</code></pre>
+<p>In Pandas it works quite similarly:</p>
+<pre class="python"><code>df_update = r.df_r
+df_update.loc[df_update[&#39;a&#39;]&gt;=3, &#39;b&#39;] = 3
+print(df_update, &#39;\n&#39;)</code></pre>
+<pre><code>##    a  b  c
+## 0  1  7  q
+## 1  2  8  q
+## 2  3  3  q
+## 3  4  3  q
+## 4  5  3  w
+## 5  6  3  w</code></pre>
+</div>
+<div id="meltcast" class="section level2">
+<h2>Melt/Cast</h2>
+<p>The functions <code>melt</code> and <code>cast</code>(data.table)/<code>pivot</code>(Pandas) are also handy to know. We can use
+<code>melt</code> to bring wide data in long form and <code>cast</code> for the reverse. I will only show
+melting here:</p>
+<pre class="r"><code>df_melted = melt(data = df_r, id.vars = &quot;c&quot;, measure.vars = c(&quot;a&quot;, &quot;b&quot;),
+                 variable.name = &quot;var&quot;, value.name = &quot;value&quot;)
+
+df_melted</code></pre>
+<pre><code>##     c var value
+##  1: q   a     1
+##  2: q   a     2
+##  3: q   a     3
+##  4: q   a     4
+##  5: w   a     5
+##  6: w   a     6
+##  7: q   b     7
+##  8: q   b     8
+##  9: q   b     9
+## 10: q   b    10
+## 11: w   b    11
+## 12: w   b    12</code></pre>
+<p>Pandas syntax is almost 100% equivalent:</p>
+<pre class="python"><code>df_py = r.df_r
+df_melted = pd.melt(frame=df_py, id_vars=&quot;c&quot;, value_vars=[&quot;a&quot;, &quot;b&quot;],
+                    var_name=&quot;var&quot;, value_name=&quot;value&quot;)
+                    
+print(df_melted)</code></pre>
+<pre><code>##     c var  value
+## 0   q   a      1
+## 1   q   a      2
+## 2   q   a      3
+## 3   q   a      4
+## 4   w   a      5
+## 5   w   a      6
+## 6   q   b      7
+## 7   q   b      8
+## 8   q   b      9
+## 9   q   b     10
+## 10  w   b     11
+## 11  w   b     12</code></pre>
+</div>
+<div id="indexing" class="section level2">
+<h2>Indexing</h2>
+<p>Indices help you speed up lookups. However since indices need time to build, they
+are only worthwhile if you repeatedly query your dataframe based on the index.</p>
+<p>Let’s start again by looking at data.table:</p>
+<pre class="r"><code>df_index = copy(df_r)
+# set keys
+setkey(df_index, a) 
+
+# get keys
+key(df_index)</code></pre>
+<pre><code>## [1] &quot;a&quot;</code></pre>
+<pre class="r"><code># If you want to use character vectors:
+# setkeyv(df_r, &#39;a&#39;)
+
+# Query data.table based on key
+df_index[.(1:3), .(a, b, c)]</code></pre>
+<pre><code>##    a b c
+## 1: 1 7 q
+## 2: 2 8 q
+## 3: 3 9 q</code></pre>
+<p>Setting a key in data.table physically reorders the rows by reference in increasing order
+and sets a <code>sorted</code> attribute for the key columns. So setting a key is equivalent to
+creating a clustered columnstore index in SQL Server. You can also generate non-clustered
+indices like so:</p>
+<pre class="r"><code>setindex(df_index, b)
+indices(df_index)</code></pre>
+<pre><code>## [1] &quot;b&quot;</code></pre>
+<pre class="r"><code># Fast subsetting
+df_index[.(7:9), .(a, b, c), on = &#39;b&#39;, verbose = TRUE]</code></pre>
+<pre><code>## on= matches existing index, using index
+## Starting bmerge ...done in 0.000sec 
+## Detected that j uses these columns: a,b,c</code></pre>
+<pre><code>##    a b c
+## 1: 1 7 q
+## 2: 2 8 q
+## 3: 3 9 q</code></pre>
+<p>For more details, see the data.table <a href="https://cran.r-project.org/web/packages/data.table/vignettes/datatable-keys-fast-subset.html">vignette for working with keys</a>
+and the <a href="https://cran.r-project.org/web/packages/data.table/vignettes/datatable-secondary-indices-and-auto-indexing.html">vignette for working with indices</a>.</p>
+<p>In Pandas we can set indices the following way:</p>
+<pre class="python"><code>df_index = r.df_r
+# Set index on existing DataFrame:
+# Alternatively, you can include an index when you create the DataFrame
+df_index.set_index(keys=[&#39;a&#39;], drop=True, inplace=True)
+# Check if index is set correctly:
+print(&quot;Check index: \n&quot;, df_index, &#39;\n&#39;)
+# Filter with index</code></pre>
+<pre><code>## Check index: 
+##      b  c
+## a       
+## 1   7  q
+## 2   8  q
+## 3   9  q
+## 4  10  q
+## 5  11  w
+## 6  12  w</code></pre>
+<pre class="python"><code>print(&quot;Lookup using index: \n&quot;, df_index.loc[[1,2,3]],&#39;\n&#39;)
+# Conditional filter with index:</code></pre>
+<pre><code>## Lookup using index: 
+##     b  c
+## a      
+## 1  7  q
+## 2  8  q
+## 3  9  q</code></pre>
+<pre class="python"><code>filter_a = (df_index.index.get_level_values(&#39;a&#39;) &gt;= 3)
+print(&quot;Conditional lookup using index: \n&quot;, df_index.loc[filter_a], &#39;\n&#39;)
+# Removing index</code></pre>
+<pre><code>## Conditional lookup using index: 
+##      b  c
+## a       
+## 3   9  q
+## 4  10  q
+## 5  11  w
+## 6  12  w</code></pre>
+<pre class="python"><code>df_index.reset_index(inplace = True)
+print(&quot;Index removed: \n&quot;, df_index)</code></pre>
+<pre><code>## Index removed: 
+##     a   b  c
+## 0  1   7  q
+## 1  2   8  q
+## 2  3   9  q
+## 3  4  10  q
+## 4  5  11  w
+## 5  6  12  w</code></pre>
+</div>
+<div id="chaining" class="section level2">
+<h2>Chaining</h2>
+<p>Chaining operations can make code more readable. If you are coming from the tidyverse
+fear not, data.table also works with magrittr:)</p>
+<pre class="r"><code>library(magrittr)
+
+df_r[,.(b, c)] %&gt;%
+  .[b &gt; 9]</code></pre>
+<pre><code>##     b c
+## 1: 10 q
+## 2: 11 w
+## 3: 12 w</code></pre>
+<p>You can also chain method calls in Pandas using <code>\\</code>. Alternatively, you can skip the
+backslash and put the entire block in <code>()</code>.</p>
+<pre class="python"><code>df_res = df_py[[&#39;b&#39;, &#39;c&#39;]] \
+            .loc[df_py[&#39;b&#39;] &gt; 9]
+print(df_res)</code></pre>
+<pre><code>##     b  c
+## 3  10  q
+## 4  11  w
+## 5  12  w</code></pre>
+</div>
+<div id="do-by-group" class="section level2">
+<h2>Do by group</h2>
+<p>In this section I want to show you how you can conveniently run calculations per group. Imagine
+you want to fit a model per group. One way to do it is to loop over the entire data.table and
+filter each run by the respective group. More convenient in my opinion is the following structure:</p>
+<pre class="r"><code>df_list = df_r[,list(data = list(.SD)), by = &#39;c&#39;]
+df_list</code></pre>
+<pre><code>##    c         data
+## 1: q &lt;data.table&gt;
+## 2: w &lt;data.table&gt;</code></pre>
+<p>We created a new data.table where we collapsed the data per group into a list. This has a couple
+of advantages:</p>
+<ul>
+<li>It is trival to parallelize</li>
+<li>Works well with <code>map</code> pattern in functional programming</li>
+<li>No filter errors possible after creation</li>
+</ul>
+<p>A very simple example could look like this:</p>
+<pre class="r"><code>library(foreach)
+library(iterators)
+
+# create row iterator
+iter_row = iter(df_list, by = &#39;row&#39;)
+
+
+# Iterate over dataset
+# Register parallel backend -&gt; use %dopar%
+foreach(i = iter_row) %do% {
+  
+  lm(a ~ b, data = i$data[[1]])
+  
+}</code></pre>
+<pre><code>## [[1]]
+## 
+## Call:
+## lm(formula = a ~ b, data = i$data[[1]])
+## 
+## Coefficients:
+## (Intercept)            b  
+##          -6            1  
+## 
+## 
+## [[2]]
+## 
+## Call:
+## lm(formula = a ~ b, data = i$data[[1]])
+## 
+## Coefficients:
+## (Intercept)            b  
+##          -6            1</code></pre>
+<p>In Pandas the code is also very concise, but requires a bit more work to parallelize:</p>
+<pre class="python"><code>df_py = r.df_r
+for group, data in df_py.groupby([&#39;c&#39;]):
+  print(&quot;Group : &quot;, group,&quot;\n Data: \n&quot;, data)</code></pre>
+<pre><code>## Group :  q 
+##  Data: 
+##     a   b  c
+## 0  1   7  q
+## 1  2   8  q
+## 2  3   9  q
+## 3  4  10  q
+## Group :  w 
+##  Data: 
+##     a   b  c
+## 4  5  11  w
+## 5  6  12  w</code></pre>
+</div>
+<div id="laggingleading-variables" class="section level2">
+<h2>Lagging/leading variables</h2>
+<p>Both data.table and Pandas have a <code>shift</code> function/method that allows you to lag/lead
+columns:</p>
+<pre class="r"><code>df_shift = copy(df_r)
+
+# Order columns before shifting
+setorderv(df_shift, cols = &quot;a&quot;)
+
+# Create column names
+shift_col_names &lt;- paste(rep(c(&quot;a&quot;, &quot;b&quot;), each = 2), &quot;lag&quot;, 1:2, sep=&quot;_&quot;)
+
+# Shift columns
+df_shift[, (shift_col_names) := shift(.SD, n = 1:2, type = &quot;lag&quot;), 
+         .SDcols = c(&quot;a&quot;, &quot;b&quot;), by = &quot;c&quot;]
+
+df_shift</code></pre>
+<pre><code>##    a  b c a_lag_1 a_lag_2 b_lag_1 b_lag_2
+## 1: 1  7 q      NA      NA      NA      NA
+## 2: 2  8 q       1      NA       7      NA
+## 3: 3  9 q       2       1       8       7
+## 4: 4 10 q       3       2       9       8
+## 5: 5 11 w      NA      NA      NA      NA
+## 6: 6 12 w       5      NA      11      NA</code></pre>
+<p>In Pandas you can do:</p>
+<pre class="python"><code>df_shift = r.df_r
+for var in [&#39;a&#39;, &#39;b&#39;]:
+  for lag in range(1,3):
+    df_shift[var+&#39;_lag_&#39;+str(lag)] = df_shift.groupby([&#39;c&#39;])[var].shift(lag)
+print(df_shift)</code></pre>
+<pre><code>##    a   b  c  a_lag_1  a_lag_2  b_lag_1  b_lag_2
+## 0  1   7  q      NaN      NaN      NaN      NaN
+## 1  2   8  q      1.0      NaN      7.0      NaN
+## 2  3   9  q      2.0      1.0      8.0      7.0
+## 3  4  10  q      3.0      2.0      9.0      8.0
+## 4  5  11  w      NaN      NaN      NaN      NaN
+## 5  6  12  w      5.0      NaN     11.0      NaN</code></pre>
+</div>
+<div id="rolling-calculations" class="section level2">
+<h2>Rolling calculations</h2>
+<p>Rolling calculations are especially important when working with time-series data.</p>
+<p>In data.table there are a couple of packages that allow rolling calculations:</p>
+<ul>
+<li>RcppRoll: optimized C++ code for max, mean, median, min, prod, sd, sum and var.
+Partial application has not been implemented yet.</li>
+<li>zoo::rollapply: allows arbitrary rolling functions, but slower</li>
+<li>Use <code>Reduce(fun(), lapply(shift())</code></li>
+</ul>
+<p>I will quickly show you how to work with <code>zoo::rollapply()</code>:</p>
+<pre class="r"><code>df_rolling = copy(df_r)
+
+df_rolling[, mean := shift(zoo::rollapply(a, width = 2, mean, align = &quot;right&quot;, 
+                                          partial = F, fill = NA),
+                          n = 1),
+           by = c]
+
+df_rolling</code></pre>
+<pre><code>##    a  b c mean
+## 1: 1  7 q   NA
+## 2: 2  8 q   NA
+## 3: 3  9 q  1.5
+## 4: 4 10 q  2.5
+## 5: 5 11 w   NA
+## 6: 6 12 w   NA</code></pre>
+<p>You can calculate rolling statistics for multiple columns in one function call by
+using <code>.SD</code>. Note that <code>shift()</code> and <code>rollapply()</code> take the ordering of your columns
+as given!</p>
+<p>In Pandas, it is not as straight forward I am afraid, because <code>.shift()</code> and <code>.rolling()</code>
+behave differently. While <code>.shift()</code> does not create a new index, <code>.rolling()</code> does. This
+means that you need to be careful when you assign the results from <code>.rolling()</code> back to
+your dataframe (check if the indices match!). To complicate things further, you cannot simply chain <code>.shift(n).rolling(m)</code>, because <code>.shift()</code> will remove the grouping and therefore <code>.rolling()</code> results can be incorrect.</p>
+<p>We will therefore define a function to do the following:</p>
+<ol style="list-style-type: decimal">
+<li>We perform the rolling calculation</li>
+<li>We remove the additional index created by grouping (index 0)</li>
+<li>We assign the result to the original DataFrame based on the old index</li>
+<li>We shift the values</li>
+</ol>
+<pre class="python"><code>import numpy as np
+from typing import List
+df_rolling = r.df_r
+# Calculate 2-day mean from day before
+def calc_rolling(df: pd.DataFrame, fun, grouping: List[str], 
+                 window: int, y: str) -&gt; None:
+                 
+  df_gd = df.groupby(grouping)
+  
+  col_name = y+&#39;_&#39;+fun.__name__+&#39;_roll&#39;+str(window)
+  
+  # raw=False silences a warning, because apply currently works with numpay arrays, 
+  # but will be switched to PandasSeries
+  df[col_name] = df_gd[y]  \
+                    .rolling(2) \
+                    .apply(lambda x: fun(x), raw=False) \
+                    .reset_index(level=list(range(len(grouping))),
+                                                          drop=True
+                                                          )
+                                  
+  df[col_name] = df.groupby(grouping)[col_name].shift(1)
+calc_rolling(df_rolling, fun=np.mean, grouping=[&#39;c&#39;], window=2, y=&#39;a&#39;)
+print(df_rolling)</code></pre>
+<pre><code>##    a   b  c  a_mean_roll2
+## 0  1   7  q           NaN
+## 1  2   8  q           NaN
+## 2  3   9  q           1.5
+## 3  4  10  q           2.5
+## 4  5  11  w           NaN
+## 5  6  12  w           NaN</code></pre>
+<p>In Pandas the <code>rolling</code> method also supports a time period offset (only valid for datetimelike indices). By default, Pandas <code>rolling</code> method uses aligns the series to the right, but centering is also possible. Partial application (i.e. using a smaller window than specified at the beginning) is not possible at the moment.</p>
+</div>
+<div id="some-final-notes" class="section level2">
+<h2>Some final notes</h2>
+<p>Changing data in-place can offer substantial speedups and reduce memory usage considerably.</p>
+<p>However, while data.table is very explicit about when assignment is made by reference
+(<code>:=</code> and all <code>set*</code> functions) Pandas is less so. There is actually no guarantee that Pandas
+performs operations in-place, even if you specify <code>inplace=True</code>, see for example <a href="https://stackoverflow.com/questions/22532302/pandas-peculiar-performance-drop-for-inplace-rename-after-dropna/22533110#22533110">this stackoverflow thread</a>.</p>
+<p>Also note that modifying data in-place can make your operations more difficult to
+understand/debug.</p>
+<p>If you are coming from R, be careful when you assign one Pandas DataFrame column to
+another DataFrame. Pandas will match the columns based on indices!</p>
+<p>I hope you found this post useful! If you find any errors, please open an issue on Github.</p>
+</div>

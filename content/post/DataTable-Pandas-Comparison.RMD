@@ -138,7 +138,7 @@ simple case as well.
 
 Unfortunately, `transform` works on columns in sequence, i.e. first column `a` is
 passed to our lambda function and then column `b`. So this code will fail:
-```{python, eval = False}
+```{python, eval = FALSE}
 df_py = r.df_r
 
 # This will fail:
