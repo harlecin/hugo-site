@@ -67,6 +67,7 @@ We found that this process really helps us to stay on track and manage the compl
 All the best for your next project!
 
 
+
 [backlog-epics]: /img/epics.PNG "Screenshot Backlog Top-Level"
 [backlog-epics-userstories]: /img/backlog-epic-userstory.PNG "Screenshot Backlog Project"
 [sprint-backlog]:  /img/capacity-planning.PNG "Sprint Backlog"
