@@ -15,6 +15,8 @@ pygmentscodefences  = true
   MathJaxCDN = "//cdn.bootcss.com"
   MathJaxVersion = "2.7.1"
 
+  custom_css = ["css/harlecin.css"]
+
 [[menu.main]]
     name = "About"
     url  = "/about/"
@@ -24,6 +26,3 @@ pygmentscodefences  = true
 [[menu.main]]
     name = "Talks"
     url  = "/talks/"
-
-[params]
-    custom_css = ["css/harlecin.css"]
