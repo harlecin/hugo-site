@@ -18,6 +18,26 @@ This will allow all users to execute scripts that have been remotely signed, i.e
 
 4) Open Powershell and type `git` to check that it is on your PATH and do the same with `ssh`. If it is not on your PATH, you need to add it before you continue.
 
-5) Install `Git-Posh`
+5) Setup `Git-Posh` by running the following in Powershell:
 
-Now that we have Posh-Git up and running, let's 
+```
+Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+PowerShellGet\Install-Module posh-git -Scope CurrentUser -AllowPrerelease -Force
+
+## Update an existing version:
+PowerShellGet\Update-Module posh-git
+
+## Add PoshGit to all PowerShell hosts (console, ISE, etc)
+Add-PoshGitToProfile -AllHosts
+```
+
+Now that we have Posh-Git up and running, let's generate a public/private key-pair:
+
+6) Open Powershell and run `ssh-keygen -t rsa -b 4096 -C "your_email@example.com"` and press enter to save to the default location. You can set a password as well.
+
+7) Now you need to add your key to `ssh-agent`. You can run `eval $(ssh-agent -s)` to start the `ssh-agent` with Git-Bash or alternatively use Posh-Git
+
+
+## Note:
+> Windows now ships with OpenSSH, which version is git using -> git bash or system?
+> Multiple shells VS Code: https://4sysops.com/archives/vscode-as-a-console-for-powershell-core-6-part-1-multiple-shells/
