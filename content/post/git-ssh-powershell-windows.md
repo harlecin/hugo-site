@@ -18,7 +18,7 @@ This will allow all users to execute scripts that have been remotely signed, i.e
 
 4) Open Powershell and type `git` to check that it is on your PATH and do the same with `ssh`. If it is not on your PATH, you need to add it before you continue.
 
-5) Setup `Git-Posh` by running the following in Powershell:
+5) Setup `Posh-Git` by running the following in Powershell:
 
 ```
 Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
