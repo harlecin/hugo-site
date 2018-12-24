@@ -35,9 +35,6 @@ Now that we have Posh-Git up and running, let's generate a public/private key-pa
 
 6) Open Powershell and run `ssh-keygen -t rsa -b 4096 -C "your_email@example.com"` and press enter to save to the default location. You can set a password as well.
 
-7) Now you need to add your key to `ssh-agent`. You can run `eval $(ssh-agent -s)` to start the `ssh-agent` with Git-Bash or alternatively use Posh-Git
+7) Now you need to add your key to `ssh-agent`. I used Git Bash to start `ssh-agent` with `eval $(ssh-agent -s)`, because Windows 10 now also ships with `ssh` and Git wants to use its own bundled ssh binaries, while posh-git starts the Windows ssh binaries (see [Windows 10 version 1803 broke my git SSH](https://adamralph.com/2018/05/15/windows-10-version-1803-broke-my-git-ssh/) if you want to use the ssh binaries shipped with Windows instead of with Git)
 
-
-## Note:
-> Windows now ships with OpenSSH, which version is git using -> git bash or system?
-> Multiple shells VS Code: https://4sysops.com/archives/vscode-as-a-console-for-powershell-core-6-part-1-multiple-shells/
+Now you should be ready to use `git`+`ssh` with Powershell:)
