@@ -1,0 +1,97 @@
+---
+title: "A Practical Guide to A/B Testing"
+author: "Christoph Bodner"
+date: 2019-02-26T14:41:14-05:00
+categories: ["R"]
+tags: ["a/b testing", "R"]
+---
+
+A/B testing is a statistical procedure that tries to quantify if differences between 
+a treatment group (A) and a control group (B) are caused by chance.
+
+A/B tests have been around for decades in the pharmaceutical industry to study the 
+effectiveness of drugs. A/B testing has also been heavily adopted by tech-titans such as 
+Google, Microsoft, Amazon and Facebook to improve their service offering. Slowly, 
+A/B tests are also starting to gain traction in traditional industries such as 
+manufacturing, logistics and others to help improve operations.
+
+In this blog post I want to give you a practical overview of A/B testing and how 
+it can be used to improve products systematically by running experiments.
+
+
+The post is split into 3 main parts:
+
+1. **Pre-Experiment Phase**: What do you need to consider before starting out
+2. **Experiment Phase**: How do you properly monitor an experiment
+3. **Post-Experiment Phase**: What do your results actually tell you?
+
+After reading this post, I hope that you feel comfortable enough to think about 
+running your own experiments.
+
+
+## Pre-Experiment Phase
+In this phase you need to come up with the questions you want to answer and prepare 
+everything for your experiment.
+
+> Note: A/B tests can only answer yes/no questions
+
+This is very important. An A/B test will (if performed properly) tell you if option 
+A is preferable to B or C. What it obviously cannot tell you is that all options 
+are worse than option D, if option D was not included in the test.
+
+Finding the right questions to test the right hypothesis is absolutely essential. 
+I strongly suggests that before you start to run any A/B tests, you ask yourself:
+
+- What are the pain points we need to address?
+- How can we measure if we are successful?
+
+I really like the [hypothesis kit](https://medium.com/@optimiseordie/hypothesis-kit-2-eff0446e09fc) Craig Sullivan posted on Medium:
+
+1. Because we saw (qual & quant data)
+2. We expect that (change) for (population) will cause (impact(s))
+3. We expect to see (data metrics(s) change) over a period of (x business cycles)
+
+Because A/B testing can take quite some time (e.g. a couple of weeks for a mid-sized 
+eCommerce company) it is essential to prioritise what you want to test properly and 
+follow a systematic approach to generate new hypothesis.
+
+Also keep in mind that not all questions are suitable for A/B testing:
+
+- Exploratory questions (What is the best color?)
+- 
+
+
+- get to know your customers - talk to them, validate later> 
+- find out which questions to ask! do not test stuff that does not generate value!
+
+Source: Google Udacity:
+A/B testing cannot show you if you are missing something! -> Google
+E.g. Premium Service: A/B test useful, but do not rely on it exclusively
+stuff that happens rarely is hard to test
+
+- unit of diversion: who do you assign to a or b? 
+user_id, anonymous id (cookie), event (eg for ranking algorithms etc), device_id, ip_address
+
+- unit of analysis vs unit of diversion: when they are the same (e.g. both are based on events) variability tends to be lower
+
+cohorts vs populations:
+- experiment and control cohort
+
+duration vs exposure:
+how long is the experiment running and who participates in the experiment? (e.g. weekend vs weekdays)
+
+learning effects
+- time to adapt to change for users: user_id/cookie + cohort
+https://classroom.udacity.com/courses/ud257/lessons/4001558669/concepts/39700990310923
+
+- checking invariants
+
+## Experiment Phase
+- attention: p-value hacking, problem with not-fixed sample size, ...
+- peeking problem
+
+## Post-Experiment Phase
+- record outcomes
+
+## Closing thoughts
+- How to increase testing velocity
