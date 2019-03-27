@@ -1,0 +1,75 @@
+---
+title: "Introduction - Analysing Customer Churn"
+author: "Christoph"
+date: 2019-03-27T21:13:14-05:00
+categories: ["Churn Rate"]
+tags: ["Churn Rate"]
+---
+
+At first glance, analysing customer churn seems pretty easy. All we have to know is how 
+many customers we have at a certain point in time and how many customers chose to leave our 
+business over a given period in order to calculate a churn rate.
+
+We could simply define customer churn rate as:
+
+$$
+\text{Churn Rate } = \frac{\text{# Customers Churned in Period}}{\text{# Customers Beginning of Period}}
+$$
+But this definition assumes that we lose customers linearly over a given period and 
+that our customer base does not change except for the customers we lose, i.e. we are 
+not acquiring any new customers.
+
+We could change the denominator from number of '# Customers Beginning of Period' to 
+'Average # of Customers over Period' defined by (# BoP + # EoP)/2, but then we would 
+implicitly assume that we acquire customers at a constant rate. Moreover, we need to be careful 
+if we want to calculate churn for periods with different lengths, say for February and March where 
+period lengths can differ by around 10%.
+
+Ideally, we need a metric to calcualte churn that takes the number of opportunities into account that 
+a customer has in order to churn. So we could use something like this:
+
+$$
+\text{Churn Rate } = \frac{\text{# Customers Churned in Period}}{\text{# Customer Active Days in Period}} \times \text{Period Length}
+$$
+
+'# Customer Active Days in Period' is defined as the number of days in a given period 
+during which a customer is considered active. Imagine we have two customers and one of 
+them churns at the end of a 7 day period. We get a churn rate of about:
+```{r}
+n_churned = 1
+n_active_days = 7 + 6
+period_length = 7
+
+churn_rate = n_churned/n_active_days * period_length
+churn_rate
+```
+
+While we would get a churn rate of 1 if the customer churned immediately at the beginning of 
+the period. This definition also allows us to calculate churn rates for different period lengths quite easily.
+
+We could go one step further still and consider a churn rate where we not only calculate a weighted 
+number of active customers over a given period but also a weighted churn number. Clearly, if a customer churns at the end of a period it is better than if he churns at the beginning? We could define a churn rate like so:
+$$
+\text{Churn Rate } = \frac{\text{# Customer Inactive Days in Period}}{\text{# Customer Active Days in Period}}
+$$
+However, imagine the following scenario: You have two customers and one of them churns at the second day of our 7 day period. Your churn rate would be:
+```{r}
+n_inactive_days = 6
+n_active_days = 7 + 1
+period_length = 7
+
+churn_rate = n_inactive_days/n_active_days
+churn_rate
+```
+How would you calculate churn rates for the next 7 day period? You still have two customers, one of them has 0 active days the other 7. You get 7 inactive days, so your churn rate would be 100%. Or should your churn rate be 0%, because the customer is actually lost and should not count towards inactive days? So we could introduce a new customers status called 'lost' and a 'lost' customer does not count towards inactive days anymore. Which raises the question, when should we consider a customer lost?
+
+Wait a minute, we still have not considered how we define if a customer is considered 'churned'!
+
+How should we do that? If you have a business where customers buy some kind of subscription that automatically renews, you can define 'churn' as 'customer cancels subscription'. But imagine your customers buy a subscription and after a couple of weeks they start to lose interest in your service, but they cannot churn yet, because they bought an annual subscription. Your churn rate will be awesome for a year after which your customers will leave all of a sudden. Or what about business that do not offer subscriptions such as supermarkets? Do you consider a customer churned if he does not shop for groceries for a week or two weeks? Or should we focus on the amount of money he spends instead of on the number of interactions? Maybe revenue or profit churn is a better metric?
+
+As you can see, while analysing churn might seem like an easy problem, it is actually quite complex and depending on your definition you are optimizing vastly different objective functions.
+
+In my next post, I plan to show you a few things I consider in my exploratory analysis when I 
+start to analyse churn rates, specifically I will focus on testing how sensitive a given definition of churn is and whether a different definition might be more appropriate.
+
+Hopefully you found this intro helpful:)
