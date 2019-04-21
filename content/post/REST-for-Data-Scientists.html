@@ -196,11 +196,11 @@ $(document).ready(function () {
 </div>
 
 
-<p>With the growing importance of cloud computing more and more services are exposed as REST apis. In this post, I want to give a hands-on introduction for data scientists from non-software-engineering backgrounds on how to work with REST apis.</p>
+<p>With the growing importance of cloud computing more and more services are exposed as REST APIs. In this post, I want to give a hands-on introduction for data scientists from non-software-engineering backgrounds on how to work with REST APIS.</p>
 <p>But before we dive straight into the code, let’s start with some background information:</p>
 <div id="a-short-history-of-urls-and-rest" class="section level2">
 <h2>A (short) history of URLs and REST</h2>
-<p>REST is an abbreviation for ‘REpresentational State Transfer’ and ‘<a href="https://en.wikipedia.org/wiki/Representational_state_transfer">defines a set of constraints to be used for creating Web services</a>’. A web service that implements all REST architecture patterns is called RESTful. With REST apis we can access and change web resources. Note that while most REST apis use ‘http’ as their protocol, in theory you could use a different protocol as well. A web resource can be anything that has a uniform resource identifier also called URI. A uniform resource locator, also called URL or simple web address, is probably the most common kind of URI. A URL tells us where a particular resource is located by telling us its primary access mechanism (e.g. the ‘http’ protocol). A URI is simply an identifier of a resource that in the case of a URL also happens to tell us where the resource is.</p>
+<p>REST is an abbreviation for ‘REpresentational State Transfer’ and ‘<a href="https://en.wikipedia.org/wiki/Representational_state_transfer">defines a set of constraints to be used for creating Web services</a>’. A web service that implements all REST architecture patterns is called RESTful. With REST APIS we can access and change web resources. Note that while most REST APIs use ‘http’ as their protocol, in theory you could use a different protocol as well. A web resource can be anything that has a uniform resource identifier also called URI. A uniform resource locator, also called URL or simple web address, is probably the most common kind of URI. A URL tells us where a particular resource is located by telling us its primary access mechanism (e.g. the ‘http’ protocol). A URI is simply an identifier of a resource that in the case of a URL also happens to tell us where the resource is.</p>
 <p>I found the following slightly modified example from <a href="https://t3n.de/news/url-uri-unterschiede-516483/">t3n.de</a> really helpful:</p>
 <ul>
 <li>website.com - URI</li>
@@ -223,34 +223,39 @@ $(document).ready(function () {
 </ul>
 <p>When we submit an http-request, the server will respond with a status message:</p>
 <ul>
-<li>1xx - informational</li>
-<li>2xx - success</li>
-<li>3xx - redirection</li>
-<li>4xx - client error (such as ‘404 - page not found’, ‘401 - Unauthorized’, or ‘403 - Forbidden’)</li>
-<li>5xx - server error</li>
+<li><strong>1xx</strong> - informational</li>
+<li><strong>2xx</strong> - success</li>
+<li><strong>3xx</strong> - redirection</li>
+<li><strong>4xx</strong> - client error (such as ‘404 - page not found’, ‘401 - Unauthorized’, or ‘403 - Forbidden’)</li>
+<li><strong>5xx</strong> - server error</li>
 </ul>
 <p>An http-message has the following defined structure:</p>
 <ol style="list-style-type: decimal">
-<li>Start line: Request line (POST) | Status line (GET)</li>
-<li>One or more headers: Field name : Field value
+<li><strong>Start line</strong>: Request line (POST) | Status line (GET)</li>
+<li><strong>One or more headers</strong>: <Field name : Field value>
 <ul>
 <li>Possible types: Request/response, general and entity headers</li>
 </ul></li>
-<li>CRLF: Mandatory new line between headers and body</li>
-<li>optional message-body</li>
+<li><strong>CRLF</strong>: Mandatory new line between headers and body</li>
+<li><strong>optional message body</strong></li>
 </ol>
-<p>So an http-request could look like this: &gt; GET /some/path/to/resource HTTP/1.1 &gt; Host: <a href="http:://www.website.com" class="uri">http:://www.website.com</a> &gt; Connection: keep-alive &gt; Cache-Control: no-cache &gt; Pragma: no-cache &gt; Accept: text/html,application/xhtml+xml,application/xml;q=0.</p>
+<p>So an http-request could look like this:</p>
+<pre><code>GET /some/path/to/resource HTTP/1.1
+Host: http:://www.website.com
+Connection: keep-alive
+Cache-Control: no-cache
+Pragma: no-cache
+Accept: text/html,application/xhtml+xml,application/xml;q=0.</code></pre>
 <p>As you can see, there are lots os headers, but only the ‘HOST’ header is mandatory. Since we submit a GET request, there is no message body.</p>
 <p>The response could look like this:</p>
-<blockquote>
-<p>HTTP/1.1 200 OK <response-headers></p>
-<body>
-</blockquote>
+<pre><code>HTTP/1.1 200 OK
+&lt;response-headers&gt;
+&lt;body&gt;</code></pre>
 <p>An excellent article wiht more detailed information about the http-protocol can be found <a href="https://code.tutsplus.com/tutorials/http-the-protocol-every-web-developer-must-know-part-1--net-31177">here</a>. If you are interested in reading about HTTP/2 check out this <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages">article</a> from Mozilla.</p>
 <p>So, let’s get started with some coding:)</p>
 </div>
 <div id="rest-calls-in-r-with-httr" class="section level2">
-<h2>REST Calls in R with <code>httr</code></h2>
+<h2>REST Calls in R with <em>httr</em></h2>
 <p>The following section is based on Hadley Wickhams’s excellent <a href="https://cran.r-project.org/web/packages/httr/vignettes/API-packages.html">httr-vignette</a>. Let’s begin with simple API calls that do not need authentication. We will make the following REST call in R using httr:</p>
 <pre><code>GET /repos/hadley/httr HTTP/1.1
 Host: api.github.com
@@ -263,7 +268,7 @@ resp = httr::GET(paste0(host, url))
 
 resp</code></pre>
 <pre><code>## Response [https://api.github.com/repositories/2756403]
-##   Date: 2019-04-21 15:17
+##   Date: 2019-04-21 15:23
 ##   Status: 200
 ##   Content-Type: application/json; charset=utf-8
 ##   Size: 6.04 kB
@@ -286,7 +291,7 @@ resp</code></pre>
 ## [1] &quot;GitHub.com&quot;
 ## 
 ## $date
-## [1] &quot;Sun, 21 Apr 2019 15:17:52 GMT&quot;
+## [1] &quot;Sun, 21 Apr 2019 15:23:23 GMT&quot;
 ## 
 ## $`content-type`
 ## [1] &quot;application/json; charset=utf-8&quot;</code></pre>
@@ -302,7 +307,7 @@ resp</code></pre>
 <p>There is also an amazing website called <a href="httpbin.org" class="uri">httpbin.org</a> where you can try submitting requests:</p>
 <pre class="r"><code>httr::POST(httr::modify_url(&quot;https://httpbin.org&quot;, path = &quot;/post&quot;))</code></pre>
 <pre><code>## Response [https://httpbin.org/post]
-##   Date: 2019-04-21 15:17
+##   Date: 2019-04-21 15:23
 ##   Status: 200
 ##   Content-Type: application/json
 ##   Size: 407 B
@@ -324,7 +329,7 @@ resp</code></pre>
 resp = httr::GET(&quot;https://httpbin.org/get&quot;, ua)
 resp</code></pre>
 <pre><code>## Response [https://httpbin.org/get]
-##   Date: 2019-04-21 15:17
+##   Date: 2019-04-21 15:23
 ##   Status: 200
 ##   Content-Type: application/json
 ##   Size: 308 B
