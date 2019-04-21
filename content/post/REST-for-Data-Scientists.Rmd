@@ -1,7 +1,7 @@
 ---
 title: "Working with REST APIs for Data Scientists in R"
 author: "Christoph"
-date: 2019-04-21T14:41:14-05:00
+date: 2019-04-21T21:13:14-05:00
 categories: ["R", "Python", "API"]
 tags: ["REST", "OAuth"]
 ---
