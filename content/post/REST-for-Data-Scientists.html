@@ -1,0 +1,155 @@
+---
+title: "Working with REST APIs for Data Scientists in R"
+author: "Christoph"
+date: 2019-04-08T14:41:14-05:00
+categories: ["R", "Python", "API"]
+tags: ["REST", "OAuth"]
+---
+
+
+
+<p>With the growing importance of cloud computing more and more services are exposed as REST apis. In this post, I want to give a hands-on introduction for data scientists from non-software-engineering backgrounds on how to work with REST apis.</p>
+<p>But before we dive straight into the code, let’s start with some background information:</p>
+<div id="a-short-history-of-urls-and-rest" class="section level2">
+<h2>A (short) history of URLs and REST</h2>
+<p>REST is an abbreviation for ‘REpresentational State Transfer’ and ‘<a href="https://en.wikipedia.org/wiki/Representational_state_transfer">defines a set of constraints to be used for creating Web services</a>’. A web service that implements all REST architecture patterns is called RESTful. With REST apis we can access and change web resources. Note that while most REST apis use ‘http’ as their protocol, in theory you could use a different protocol as well. A web resource can be anything that has a uniform resource identifier also called URI. A uniform resource locator, also called URL or simple web address, is probably the most common kind of URI. A URL tells us where a particular resource is located by telling us its primary access mechanism (e.g. the ‘http’ protocol). A URI is simply an identifier of a resource that in the case of a URL also happens to tell us where the resource is.</p>
+<p>I found the following slightly modified example from <a href="https://t3n.de/news/url-uri-unterschiede-516483/">t3n.de</a> really helpful:</p>
+<ul>
+<li>website.com - URI</li>
+<li><a href="https://website.com" class="uri">https://website.com</a> - URL</li>
+<li><a href="ftp://website.com" class="uri">ftp://website.com</a> - URL</li>
+</ul>
+<p>So URLs are not restricted to ‘http’ and ‘https’ as the example above shows. More generally, a URL consists of the following components: <span class="math display">\[
+\underbrace{\text{http}}_{\text{protocol}}://
+\underbrace{\text{www.website.com}}_{\text{host}}:
+\underbrace{\text{42}}_{\text{port}}/
+\underbrace{\text{some/path/to/resource}}_{\text{resource path}}
+\underbrace{\text{?par1=val1&amp;par2=val2}}_{\text{query}}
+\]</span> If no port is set, the default for ‘http’ is 80 and 443 for ‘https’.</p>
+<p>The most common verbs for specifying http-requests are:</p>
+<ul>
+<li><strong>GET</strong>: Get an existing resource</li>
+<li><strong>POST</strong>: Create a new resource (usually with a payload that specifies the data used for the new resource)</li>
+<li><strong>PUT</strong>: Update an existing resource</li>
+<li><strong>DELETE</strong>: Delete a resource</li>
+</ul>
+<p>When we submit an http-request, the server will respond with a status message:</p>
+<ul>
+<li>1xx - informational</li>
+<li>2xx - success</li>
+<li>3xx - redirection</li>
+<li>4xx - client error (such as ‘404 - page not found’, ‘401 - Unauthorized’, or ‘403 - Forbidden’)</li>
+<li>5xx - server error</li>
+</ul>
+<p>An http-message has the following defined structure:</p>
+<ol style="list-style-type: decimal">
+<li>Start line: Request line (POST) | Status line (GET)</li>
+<li>One or more headers: Field name : Field value
+<ul>
+<li>Possible types: Request/response, general and entity headers</li>
+</ul></li>
+<li>CRLF: Mandatory new line between headers and body</li>
+<li>optional message-body</li>
+</ol>
+<p>So an http-request could look like this: &gt; GET /some/path/to/resource HTTP/1.1 &gt; Host: <a href="http:://www.website.com" class="uri">http:://www.website.com</a> &gt; Connection: keep-alive &gt; Cache-Control: no-cache &gt; Pragma: no-cache &gt; Accept: text/html,application/xhtml+xml,application/xml;q=0.</p>
+<p>As you can see, there are lots os headers, but only the ‘HOST’ header is mandatory. Since we submit a GET request, there is no message body.</p>
+<p>The response could look like this:</p>
+<blockquote>
+<p>HTTP/1.1 200 OK <response-headers></p>
+<body>
+</blockquote>
+<p>An excellent article wiht more detailed information about the http-protocol can be found <a href="https://code.tutsplus.com/tutorials/http-the-protocol-every-web-developer-must-know-part-1--net-31177">here</a>. If you are interested in reading about HTTP/2 check out this <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages">article</a> from Mozilla.</p>
+<p>So, let’s get started with some coding:)</p>
+</div>
+<div id="rest-calls-in-r-with-httr" class="section level2">
+<h2>REST Calls in R with <code>httr</code></h2>
+<p>The following section is based on Hadley Wickhams’s excellent <a href="https://cran.r-project.org/web/packages/httr/vignettes/API-packages.html">httr-vignette</a>. Let’s begin with simple API calls that do not need authentication. We will make the following REST call in R using httr:</p>
+<pre><code>GET /repos/hadley/httr HTTP/1.1
+Host: api.github.com
+Accept: application/vnd.github.v3+json</code></pre>
+<p>We call Github’s public api and request information for Hadley’s httr repo.</p>
+<p>Using <code>httr</code> we can submit the request as follows:</p>
+<pre class="r"><code>host = &quot;https://api.github.com&quot;
+url = &quot;/repos/hadley/httr&quot;
+resp = httr::GET(paste0(host, url))
+
+resp</code></pre>
+<pre><code>## Response [https://api.github.com/repositories/2756403]
+##   Date: 2019-04-21 15:14
+##   Status: 200
+##   Content-Type: application/json; charset=utf-8
+##   Size: 6.04 kB
+## {
+##   &quot;id&quot;: 2756403,
+##   &quot;node_id&quot;: &quot;MDEwOlJlcG9zaXRvcnkyNzU2NDAz&quot;,
+##   &quot;name&quot;: &quot;httr&quot;,
+##   &quot;full_name&quot;: &quot;r-lib/httr&quot;,
+##   &quot;private&quot;: false,
+##   &quot;owner&quot;: {
+##     &quot;login&quot;: &quot;r-lib&quot;,
+##     &quot;id&quot;: 22618716,
+##     &quot;node_id&quot;: &quot;MDEyOk9yZ2FuaXphdGlvbjIyNjE4NzE2&quot;,
+## ...</code></pre>
+<p>The response contains the header first followed by the body (application json in this case). We can automatically parse it to an R object using <code>jsonlite</code> or access status codes and headers using <code>httr</code> in-build functions like so:</p>
+<pre class="r"><code>httr::status_code(resp)</code></pre>
+<pre><code>## [1] 200</code></pre>
+<pre class="r"><code>head(httr::headers(resp), 3)</code></pre>
+<pre><code>## $server
+## [1] &quot;GitHub.com&quot;
+## 
+## $date
+## [1] &quot;Sun, 21 Apr 2019 15:14:46 GMT&quot;
+## 
+## $`content-type`
+## [1] &quot;application/json; charset=utf-8&quot;</code></pre>
+<pre class="r"><code>head(jsonlite::fromJSON(httr::content(resp, &quot;text&quot;), simplifyVector = FALSE), 3)</code></pre>
+<pre><code>## $id
+## [1] 2756403
+## 
+## $node_id
+## [1] &quot;MDEwOlJlcG9zaXRvcnkyNzU2NDAz&quot;
+## 
+## $name
+## [1] &quot;httr&quot;</code></pre>
+<p>There is also an amazing website called <a href="httpbin.org" class="uri">httpbin.org</a> where you can try submitting requests:</p>
+<pre class="r"><code>httr::POST(httr::modify_url(&quot;https://httpbin.org&quot;, path = &quot;/post&quot;))</code></pre>
+<pre><code>## Response [https://httpbin.org/post]
+##   Date: 2019-04-21 15:14
+##   Status: 200
+##   Content-Type: application/json
+##   Size: 407 B
+## {
+##   &quot;args&quot;: {}, 
+##   &quot;data&quot;: &quot;&quot;, 
+##   &quot;files&quot;: {}, 
+##   &quot;form&quot;: {}, 
+##   &quot;headers&quot;: {
+##     &quot;Accept&quot;: &quot;application/json, text/xml, application/xml, */*&quot;, 
+##     &quot;Accept-Encoding&quot;: &quot;gzip, deflate&quot;, 
+##     &quot;Content-Length&quot;: &quot;0&quot;, 
+##     &quot;Host&quot;: &quot;httpbin.org&quot;, 
+## ...</code></pre>
+<p>Hadley recommends setting a user agent in your requests to identify the client that is calling the API so API owners can see who is using their services. By sending your R package as a user agent, API owners might also see that there is demand from R users and perhaps allocate more resources.</p>
+<p>You can send a user agent like so:</p>
+<pre class="r"><code>ua = httr::user_agent(&quot;http://github.com/hadley/httr&quot;)
+
+resp = httr::GET(&quot;https://httpbin.org/get&quot;, ua)
+resp</code></pre>
+<pre><code>## Response [https://httpbin.org/get]
+##   Date: 2019-04-21 15:14
+##   Status: 200
+##   Content-Type: application/json
+##   Size: 308 B
+## {
+##   &quot;args&quot;: {}, 
+##   &quot;headers&quot;: {
+##     &quot;Accept&quot;: &quot;application/json, text/xml, application/xml, */*&quot;, 
+##     &quot;Accept-Encoding&quot;: &quot;gzip, deflate&quot;, 
+##     &quot;Host&quot;: &quot;httpbin.org&quot;, 
+##     &quot;User-Agent&quot;: &quot;http://github.com/hadley/httr&quot;
+##   }, 
+##   &quot;origin&quot;: &quot;84.114.229.149, 84.114.229.149&quot;, 
+##   &quot;url&quot;: &quot;https://httpbin.org/get&quot;
+## ...</code></pre>
+<p>That’s it for now. In my next post I want to cover OAuth 2.0, a very common authentication model used to secure API endpoints.</p>
+</div>
