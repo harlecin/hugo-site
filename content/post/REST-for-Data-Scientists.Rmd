@@ -1,0 +1,136 @@
+---
+title: "Working with REST APIs for Data Scientists in R"
+author: "Christoph"
+date: 2019-04-08T14:41:14-05:00
+categories: ["R", "Python", "API"]
+tags: ["REST", "OAuth"]
+---
+
+
+With the growing importance of cloud computing more and more services are 
+exposed as REST apis. In this post, I want to give a hands-on introduction for data 
+scientists from non-software-engineering backgrounds on how to work with REST apis.
+
+But before we dive straight into the code, let's start with some background information:
+
+## A (short) history of URLs and REST
+REST is an abbreviation for 'REpresentational State Transfer' and '[defines a set of 
+constraints to be used for creating Web services](https://en.wikipedia.org/wiki/Representational_state_transfer)'. 
+A web service that implements all REST architecture patterns is called RESTful. With REST apis we can 
+access and change web resources. Note that while most REST apis use 'http' as their protocol, in theory you could 
+use a different protocol as well. A web resource can be anything that has a uniform resource 
+identifier also called URI. A uniform resource locator, also called URL or simple web address, 
+is probably the most common kind of URI. A URL tells us where a particular resource is located by telling us its 
+primary access mechanism (e.g. the 'http' protocol).
+A URI is simply an identifier of a resource that in the case of a URL also happens to tell us 
+where the resource is.
+
+I found the following slightly modified example from [t3n.de](https://t3n.de/news/url-uri-unterschiede-516483/) really helpful:
+
+- website.com - URI
+- https://website.com - URL
+- ftp://website.com - URL
+
+So URLs are not restricted to 'http' and 'https' as the example above shows. More generally, a URL consists of the following components:
+$$
+\underbrace{\text{http}}_{\text{protocol}}://
+\underbrace{\text{www.website.com}}_{\text{host}}:
+\underbrace{\text{42}}_{\text{port}}/
+\underbrace{\text{some/path/to/resource}}_{\text{resource path}}
+\underbrace{\text{?par1=val1&par2=val2}}_{\text{query}}
+$$
+If no port is set, the default for 'http' is 80 and 443 for 'https'.
+
+The most common verbs for specifying http-requests are:
+
+- **GET**: Get an existing resource
+- **POST**: Create a new resource (usually with a payload that specifies the data used for the new resource)
+- **PUT**: Update an existing resource
+- **DELETE**: Delete a resource
+
+When we submit an http-request, the server will respond with a status message:
+
+- 1xx - informational 
+- 2xx - success
+- 3xx - redirection
+- 4xx - client error (such as '404 - page not found', '401 - Unauthorized', or '403 - Forbidden')
+- 5xx - server error
+
+An http-message has the following defined structure:
+
+1. Start line: Request line (POST) | Status line (GET)
+2. One or more headers: Field name : Field value
+    - Possible types: Request/response, general and entity headers
+3. CRLF: Mandatory new line between headers and body
+4. optional message-body
+
+So an http-request could look like this:
+> GET /some/path/to/resource HTTP/1.1
+> Host: http:://www.website.com
+> Connection: keep-alive
+> Cache-Control: no-cache
+> Pragma: no-cache
+> Accept: text/html,application/xhtml+xml,application/xml;q=0.
+
+As you can see, there are lots os headers, but only the 'HOST' header is mandatory. Since we submit a GET request, there 
+is no message body. 
+
+The response could look like this:
+
+> HTTP/1.1 200 OK
+> <response-headers>
+>
+> <body>
+
+An excellent article wiht more detailed information about the http-protocol can be found [here](https://code.tutsplus.com/tutorials/http-the-protocol-every-web-developer-must-know-part-1--net-31177). If you are interested in 
+reading about HTTP/2 check out this [article](https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages) from Mozilla.
+
+So, let's get started with some coding:)
+
+## REST Calls in R with `httr`
+
+The following section is based on Hadley Wickhams's excellent [httr-vignette](https://cran.r-project.org/web/packages/httr/vignettes/API-packages.html). Let's begin with simple API calls that do not need authentication. We will make the following REST call in R using httr:
+
+```
+GET /repos/hadley/httr HTTP/1.1
+Host: api.github.com
+Accept: application/vnd.github.v3+json
+```
+
+We call Github's public api and request information for Hadley's httr repo.
+
+Using `httr` we can submit the request as follows:
+```{r}
+host = "https://api.github.com"
+url = "/repos/hadley/httr"
+resp = httr::GET(paste0(host, url))
+
+resp
+```
+
+The response contains the header first followed by the body (application json in this case). We can automatically parse it to an R object using `jsonlite` or access status codes and headers using `httr` in-build functions like so:
+```{r}
+httr::status_code(resp)
+
+head(httr::headers(resp), 3)
+
+head(jsonlite::fromJSON(httr::content(resp, "text"), simplifyVector = FALSE), 3)
+```
+
+There is also an amazing website called [httpbin.org](httpbin.org) where you can try submitting requests:
+```{r}
+httr::POST(httr::modify_url("https://httpbin.org", path = "/post"))
+```
+
+Hadley recommends setting a user agent in your requests to identify the client that is calling the API so API owners can see who is using their services. By sending your R package as a user agent, API owners might also see that there is demand from R users and perhaps allocate more resources.
+
+You can send a user agent like so:
+```{r}
+ua = httr::user_agent("http://github.com/hadley/httr")
+
+resp = httr::GET("https://httpbin.org/get", ua)
+resp
+```
+
+That's it for now. In my next post I want to cover OAuth 2.0, a very common authentication model used to secure API endpoints.
+
