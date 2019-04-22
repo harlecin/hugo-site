@@ -1,0 +1,153 @@
+---
+title: "OAuth 2.0 in R"
+author: "Christoph"
+date: 2019-04-22T14:41:14-05:00
+categories: ["R", "API"]
+tags: ["REST", "OAuth"]
+---
+
+
+
+<p>Many APIs require some form of authentication. A very common form used with many cloud providers and commercial APIs is OAuth 2.0. In this post, I want to give you an introduction to how OAuth 2.0 works and use it to authenticate with Microsoft Azure services.</p>
+<div id="oauth-2.0---overview" class="section level2">
+<h2>OAuth 2.0 - Overview</h2>
+<p>The OAuth 2.0 specification is not what you would commonly describe as ‘easy to understand’. Eran Hammer, the former lead author for the OAuth 2.0 project actually resigned and removed his name from the specification. He even wrote a Medium post titled <a href="https://hueniverse.com/oauth-2-0-and-the-road-to-hell-8eec45921529">‘OAuth 2.0 and the Road to Hell’</a>. His core concern is that OAuth 2.0 might be too complex for most developers to implement securely. However OAuth 2.0 is more or less the de facto authentication standard and used by Google, Facebook and Microsoft to secure access to their APIs, so we have to learn to work with it to a certain extend.</p>
+<p>OAuth is not to be confused with OpenID. <a href="http://cakebaker.42dh.com/2008/04/01/openid-versus-oauth-from-the-users-perspective/">“OpenID is about authentication (i.e. I can identify myself with an url) whereas OAuth is about authorization (i.e. I can grant permission to access my data on some website to another website, without providing this website the authentication information for the original website)”</a>.</p>
+<p>So how does OAuth 2.0 work conceptually? At its core, OAuth defines four roles:</p>
+<ol style="list-style-type: decimal">
+<li><strong>resource owner</strong>: An entity who can grant access to a protected resource (often the end-user)</li>
+<li><strong>resource server</strong>: The server hosting the protected resource</li>
+<li><strong>client</strong>: An app that wants to access protected resources with authorization from the resource owner</li>
+<li><strong>authorization server</strong>: The server issuing access tokens to client after resource owner is successfully authenticated and authorization is obtained.</li>
+</ol>
+<p>The protocol flow looks like this (taken from <a href="https://tools.ietf.org/html/rfc6749">ietf.org</a>):</p>
+<pre><code> +--------+                               +---------------+
+ |        |--(A)- Authorization Request -&gt;|   Resource    |
+ |        |                               |     Owner     |
+ |        |&lt;-(B)-- Authorization Grant ---|               |
+ |        |                               +---------------+
+ |        |
+ |        |                               +---------------+
+ |        |--(C)-- Authorization Grant --&gt;| Authorization |
+ | Client |                               |     Server    |
+ |        |&lt;-(D)----- Access Token -------|               |
+ |        |                               +---------------+
+ |        |
+ |        |                               +---------------+
+ |        |--(E)----- Access Token ------&gt;|    Resource   |
+ |        |                               |     Server    |
+ |        |&lt;-(F)--- Protected Resource ---|               |
+ +--------+                               +---------------+</code></pre>
+<p>Note that the authorization server and the resource server do not need to be distinct servers. In practice, the authorization request is not made directly to the resource owner, but handled by the authorization server. The client gets an authorization grant which it can use to get an access token to access protected resources.</p>
+<p>There are four different authorization grant types:</p>
+<ol style="list-style-type: decimal">
+<li>authorization code,</li>
+<li>implicit,</li>
+<li>resource owner password credentials and</li>
+<li>client credentials</li>
+</ol>
+<p>It is possible to define additional custom grant types as well. Let’s look at them in more detail:</p>
+<div id="authorization-code" class="section level3">
+<h3>Authorization Code</h3>
+<p>The client redirects the resource owner to the authorization server via its user agent (usually a browser). The authorization server then redirects the resource owner back to the client with the authorization code.</p>
+<p>A typical call to <code>login.microsoftonline.com</code> might look like this:</p>
+<pre><code>// Line breaks for legibility only
+
+https://login.microsoftonline.com/&lt;tenant-id&gt;/OAuth2/Authorize?
+client_id=a0448380-c346-4f9f-b897-c18733de9394&amp;
+response_mode=query&amp;
+response_type=code&amp;
+state=12345&amp;
+redirect_uri=http%3A%2F%2Flocalhost%3A3000&amp;
+resource=https%3a%2f%2fgraph.windows.net%2f&amp;domain_hint=live.com</code></pre>
+<p>The query contains the following key-value pairs:</p>
+<ul>
+<li><strong>client_id</strong>: the id from the client we are making the call from</li>
+<li><strong>response_mode</strong>: specifies how the token should be send back to the client</li>
+<li><strong>response_type</strong>: with the value <code>code</code>.</li>
+<li><strong>scope</strong>: missing in this case, but tells us which authorization we want (space delimited list of scopes, but ignored in Azure)</li>
+<li><strong>state</strong>: optional, but highly recommended to help mitigate <a href="https://auth0.com/docs/protocols/oauth2/oauth-state">CSRF attacks</a>. Can be an arbitrary string. This option can also be used to put the user back to the page from where the login was made.</li>
+<li><strong>redirect_uri</strong>: optional, this is the URI where we get the return from the authorization server. If not set, the default is used. Note that the redirect_uri ‘<a href="http://localhost:3000" class="uri">http://localhost:3000</a>’ has been url-encoded to ‘http%3A%2F%2Flocalhost%3A3000’.</li>
+<li><strong>resource</strong>: The App ID URI of the traget web API (secured resource)</li>
+</ul>
+<p>You can find more information about OAuth2.0 code grand on Azure in the <a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-protocols-oauth-code#request-an-authorization-code">official documentation</a>.</p>
+<p>Let’s take an example from <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-manager-api-authentication">Microsoft’s Azure documentation</a>:</p>
+<p>If the user approves the client, he is redirected back to redirect_uri with the following parameters in the query string:</p>
+<pre><code>http://localhost:3000?code=&lt;authorization-token&gt;&amp;state=&lt;state-string-from-original-request&gt;</code></pre>
+<p>Now the client uses the authorization code in a POST request to get an access token:</p>
+<pre><code>POST https://login.microsoftonline.com/{tenant-id}/OAuth2/Token HTTP/1.1
+
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 1012
+
+grant_type=authorization_code&amp;code=AAABAAAAiL9Kn2Z*****L1nVMH3Z5ESiAA&amp;redirect_uri=http%3A%2F%2Flocalhost%3A62080%2FAccount%2FSignIn&amp;client_id=a0448380-c346-4f9f-b897-c18733de9394&amp;client_secret=olna84E8*****goScOg%3D</code></pre>
+<p>Note that the client also includes a client_secret in the POST request to prove its identiy against the server before it gets the access token.</p>
+<p>An example response might look like this:</p>
+<pre><code>HTTP/1.1 200 OK
+
+{&quot;token_type&quot;:&quot;Bearer&quot;,&quot;expires_in&quot;:&quot;3599&quot;,&quot;expires_on&quot;:&quot;1432039858&quot;,&quot;not_before&quot;:&quot;1432035958&quot;,&quot;resource&quot;:&quot;https://management.core.windows.net/&quot;,&quot;access_token&quot;:&quot;eyJ0eXAiOiJKV1Q****M7Cw6JWtfY2lGc5A&quot;,&quot;refresh_token&quot;:&quot;AAABAAAAiL9Kn2Z****55j-sjnyYgAA&quot;,&quot;scope&quot;:&quot;user_impersonation&quot;,&quot;id_token&quot;:&quot;eyJ0eXAiOiJKV*****-drP1J3P-HnHi9Rr46kGZnukEBH4dsg&quot;}</code></pre>
+<p>Using authorization code grant is quite involved and in some cases a simpler authentication is more appropriate:</p>
+</div>
+<div id="implicit" class="section level3">
+<h3>Implicit</h3>
+<p>The implicit grant is an authorization flow optimized for clients implemented in a browser or any app that cannot protect a client secret. The implicit grant flow is the same as the authorization grant flow above, but instead of getting an authorization code first that is exchanged for an access token after presenting the client secret with the authorization code, the authorization server returns an access token immediately.</p>
+<p>Note that apparently industry best practices now recommend to use the authorization code flow without a client secret instead of implicit grant flow (see <a href="https://aaronparecki.com/oauth-2-simplified/">here</a> and <a href="https://tools.ietf.org/html/draft-ietf-oauth-security-topics-12">here</a>).</p>
+</div>
+<div id="resource-owner-password-credentials" class="section level3">
+<h3>Resource Owner Password Credentials</h3>
+<p>In this case we use the resource owner credentials directly to login to a given service. Since the app obviously collects password and user name from resource owner, this grant flow should only be used when the application is trusted to a very high degree by the resource owner. However, credentials do not need to be stored as the client gets an access token from the authentication server.</p>
+</div>
+<div id="client-credentials" class="section level3">
+<h3>Client Credentials</h3>
+<p>When the authorization scope is limited to the resources owned by the client, the client can use its client id and client secret to request an access token. This grant flow is more or less the same as the resource owner password credentials flow, except that the client is under control of the protected resources.</p>
+</div>
+<div id="access-and-refresh-tokens" class="section level3">
+<h3>Access and Refresh Tokens</h3>
+<p>Access tokens allow access to protected resources and are usually short lived to minimize harm in case they are leaked. Refresh tokens on the other hand are usually long lived and can be used to request new access tokens after the old ones have expired.</p>
+<p>You can find more details about OAuth 2.0 on the official <a href="https://oauth.net/2/">OAuth webpage</a>. I also found <a href="https://aaronparecki.com/oauth-2-simplified/">‘OAuth 2 Simplified’</a> and <a href="https://alexbilbie.com/guide-to-oauth-2-grants/">‘A Guide To OAuth 2.0 Grants’</a> by Aaron Parecki really helpful (He also gave a talk about <a href="https://www.youtube.com/watch?v=FGVJ0eXTRpw">“The vowel R”</a>, which as an R programmer I find pretty cool:).</p>
+<p>So, after we covered some basic theory about how OAuth 2.0 works, let’s get our hands dirty and try to use our knowledge to access APIs in Azure.</p>
+</div>
+</div>
+<div id="oauth-2.0-on-azure" class="section level2">
+<h2>OAuth 2.0 on Azure:</h2>
+<p>To authenticate with Azure the following call is made to the <code>/authorize</code> endpoint (line breaks for readability only):</p>
+<pre><code>https://login.microsoftonline.com/common/oauth2/authorize?
+response_type=code
+&amp;client_id=04b07795-8ddb-461a-bbee-02f9e1bf7b46
+&amp;redirect_uri=http://localhost:8400
+&amp;state=mkb28apjvs1tj4m8m4hb
+&amp;resource=https://management.core.windows.net/
+&amp;prompt=select_account</code></pre>
+<p>The client_id in the example above is from the Azure CLI client. Also note that compared to the example we had earlier we are accessing <code>/common/</code> instead of <code>/&lt;tenant-id&gt;/</code>. Pasting the above URL into your browser will return a redirect url of the following form:</p>
+<pre><code>http://localhost:8400/?code=&lt;your-access-token&gt;&amp;session_state=&lt;session-state&gt;</code></pre>
+<p>Before we start: In Azure there are two types of apps you can register: native and web apps. Only web apps have a client_secret parameter.</p>
+<p>Let’s try to get access tokens for the Azure resource manager in R:</p>
+<pre class="r"><code>library(httr)
+
+app_name = &quot;test&quot;
+# client_id of Azure CLI
+client_id = &quot;04b07795-8ddb-461a-bbee-02f9e1bf7b46&quot;
+client_secret = NULL
+resource_uri = &quot;https://management.core.windows.net/&quot;
+
+# Endpoints are of the form: 
+# https://login.windows.net/&lt;common | tenant-id&gt;/oauth2/&lt;authorize | token&gt;
+azure_endpoint = oauth_endpoint(authorize = &quot;https://login.windows.net/common/oauth2/authorize&quot;,
+                                access = &quot;https://login.windows.net/common/oauth2/token&quot;)
+
+azure_app = oauth_app(
+  appname = app_name,
+  key = client_id,
+  secret = client_secret
+)
+
+token &lt;- oauth2.0_token(azure_endpoint, azure_app,
+  user_params = list(resource = resource_uri),
+  use_oob = FALSE
+)</code></pre>
+<p>You should now be redirected to a browser window where you can sign-in to your Azure account. There is also a library called <a href="https://github.com/cloudyr/AzureAuth">AzureAuth</a> as part of the cloudyR project, but I like that we can cover the entire flow with <code>httr</code> and no further dependencies.</p>
+</div>
+<div id="further-examples-documentation" class="section level2">
+<h2>Further Examples &amp; Documentation</h2>
+<p>I found the following resources super helpful as well: - <a href="https://cran.r-project.org/web/packages/httr/">httr: Tools for Working with URLs and HTTP</a> - <a href="https://docs.microsoft.com/en-us/rest/api/azure/">REST APIs in Azure</a></p>
+</div>
