@@ -20,7 +20,7 @@ tags: ["REST", "OAuth"]
 <li><a href="ftp://website.com" class="uri">ftp://website.com</a> - URL</li>
 </ul>
 <p>So URLs are not restricted to ‘http’ and ‘https’ as the example above shows. More generally, a URL consists of the following components: <span class="math display">\[
-\underbrace{\text{http}}_{\text{protocol}}://
+\underbrace{\text{http}}_{\text{scheme / protocol}}://
 \underbrace{\text{www.website.com}}_{\text{host}}:
 \underbrace{\text{42}}_{\text{port}}/
 \underbrace{\text{some/path/to/resource}}_{\text{resource path}}
@@ -80,7 +80,7 @@ resp = httr::GET(paste0(host, url))
 
 resp</code></pre>
 <pre><code>## Response [https://api.github.com/repositories/2756403]
-##   Date: 2019-04-21 15:38
+##   Date: 2019-04-22 15:44
 ##   Status: 200
 ##   Content-Type: application/json; charset=utf-8
 ##   Size: 6.04 kB
@@ -103,7 +103,7 @@ resp</code></pre>
 ## [1] &quot;GitHub.com&quot;
 ## 
 ## $date
-## [1] &quot;Sun, 21 Apr 2019 15:38:30 GMT&quot;
+## [1] &quot;Mon, 22 Apr 2019 15:44:30 GMT&quot;
 ## 
 ## $`content-type`
 ## [1] &quot;application/json; charset=utf-8&quot;</code></pre>
@@ -119,7 +119,7 @@ resp</code></pre>
 <p>There is also an amazing website called <a href="httpbin.org" class="uri">httpbin.org</a> where you can try submitting requests:</p>
 <pre class="r"><code>httr::POST(httr::modify_url(&quot;https://httpbin.org&quot;, path = &quot;/post&quot;))</code></pre>
 <pre><code>## Response [https://httpbin.org/post]
-##   Date: 2019-04-21 15:38
+##   Date: 2019-04-22 15:44
 ##   Status: 200
 ##   Content-Type: application/json
 ##   Size: 407 B
@@ -141,7 +141,7 @@ resp</code></pre>
 resp = httr::GET(&quot;https://httpbin.org/get&quot;, ua)
 resp</code></pre>
 <pre><code>## Response [https://httpbin.org/get]
-##   Date: 2019-04-21 15:38
+##   Date: 2019-04-22 15:44
 ##   Status: 200
 ##   Content-Type: application/json
 ##   Size: 308 B

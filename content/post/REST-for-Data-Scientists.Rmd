@@ -33,7 +33,7 @@ I found the following slightly modified example from [t3n.de](https://t3n.de/new
 
 So URLs are not restricted to 'http' and 'https' as the example above shows. More generally, a URL consists of the following components:
 $$
-\underbrace{\text{http}}_{\text{protocol}}://
+\underbrace{\text{http}}_{\text{scheme / protocol}}://
 \underbrace{\text{www.website.com}}_{\text{host}}:
 \underbrace{\text{42}}_{\text{port}}/
 \underbrace{\text{some/path/to/resource}}_{\text{resource path}}
