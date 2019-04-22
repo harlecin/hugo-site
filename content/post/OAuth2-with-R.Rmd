@@ -182,6 +182,7 @@ You should now be redirected to a browser window where you can sign-in to your A
 ## Further Examples & Documentation
 
 I found the following resources super helpful as well:
+
 - [httr: Tools for Working with URLs and HTTP](https://cran.r-project.org/web/packages/httr/)
 - [REST APIs in Azure](https://docs.microsoft.com/en-us/rest/api/azure/)
 
