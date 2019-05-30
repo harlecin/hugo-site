@@ -33,7 +33,7 @@ Host: management.azure.com
 But before we can start, we need to create a resource grouup in Azure for our Logic App.
 
 We will use `httr` to send the PUT request to create the resource group, but first we need to acquire an access token (Note: make sure you have `httpuv` installed as well):
-```{r}
+```{r, eval = FALSE}
 library(httr)
 
 app_name = "azure_mgmt"
@@ -68,7 +68,7 @@ token <- oauth2.0_token(azure_endpoint, logic_app,
 ```
 
 We can now create our resource group like so:
-```{r}
+```{r, eval = FALSE}
 resource_group = "serverless"                         # Resource group we are going to use
 url = glue::glue("https://management.azure.com/subscriptions/{subscription}/resourcegroups/{resource_group}?api-version=2018-05-01")
 
@@ -130,7 +130,7 @@ We will setup a super simple logic app with an http trigger that returns a "Hell
 ```
 
 Let's build the query to submit the request:
-```{r}
+```{r, eval = FALSE}
 url = glue::glue("https://management.azure.com/subscriptions/{subscription}/resourceGroups/{resource_group}/providers/Microsoft.Logic/workflows/{workflow_name}?api-version=2016-06-01")
 
 body = readLines(con = "../../data/logic_app.json")
