@@ -20,7 +20,10 @@ Logic Apps can be created using a visual interface in the Azure Portal, but also
 ## Getting Started
 To create or update Logic Apps, we will use the following REST call template:
 ```
-PUT subscriptions/<subscriptionId>/resourceGroups/<resourceGroupName>/providers/Microsoft.Logic/workflows/<workflowName>?api-version=2016-06-01  HTTP/1.1
+# Line breaks for legibility only
+PUT subscriptions/<subscriptionId>/resourceGroups/<resourceGroupName>/
+providers/Microsoft.Logic/workflows/<workflowName>
+?api-version=2016-06-01  HTTP/1.1
 Authorization: Bearer <bearer-token>
 Content-Type: application/json
 Host: management.azure.com
@@ -30,23 +33,29 @@ Host: management.azure.com
 }
 ```
 
-But before we can start, we need to create a resource grouup in Azure for our Logic App.
+But before we can start, we need to create a resource group in Azure for our Logic App.
 
 We will use `httr` to send the PUT request to create the resource group, but first we need to acquire an access token (Note: make sure you have `httpuv` installed as well):
 ```{r, eval = FALSE}
 library(httr)
 
 app_name = "azure_mgmt"
+
 # client_id of Azure CLI so we do not need to register an app
 client_id = "04b07795-8ddb-461a-bbee-02f9e1bf7b46"    
+
 # we have no client secret, we do everything interactively
 client_secret = NULL
+
 # Your tenant_id/directory_id -> azure portal/azure active directory/Properties/directory id
 tenant_id = "441ec6d2-e277-43f8-b599-8dc54649d5c8"
+
 # azure subscription -> azure portal/subscriptions
 subscription = "a946be7b-3533-413d-9366-91e10c0b209b" 
+
 # name of the logic app workflow in azure
 workflow_name = "serverless_testworkflow"     
+
 # endpoint we need to request permission to
 resource_uri = "https://management.core.windows.net/"
 

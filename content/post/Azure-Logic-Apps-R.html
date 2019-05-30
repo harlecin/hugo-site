@@ -19,7 +19,10 @@ tags: ["Logic Apps", "serverless"]
 <div id="getting-started" class="section level2">
 <h2>Getting Started</h2>
 <p>To create or update Logic Apps, we will use the following REST call template:</p>
-<pre><code>PUT subscriptions/&lt;subscriptionId&gt;/resourceGroups/&lt;resourceGroupName&gt;/providers/Microsoft.Logic/workflows/&lt;workflowName&gt;?api-version=2016-06-01  HTTP/1.1
+<pre><code># Line breaks for legibility only
+PUT subscriptions/&lt;subscriptionId&gt;/resourceGroups/&lt;resourceGroupName&gt;/
+providers/Microsoft.Logic/workflows/&lt;workflowName&gt;
+?api-version=2016-06-01  HTTP/1.1
 Authorization: Bearer &lt;bearer-token&gt;
 Content-Type: application/json
 Host: management.azure.com
@@ -27,21 +30,27 @@ Host: management.azure.com
 {
   &lt;body&gt;
 }</code></pre>
-<p>But before we can start, we need to create a resource grouup in Azure for our Logic App.</p>
+<p>But before we can start, we need to create a resource group in Azure for our Logic App.</p>
 <p>We will use <code>httr</code> to send the PUT request to create the resource group, but first we need to acquire an access token (Note: make sure you have <code>httpuv</code> installed as well):</p>
 <pre class="r"><code>library(httr)
 
 app_name = &quot;azure_mgmt&quot;
+
 # client_id of Azure CLI so we do not need to register an app
 client_id = &quot;04b07795-8ddb-461a-bbee-02f9e1bf7b46&quot;    
+
 # we have no client secret, we do everything interactively
 client_secret = NULL
+
 # Your tenant_id/directory_id -&gt; azure portal/azure active directory/Properties/directory id
 tenant_id = &quot;441ec6d2-e277-43f8-b599-8dc54649d5c8&quot;
+
 # azure subscription -&gt; azure portal/subscriptions
 subscription = &quot;a946be7b-3533-413d-9366-91e10c0b209b&quot; 
+
 # name of the logic app workflow in azure
 workflow_name = &quot;serverless_testworkflow&quot;     
+
 # endpoint we need to request permission to
 resource_uri = &quot;https://management.core.windows.net/&quot;
 
