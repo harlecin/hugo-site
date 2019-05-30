@@ -1,7 +1,7 @@
 ---
-title: "Creating Azure Logic Apps from R"
+title: "Creating Azure Logic Apps from R using httr"
 author: "Christoph"
-date: 2019-05-19T21:13:14-05:00
+date: 2019-05-30:13:14-05:00
 categories: ["R", "Azure"]
 tags: ["Logic Apps", "serverless"]
 ---
@@ -13,11 +13,9 @@ You can define different types of triggers based on:
 - time and
 - events (e.g. http requests, messages received, ...)
 
-that start workflows.
+to start workflows.
 
-A super simple example is, you receive an email and this event triggers an automatic reply.
-
-Logic Apps can be created using a visual interface in the Azure Portal, but also programmatically using the Azure REST api. In this post I want to show you how we can create Logic Apps in Azure directly from R. 
+Logic Apps can be created using a visual interface in the Azure Portal, but also programmatically using the Azure REST api. In this post I want to show you how we can create Logic Apps in Azure directly from R.
 
 ## Getting Started
 To create or update Logic Apps, we will use the following REST call template:
@@ -32,20 +30,30 @@ Host: management.azure.com
 }
 ```
 
-We will use `httr` to send the PUT request, but first we need to acquire an access token:
+But before we can start, we need to create a resource grouup in Azure for our Logic App.
+
+We will use `httr` to send the PUT request to create the resource group, but first we need to acquire an access token (Note: make sure you have `httpuv` installed as well):
 ```{r}
 library(httr)
 
-app_name = "logic_app"
-# client_id of Azure CLI
-client_id = "04b07795-8ddb-461a-bbee-02f9e1bf7b46"
+app_name = "azure_mgmt"
+# client_id of Azure CLI so we do not need to register an app
+client_id = "04b07795-8ddb-461a-bbee-02f9e1bf7b46"    
+# we have no client secret, we do everything interactively
 client_secret = NULL
+# Your tenant_id/directory_id -> azure portal/azure active directory/Properties/directory id
+tenant_id = "441ec6d2-e277-43f8-b599-8dc54649d5c8"
+# azure subscription -> azure portal/subscriptions
+subscription = "a946be7b-3533-413d-9366-91e10c0b209b" 
+# name of the logic app workflow in azure
+workflow_name = "serverless_testworkflow"     
+# endpoint we need to request permission to
 resource_uri = "https://management.core.windows.net/"
 
 # Endpoints are of the form: 
-# https://login.windows.net/<common | tenant-id>/oauth2/<authorize | token>
-azure_endpoint = oauth_endpoint(authorize = "https://login.windows.net/441ec6d2-e277-43f8-b599-8dc54649d5c8/oauth2/authorize",
-                                access = "https://login.windows.net/441ec6d2-e277-43f8-b599-8dc54649d5c8/oauth2/token")
+# https://login.windows.net/<tenant-id>/oauth2/<authorize | token>
+azure_endpoint = oauth_endpoint(authorize = glue::glue("https://login.windows.net/{tenant_id}/oauth2/authorize"),
+                                access = glue::glue("https://login.windows.net/{tenant_id}/oauth2/token"))
 
 logic_app = oauth_app(
   appname = app_name,
@@ -59,28 +67,89 @@ token <- oauth2.0_token(azure_endpoint, logic_app,
 )
 ```
 
-Now, let's try to stitch together our REST call to create a simple Logic App:
+We can now create our resource group like so:
 ```{r}
-url = "https://management.azure.com/subscriptions/a946be7b-3533-413d-9366-91e10c0b209b/resourceGroups/serverless/providers/Microsoft.Logic/workflows/serverless_testworkflow?api-version=2016-06-01"
+resource_group = "serverless"                         # Resource group we are going to use
+url = glue::glue("https://management.azure.com/subscriptions/{subscription}/resourcegroups/{resource_group}?api-version=2018-05-01")
 
-body = jsonlite::fromJSON(txt = "../../data/logic_app.json")
+body = paste0('
+  {
+  "location": "westeurope"
+}'
+)
 
-PUT(url = url, 
+PUT(url = url,
+    add_headers(.headers = c(
+                "Authorization" = paste0("Bearer ", token$credentials$access_token)
+                ,"Content-Type" = "application/json")
+    ),
     body = body,
-    add_headers(Authorization = paste0("Bearer ", token$credentials$access_token))
+    encode = "json"
     )
 ```
 
+Now, let's try to stitch together our REST call to create a simple Logic App.
+
+We will setup a super simple logic app with an http trigger that returns a "Hello world!":
+
+```
+{
+	"properties": {
+	    "definition": {
+	        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+	        "actions": {
+	            "Response": {
+	                "inputs": {
+	                    "body": {
+	                        "response": "Hello world!"
+	                    },
+	                    "statusCode": 200
+	                },
+	                "kind": "Http",
+	                "runAfter": {},
+	                "type": "Response"
+	            }
+	        },
+	        "contentVersion": "1.0.0.0",
+	        "outputs": {},
+	        "parameters": {},
+	        "triggers": {
+	            "manual": {
+	                "inputs": {
+	                    "schema": {}
+	                },
+	                "kind": "Http",
+	                "type": "Request"
+	            }
+	        }
+	    }
+	},
+	    "location": "westeurope"
+}
+
+```
+
+Let's build the query to submit the request:
+```{r}
+url = glue::glue("https://management.azure.com/subscriptions/{subscription}/resourceGroups/{resource_group}/providers/Microsoft.Logic/workflows/{workflow_name}?api-version=2016-06-01")
+
+body = readLines(con = "../../data/logic_app.json")
 
 
-https://docs.microsoft.com/de-at/rest/api/logic/workflows/createorupdate
+PUT(url = url, 
+    add_headers(.headers = c(
+                "Authorization" = paste0("Bearer ", token$credentials$access_token)
+                ,"Content-Type" = "application/json")
+    ),
+    body = body,
+    encode = "json"
+    )
+```
+And we are done:) If you go to your resource group in the Azure portal, you should see the logic app we defined above.
 
-https://docs.microsoft.com/en-us/rest/api/azure/
 
-PUT https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}?api-version=2016-06-01
-Authorization: 
-Content-Type: application/json
+## Links and more information
+You can find more detailed information in the official Microsoft Azure docs:
 
-
-## Open
-- Common geht nicht bei login.windows.net nur tenant-id?
+- [Logic Apps - Official Docs](https://docs.microsoft.com/de-at/rest/api/logic/workflows/createorupdate)
+- [Azure REST api](https://docs.microsoft.com/en-us/rest/api/azure/)
