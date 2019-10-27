@@ -1,0 +1,96 @@
+---
+title: "Many models vs. one model"
+author: "Christoph"
+date: 2019-10-06T14:41:14-05:00
+categories: ["R", "modeling"]
+tags: ["forecasting", "R"]
+---
+
+In many business applications we have to generate lots and lots of forecasts. Unfortunately, in many cases we do not have lots of historical data available (usually 2-3 years only), but we may have a large cross-section of time series (e.g. sales for different products over time).
+
+In this blog post I want to investigate, in which cases it might be beneficial to train one model on multiple time series instead of multiple models on multiple time series.
+
+Intuitively, many individual models should outperform one large model if time series share little if any similar patterns. Consider a very simple example:
+
+## Independent Processes
+Suppose we have 2 processes, each following a random walk, but starting from a different base:
+```{r}
+library(data.table)
+library(ggplot2)
+
+set.seed(1234)
+
+random_walks = data.table(time = 1:1000,
+                          rw_1 = cumsum(rnorm(1000, mean = 0, sd = 1)),
+                          rw_2 = cumsum(rnorm(1000, mean = 0, sd = 1)) + 100
+                          )
+
+ggplot(random_walks, aes(x = time)) +
+  geom_line(aes(y =rw_1)) +
+  geom_line(aes(y = rw_2)) +
+  labs(title = "2 Random Walks over Time",
+       subtitle = "Same processes, but with different starting points",
+       y = "value")
+
+```
+
+Since we cannot predict if our processes will go up or down as they are independent by construction, at each point in time, the best one-step-ahead forecast we can make is to predict $Y_{t+1} = Y_{t}$. This type of forecast is also called 'persistence forecast'. Obviously, if we were to "fit" a single model for both processes the prediction will invariably be worse than if we were to 'fit' two models, as long as $Y_{1, t} \neq Y_{2, t}$, i.e. if the two processes do not have the same value at a given point in time.
+
+The two time series are evolving completely independently of each other, there is nothing to be learned from watching one time series to predict another.
+
+**Sidenote:**
+If our processes were cointegrated, we could indeed learn something of the behaviour of one random walk by observing the other. I really, like the example from [Jesús Gonzalo, Univerisdad Carlos III de Madrid](http://www.eco.uc3m.es/~jgonzalo/teaching/EconometriaII/cointegration.HTM):
+
+> "The old woman and the boy are unrelated to one another, except that they are both on a random walk in the park. Information about the boy's location tells us nothing about the old woman's location. The old man and the dog are joined by one of those leashes that has the cord rolled up inside the handle on a spring. Individually, the dog and the man are each on a random walk. They cannot wander too far from one another because of the leash.  We say that the random processes describing their paths are cointegrated."
+
+(This is a child-friendly version of the ['A Drunk and Her Dog'](http://www.uta.edu/faculty/crowder/papers/drunk%20and%20dog.pdf) to explain cointegration:)
+
+## Related Processes
+
+In most real life settings, time series are usually related to each other in some 
+way. Let's take grocery products (SKUs) as an example. Most SKUs exhibit seasonal 
+patterns that are quite similar to one another. Ice cream sales tend to rise in 
+the warm summer periods and fall in colder periods. While there are some ice cream 
+flavors that could be vastly more popular than others, it is quite reasonable to 
+assume that the seasonal pattern is similar for all of them.
+
+While in the past, most time-series forecasting procedures looked at individual 
+series, it appears there is an uptick in interest in extracting information across 
+related time series. One very interesting research project I am looking forward to is [DeepForecast: Leveraging forecasts on large scales of related time series](https://research.fb.com/blog/2019/01/announcing-the-winners-of-the-statistics-for-improving-insights-and-decisions-research-awards/) by Rob J Hyndman, the 
+author of the popular `forecast` package in R. His research proposal was one of the winners of the 'Facebook Statistics for Improving Insights and Decisions' research award.
+
+Until Rob's results get published, let's do some simulation work to see how mining 
+related time series together can help with model training. To do that we will generate 100 series where each series contains 730 observations, corresponding to 2 years worth of data. We start with the simplest case:
+
+### Case 1 - Level Shifts
+
+Let's suppose our time series are perfectly equal except for different levels.
+
+So we have:
+
+$$y_i = \beta_{0,i} + \beta_1x + \epsilon$$
+Obviously, we can now fit either one linear regression model per series or one regression model with dummies. 
+
+```{r}
+set.seed(1234)
+
+dt_level = data.table(
+  y = rep(1:730, 100) + rep(1:100, each = 730) + rnorm(n = 730 * 100),
+  x = rep(1:730, 100),
+  series_no = as.factor(rep(1:100, each = 730))
+  )
+
+lm_level_all = lm(y ~ x + series_no, data = dt_level)
+
+summary(lm_level_all)
+```
+```{r}
+summary(lm(y ~ x, data = dt_level[1:730,]))
+```
+
+### Case 2 - Level Shifts and Scaling
+
+
+### Case 3 - Level Shifts, Scaling and Rotation
+
+### Case 4 - Different sigmas
