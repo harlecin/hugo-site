@@ -34,7 +34,7 @@ ggplot(random_walks, aes(x = time)) +
 
 ```
 
-Since we cannot predict if our processes will go up or down as they are independent by construction, at each point in time, the best one-step-ahead forecast we can make is to predict $Y_{t+1} = Y_{t}$. This type of forecast is also called 'persistence forecast'. Obviously, if we were to "fit" a single model for both processes the prediction will invariably be worse than if we were to 'fit' two models, as long as $Y_{1, t} \neq Y_{2, t}$, i.e. if the two processes do not have the same value at a given point in time.
+Since we cannot predict if our processes will go up or down as they are independent by construction, at each point in time the best one-step-ahead forecast we can make is to predict $Y_{t+1} = Y_{t}$. This type of forecast is also called 'persistence forecast'. Obviously, if we were to "fit" a single model for both processes the prediction will invariably be worse than if we were to 'fit' two models, as long as $Y_{1, t} \neq Y_{2, t}$, i.e. if the two processes do not have the same value at a given point in time.
 
 The two time series are evolving completely independently of each other, there is nothing to be learned from watching one time series to predict another.
 
@@ -59,34 +59,61 @@ series, it appears there is an uptick in interest in extracting information acro
 related time series. One very interesting research project I am looking forward to is [DeepForecast: Leveraging forecasts on large scales of related time series](https://research.fb.com/blog/2019/01/announcing-the-winners-of-the-statistics-for-improving-insights-and-decisions-research-awards/) by Rob J Hyndman, the 
 author of the popular `forecast` package in R. His research proposal was one of the winners of the 'Facebook Statistics for Improving Insights and Decisions' research award.
 
-Until Rob's results get published, let's do some simulation work to see how mining 
-related time series together can help with model training. To do that we will generate 100 series where each series contains 730 observations, corresponding to 2 years worth of data. We start with the simplest case:
+Until Rob's results get published, let's do some super simple simulation work to see how mining related time series together can help with model training. To do that we will generate 100 series where each series contains 730 observations, corresponding to about 2 years worth of data. For simplicity, we assume that the true data generating process for each series $i$ is given by:
+
+$$y_i = \beta_{0,i} + \beta_{1,i}x + \epsilon$$
 
 ### Case 1 - Level Shifts
-
 Let's suppose our time series are perfectly equal except for different levels.
 
 So we have:
+$$y_i = \beta_{0,i} + \beta_{1}x + \epsilon$$
 
-$$y_i = \beta_{0,i} + \beta_1x + \epsilon$$
 Obviously, we can now fit either one linear regression model per series or one regression model with dummies. 
 
 ```{r}
-set.seed(1234)
+set.seed(12345)
 
 dt_level = data.table(
-  y = rep(1:730, 100) + rep(1:100, each = 730) + rnorm(n = 730 * 100),
+  y = rep(1:730, 100) + rep(1:100, each = 730) + rnorm(n = 730 * 100, mean = 0, sd = 100),
   x = rep(1:730, 100),
   series_no = as.factor(rep(1:100, each = 730))
   )
 
+dt_level_pred = data.table(
+  y = rep(731:800, 100) + rep(1:100, each = 70) + rnorm(n = 70 * 100, mean = 0, sd = 100),
+  x = rep(731:800, 100),
+  series_no = as.factor(rep(1:100, each = 70))
+  )
+ 
 lm_level_all = lm(y ~ x + series_no, data = dt_level)
+x_all = lm_level_all$coefficients[[2]]
 
-summary(lm_level_all)
+rmse_all = sqrt(mean((predict(lm_level_all, dt_level_pred) - dt_level_pred[['y']])^2))
+
+rmse_all
 ```
+
 ```{r}
-summary(lm(y ~ x, data = dt_level[1:730,]))
+dt_x = NULL
+dt_pred = NULL
+
+for (i in 1:100) {
+  
+  lm_level_single = lm(y ~ x, data = dt_level[series_no == i])
+  
+  dt_x = rbind(dt_x, data.table(run = i, x = lm_level_single$coefficients[[2]]))
+  dt_pred = rbind(dt_pred, data.table(run = i, pred = predict(lm_level_single, dt_level_pred[series_no == i])))
+}
+
+sqrt(mean((dt_pred$pred - dt_level_pred[['y']])^2))
+
+ggplot(dt_x, aes(x = x)) + 
+  geom_histogram() +
+  geom_vline(xintercept = x_all)
 ```
+
+- plot with true and estimated lines, color for each series
 
 ### Case 2 - Level Shifts and Scaling
 
