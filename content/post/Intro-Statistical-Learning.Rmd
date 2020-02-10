@@ -77,7 +77,7 @@ $$
 This is the function we want to find/estimate. We can calculate the target function pointwise:
 
 $$
-f^*(X) =\text{argmin }_{f(x) \in \mathcal{A}^{\mathcal{X}}} \mathbb{E}[L(Y,f(X)) | X = x] \text{ } \forall x \in \mathcal{X}
+f^*(X) =\text{argmin }_{f(x) \in \mathcal{A}^{\mathcal{X}}} \mathbb{E}[L(Y,f(x)) | X = x] \text{ } \forall x \in \mathcal{X}
 $$
 Let's look at the squared loss again. Squared loss risk is given by:
 $$
@@ -115,7 +115,7 @@ total function space and is sometimes also called hypothesis space. Each $mathca
 viewed as a model class. Take for example the class of linear models:
 
 $$
-\mathcal{F} = \{f: f(x) = \theta_0 + \sum_{i = 1}^p \theta_ixi, \forall x \in \mathcal{X}}\}
+\mathcal{F} = \left\{f: f(x) = \theta_0 + \sum_{i = 1}^p \theta_ixi, \forall x \in \mathcal{X}\right\}
 $$
 
 To sum up: empirical risk minimization & a given model class turns "learning" into function optimization.
@@ -132,7 +132,7 @@ ggplot(mtcars, aes(x = hp, y = mpg)) +
   geom_point() +
   geom_smooth() +
   labs(title = "Relationship between horsepower and mpg",
-       subtitle = "More horsepower seems to imply less mpg")
+       subtitle = "More hp seems to imply less mpg")
 ```
 
 
@@ -159,6 +159,15 @@ Let's compare our output to R's `lm` function:
 lm(mpg ~ hp, data = mtcars)
 ```
 We get almost the same parameters, which was to be expected, because linear regression or ordinary least squares (OLS) relies on squared loss as the name implies:)
+
+A quick sidenote: In the maximum likelihood setting, we are minimizing $-log(P(y|X))$, i.e. the density conditional on $X$. If the density is Gaussian, like in the linear regression setting, we get the squared loss, because the likelihood is given by:
+$$
+Lik(X\beta, \sigma^2|x) = \prod_{i=1}^{n}\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(y_i - x_i\beta_i)^2}{2\sigma^2}}
+$$
+and applying the $log$ gives us in essence:
+$$
+(y_i - x_i\beta_i)^2
+$$
 
 Now, let's run the same experiment, with absolute error as a loss function:
 ```{r}
@@ -211,13 +220,13 @@ ggplot(df_plot, aes(x  = hp, y = mpg)) +
 
 While the examples above are very simple, the same logics applies to arbitrarily complex problems. In practice, the main problem is finding a good optimizer to solve the optimization problem as we already saw with the last example.
 
-Sidenote: Terminology in this field can be quite confusing. I was spending quite some time trying to figure out, if I should be talking about objective, loss or cost functions. You can take a look at this [stats.stackexchange](https://stats.stackexchange.com/questions/179026/objective-function-cost-function-loss-function-are-they-the-same-thing) discussion  to see different ways people use these terms in practice. Personally, I like the definition that was accepted as an answer, which goes like this:
+One last sidenote: Terminology in this field can be quite confusing. I was spending quite some time trying to figure out, if I should be talking about objective, loss or cost functions. You can take a look at this [stats.stackexchange](https://stats.stackexchange.com/questions/179026/objective-function-cost-function-loss-function-are-they-the-same-thing) discussion  to see different ways people use these terms in practice. Personally, I like the definition that was accepted as an answer, which goes like this:
 
 - *Loss function*: defined on a data point and measures the penalty (e.g. squared loss)
 - *Cost function*: usually more general, might be the sum of loss functions over a training set plus some penalty (e.g. MSE)
 - *Objective function*: the most general term for any function that you want to optimize
 
-User lejlot summarises with:
+User *lejlot* summarises with:
 > A loss function is a part of a cost function which is a type of an objective function.
 
 But the other definitions are quite nice as well:)
@@ -226,7 +235,5 @@ I hope you found my post helpful!
 
 # TODO
 - Check notation with dataset
-- Add likelihood based loss -> normal: https://medium.com/quick-code/maximum-likelihood-estimation-for-regression-65f9c99f815d
-https://stats.stackexchange.com/questions/252267/the-loss-function-of-the-gaussian-maximum-likelihood-estimator
 - Check entire notation
 - Add relationship: loss <> risk: conditional variance, MSE
