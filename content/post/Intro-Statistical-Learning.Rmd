@@ -233,6 +233,10 @@ But the other definitions are quite nice as well:)
 
 I hope you found my post helpful!
 
+## Reference
+
+- [Tree Boosting with XGBoost - Why Does XGBoost Win "Every" Machine Learning Competition?](https://ntnuopen.ntnu.no/ntnu-xmlui/bitstream/handle/11250/2433761/16128_FULLTEXT.pdf) by Didrik Nielsen
+
 # TODO
 - Check notation with dataset
 - Check entire notation
