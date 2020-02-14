@@ -6,9 +6,9 @@ categories: ["R", "Theory"]
 tags: ["R"]
 ---
 
-In this blog post I want to give a brief overive of the core ideas behind the 
-statistical learning framework and show you how to implement a linear regression 
-model based on this framework.
+In this blog post I want to give a brief overview of the core ideas behind the 
+statistical learning framework and show you how to implement a few simple models 
+in this framework.
 
 This post is based on the excellent work "Tree Boosting With XGBoost - Why Does 
 XGBoost Win 'Every' machine Learning Competition" by Didrik Nielson.
@@ -23,12 +23,12 @@ covariates, also called features ($X$) that might help explain changes in $y$.
 Mathematically speaking we have:
 
 $$
-\overbrace{\mathcal{D}}^{data set} = \{(y_1, X_1), (y_2, X_2), ..., (y_n, Xn)\} \\
+\overbrace{\mathcal{D}}^{data set} = \{(y_1, X_{1,1...p}), (y_2, X_{2, 1...p}), ..., (y_n, X_{n,1...p})\} \\
 \text{with} \\
 y \in \mathcal{Y} \text{ and } X = (X_1, ... X_p) \in \mathcal{X} 
 $$
 We want to find a function $f$ that helps us predict $Y$ given $X$ with high 'accuracy'. 
-the function that defines how we measure accuracy is called **loss function** and our 
+The function that defines how we measure accuracy is called **loss function** and our 
 goal is to minimize the **expected loss**, also know as the **risk**. The function 
 minimizing risk is called **target function** and is the function we want to find. 
 
@@ -83,7 +83,7 @@ Let's look at the squared loss again. Squared loss risk is given by:
 $$
 R(f) = \mathbb{E}[(Y - f(x))^2 | X = x]
 $$
-We can show that the target function is the conditional expectation:
+We can show that the target function is the conditional expectation (see e.g. [here](http://scholar.harvard.edu/files/danielyewmaolim/files/api-208section1.pdf) for a proof):
 $$
 f^*(x) = \mathbb{E}[Y|X = x]
 $$
@@ -95,19 +95,19 @@ $$
 Since we don't know the true model risk, we use the empirical risk as a proxy, which is 
 simply an estimate of the true risk:
 $$
-\hat{R(f)} = \frac{1}{n}\sum_{i=1}^nL(y_i, f(x_i)) \\
+R(\hat{f}) = \frac{1}{n}\sum_{i=1}^nL(y_i, f(x_i)) \\
 \text{with} \\
-lim_{n \to \infty}\hat{R(f)} = R(f) \text{ by the law of large numbers}
+lim_{n \to \infty}R(\hat{f}) = R(f) \text{ by the law of large numbers}
 $$
 
 So the empirical risk minimizer is given by:
 $$
-\hat{f} = argmin_{f \in \mathcal{F} \subseteq \mathcal{A}^{\mathcal{X}}}\hat{R(f)}
+\hat{f} = argmin_{f \in \mathcal{F} \subseteq \mathcal{A}^{\mathcal{X}}}R(\hat{f})
 $$
 > Note: We consider only a subspace $\mathcal{F} \subseteq \mathcal{A}^{\mathcal{X}}$
 
 Since we only have finitely many datapoints, but an infinite function search space, there are 
-infinitely many functions taht fit perfectly in-sample. We thus need to impose additional constraints 
+infinitely many functions that fit perfectly in-sample. We thus need to impose additional constraints 
 on our functions, which leads us to consider different model classes:
 
 A model class is nothing more than a restriction $\mathcal{F} \subseteq \mathcal{A}^{\mathcal{X}}$ of the 
@@ -121,7 +121,7 @@ $$
 To sum up: empirical risk minimization & a given model class turns "learning" into function optimization.
 
 Now, let's implement linear regression in the statistical learning framework. We want to predict miles per gallon (mpg) using features from the mtcars dataset:
-```{r}
+```{r, include = FALSE}
 library(ggplot2)
 mtcars
 ```
@@ -135,6 +135,7 @@ ggplot(mtcars, aes(x = hp, y = mpg)) +
        subtitle = "More hp seems to imply less mpg")
 ```
 
+Let's setup our problem using the statistical learning framework:
 
 ```{r}
 empirical_risk = function(loss_fun, y, yhat) {
