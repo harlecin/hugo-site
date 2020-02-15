@@ -194,6 +194,7 @@ optim_wrapper = function(params) {
   
 }
 
+set.seed(1234)
 par_custom = optim(par = c(0, 0), fn = optim_wrapper, method = "SANN", control = list(maxit = 800000))
 par_custom
 ```
