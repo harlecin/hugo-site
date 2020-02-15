@@ -1,0 +1,258 @@
+---
+title: "An Introduction to Statistical Learning"
+author: "Christoph"
+date: 2020-02-09T14:41:14-05:00
+categories: ["R", "Theory"]
+tags: ["R"]
+---
+
+
+
+<p>In this blog post I want to give a brief overview of the core ideas behind the
+statistical learning framework and show you how to implement a few simple models
+in this framework.</p>
+<p>This post is based on the excellent work “Tree Boosting With XGBoost - Why Does
+XGBoost Win ‘Every’ machine Learning Competition” by Didrik Nielson.</p>
+<p>First, let’s start with some general background info: Statistical learning refers
+to “learning” patterns from data that generalize well to new incoming data. We can
+distinguish between two main areas, supervised and unsupervised learning, but in
+this post I will only focus on the former.</p>
+<p>In a supervised learning problem, we have a variable we want to predict (<span class="math inline">\(y\)</span>) and some
+covariates, also called features (<span class="math inline">\(X\)</span>) that might help explain changes in <span class="math inline">\(y\)</span>.
+Mathematically speaking we have:</p>
+<p><span class="math display">\[
+\overbrace{\mathcal{D}}^{data set} = \{(y_1, X_{1,1...p}), (y_2, X_{2, 1...p}), ..., (y_n, X_{n,1...p})\} \\
+\text{with} \\
+y \in \mathcal{Y} \text{ and } X = (X_1, ... X_p) \in \mathcal{X} 
+\]</span>
+We want to find a function <span class="math inline">\(f\)</span> that helps us predict <span class="math inline">\(Y\)</span> given <span class="math inline">\(X\)</span> with high ‘accuracy’.
+The function that defines how we measure accuracy is called <strong>loss function</strong> and our
+goal is to minimize the <strong>expected loss</strong>, also know as the <strong>risk</strong>. The function
+minimizing risk is called <strong>target function</strong> and is the function we want to find.</p>
+<p>So we have:
+<span class="math display">\[
+L: \mathcal{Y} \times \mathcal{A} \to \mathbb{R}_+ \text{... loss function}\\
+\text{with}\\
+a \in \mathcal{A} \text{... action from set of allowable actions, i.e. a prediction } \hat{y}
+\]</span></p>
+<p>Some examples include:</p>
+<ul>
+<li>Squared loss: <span class="math inline">\(L(y, a) = \frac{1}{2}(y - a)^2\)</span></li>
+<li>Absolute loss: <span class="math inline">\(L(y, a) = |(y - a)|\)</span></li>
+</ul>
+<p>The risk is now simply the expected value of the loss function:
+<span class="math display">\[
+R(a) = \mathbb{E}[L(Y,a)]
+\]</span>
+The optimal action <span class="math inline">\(a^*\)</span> is given by:
+<span class="math display">\[
+a^* = \underset{a \in \mathcal{A}}{\text{argmin }} R(a)
+\]</span></p>
+<blockquote>
+<p>Note: The argmin operator returns the point where the minimum value is reached, while
+the min operator returns the value of the function at that point!</p>
+</blockquote>
+<p>To generate predictions <span class="math inline">\(a\)</span>, we use a function, i.e. a model, that maps <span class="math inline">\(X\)</span> to a:
+<span class="math display">\[
+f: \mathcal{X} \to \mathcal{A} \\
+a = f(x)
+\]</span>
+Where <span class="math inline">\(\mathcal{A}^{\mathcal{X}}\)</span> is the set of all functions mapping <span class="math inline">\(\mathcal{X}\)</span>
+to <span class="math inline">\(\mathcal{A}\)</span>.</p>
+<p>The risk of a model is therefore simply:
+<span class="math display">\[
+R(f) = \mathbb{E}[L(Y,f(X))] = \mathbb{E}[\mathbb{E}[L(Y, f(X)) | X]]
+\]</span>
+by the law of total expectation, with the optimal model given by:</p>
+<p><span class="math display">\[
+f^* = \underset{f \in \mathcal{A}^{\mathcal{X}}}{\text{argmin }} R(f) \text{ ... target function}
+\]</span></p>
+<p>This is the function we want to find/estimate. We can calculate the target function pointwise:</p>
+<p><span class="math display">\[
+f^*(X) =\text{argmin }_{f(x) \in \mathcal{A}^{\mathcal{X}}} \mathbb{E}[L(Y,f(x)) | X = x] \text{ } \forall x \in \mathcal{X}
+\]</span>
+Let’s look at the squared loss again. Squared loss risk is given by:
+<span class="math display">\[
+R(f) = \mathbb{E}[(Y - f(x))^2 | X = x]
+\]</span>
+We can show that the target function is the conditional expectation (see e.g. <a href="http://scholar.harvard.edu/files/danielyewmaolim/files/api-208section1.pdf">here</a> for a proof):
+<span class="math display">\[
+f^*(x) = \mathbb{E}[Y|X = x]
+\]</span>
+and the risk of the target function is given by the conditional variance:
+<span class="math display">\[
+R(f^*(x)) = Var[Y | X = x]
+\]</span></p>
+<p>Since we don’t know the true model risk, we use the empirical risk as a proxy, which is
+simply an estimate of the true risk:
+<span class="math display">\[
+R(\hat{f}) = \frac{1}{n}\sum_{i=1}^nL(y_i, f(x_i)) \\
+\text{with} \\
+lim_{n \to \infty}R(\hat{f}) = R(f) \text{ by the law of large numbers}
+\]</span></p>
+<p>So the empirical risk minimizer is given by:
+<span class="math display">\[
+\hat{f} = argmin_{f \in \mathcal{F} \subseteq \mathcal{A}^{\mathcal{X}}}R(\hat{f})
+\]</span>
+&gt; Note: We consider only a subspace <span class="math inline">\(\mathcal{F} \subseteq \mathcal{A}^{\mathcal{X}}\)</span></p>
+<p>Since we only have finitely many datapoints, but an infinite function search space, there are
+infinitely many functions that fit perfectly in-sample. We thus need to impose additional constraints
+on our functions, which leads us to consider different model classes:</p>
+<p>A model class is nothing more than a restriction <span class="math inline">\(\mathcal{F} \subseteq \mathcal{A}^{\mathcal{X}}\)</span> of the
+total function space and is sometimes also called hypothesis space. Each <span class="math inline">\(mathcal{F}\)</span> can be
+viewed as a model class. Take for example the class of linear models:</p>
+<p><span class="math display">\[
+\mathcal{F} = \left\{f: f(x) = \theta_0 + \sum_{i = 1}^p \theta_ixi, \forall x \in \mathcal{X}\right\}
+\]</span></p>
+<p>To sum up: empirical risk minimization &amp; a given model class turns “learning” into function optimization.</p>
+<p>Now, let’s implement linear regression in the statistical learning framework. We want to predict miles per gallon (mpg) using features from the mtcars dataset:</p>
+<p>Let’s look at the relation between horsepower (hp) and miles per gallon (mpg):</p>
+<pre class="r"><code>ggplot(mtcars, aes(x = hp, y = mpg)) +
+  geom_point() +
+  geom_smooth() +
+  labs(title = &quot;Relationship between horsepower and mpg&quot;,
+       subtitle = &quot;More hp seems to imply less mpg&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="/post/Intro-Statistical-Learning_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>Let’s setup our problem using the statistical learning framework:</p>
+<pre class="r"><code>empirical_risk = function(loss_fun, y, yhat) {
+  mean(loss_fun(y, yhat))
+}
+
+squared_loss = function(y, yhat) (y - yhat)^2
+
+optim_wrapper = function(params) {
+  
+  empirical_risk(squared_loss, y = mtcars$mpg, yhat = params[1] + params[2]*mtcars$hp)
+  
+}
+
+par_loss_sqrt = optim(par = c(0,0), fn = optim_wrapper)
+par_loss_sqrt</code></pre>
+<pre><code>## $par
+## [1] 30.09641090 -0.06821044
+## 
+## $value
+## [1] 13.98982
+## 
+## $counts
+## function gradient 
+##       93       NA 
+## 
+## $convergence
+## [1] 0
+## 
+## $message
+## NULL</code></pre>
+<p>Let’s compare our output to R’s <code>lm</code> function:</p>
+<pre class="r"><code>lm(mpg ~ hp, data = mtcars)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = mpg ~ hp, data = mtcars)
+## 
+## Coefficients:
+## (Intercept)           hp  
+##    30.09886     -0.06823</code></pre>
+<p>We get almost the same parameters, which was to be expected, because linear regression or ordinary least squares (OLS) relies on squared loss as the name implies:)</p>
+<p>A quick sidenote: In the maximum likelihood setting, we are minimizing <span class="math inline">\(-log(P(y|X))\)</span>, i.e. the density conditional on <span class="math inline">\(X\)</span>. If the density is Gaussian, like in the linear regression setting, we get the squared loss, because the likelihood is given by:
+<span class="math display">\[
+Lik(X\beta, \sigma^2|x) = \prod_{i=1}^{n}\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(y_i - x_i\beta_i)^2}{2\sigma^2}}
+\]</span>
+and applying the <span class="math inline">\(log\)</span> gives us in essence:
+<span class="math display">\[
+(y_i - x_i\beta_i)^2
+\]</span></p>
+<p>Now, let’s run the same experiment, with absolute error as a loss function:</p>
+<pre class="r"><code>absolute_loss = function(y, yhat) abs(y - yhat)
+
+optim_wrapper = function(params) {
+  
+  empirical_risk(absolute_loss, y = mtcars$mpg, yhat = params[1] + params[2]*mtcars$hp)
+  
+}
+
+par_loss_abs = optim(par = c(0,0), fn = optim_wrapper)
+par_loss_abs</code></pre>
+<pre><code>## $par
+## [1] 28.13045297 -0.06016883
+## 
+## $value
+## [1] 2.72765
+## 
+## $counts
+## function gradient 
+##      265       NA 
+## 
+## $convergence
+## [1] 0
+## 
+## $message
+## NULL</code></pre>
+<p>And as theory predicts, parameters change, because our risk minimizer is now the conditional median.</p>
+<p>We can also train a non-linear model:</p>
+<pre class="r"><code>optim_wrapper = function(params) {
+  
+  empirical_risk(squared_loss, y = mtcars$mpg, yhat = params[1]*exp(params[2]*mtcars$hp))
+  
+}
+
+set.seed(1234)
+par_custom = optim(par = c(0, 0), fn = optim_wrapper, method = &quot;SANN&quot;, control = list(maxit = 800000))
+par_custom</code></pre>
+<pre><code>## $par
+## [1] 29.715633368 -0.002983908
+## 
+## $value
+## [1] 13.3925
+## 
+## $counts
+## function gradient 
+##   800000       NA 
+## 
+## $convergence
+## [1] 0
+## 
+## $message
+## NULL</code></pre>
+<p>Even though this is quite a simple model, just using the default optimization settings as I did before does not cut it anymore. The default algorithms are extremely sensitive to the starting values you pick, but they do work if you take a look at the graph and provide ‘good’ initial guesses. Moreover, since fitting an exponential decay function relys heavily on getting the boundaries correct, a squared loss might be more appropriate than absolute loss as extreme errors are penalized more strongly.</p>
+<p>Let’s take a look at the model output:</p>
+<pre class="r"><code>df_plot = data.frame(mpg = mtcars$mpg, 
+                     hp = mtcars$hp,
+                     yhat_sqrt = par_loss_sqrt$par[1] + par_loss_sqrt$par[2] * mtcars$hp,
+                     yhat_abs = par_loss_abs$par[1] + par_loss_abs$par[2] * mtcars$hp,
+                     yhat_cust = par_custom$par[1]*exp(par_custom$par[2] * mtcars$hp)
+                    )
+
+ggplot(df_plot, aes(x  = hp, y = mpg)) +
+  geom_point() +
+  geom_line(aes(y = yhat_sqrt)) + 
+  geom_line(aes(y = yhat_abs)) +
+  geom_line(aes(y = yhat_cust), color = &quot;red&quot;) +
+  labs(title = &quot;Results using different optimization algorithms&quot;,
+       subtitle = &quot;Red: exponential decay model with squared loss, black: linear models&quot;)</code></pre>
+<p><img src="/post/Intro-Statistical-Learning_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>While the examples above are very simple, the same logics applies to arbitrarily complex problems. In practice, the main problem is finding a good optimizer to solve the optimization problem as we already saw with the last example.</p>
+<p>One last sidenote: Terminology in this field can be quite confusing. I was spending quite some time trying to figure out, if I should be talking about objective, loss or cost functions. You can take a look at this <a href="https://stats.stackexchange.com/questions/179026/objective-function-cost-function-loss-function-are-they-the-same-thing">stats.stackexchange</a> discussion to see different ways people use these terms in practice. Personally, I like the definition that was accepted as an answer, which goes like this:</p>
+<ul>
+<li><em>Loss function</em>: defined on a data point and measures the penalty (e.g. squared loss)</li>
+<li><em>Cost function</em>: usually more general, might be the sum of loss functions over a training set plus some penalty (e.g. MSE)</li>
+<li><em>Objective function</em>: the most general term for any function that you want to optimize</li>
+</ul>
+<p>User <em>lejlot</em> summarises with:
+&gt; A loss function is a part of a cost function which is a type of an objective function.</p>
+<p>But the other definitions are quite nice as well:)</p>
+<p>I hope you found my post helpful!</p>
+<div id="reference" class="section level2">
+<h2>Reference</h2>
+<ul>
+<li><a href="https://ntnuopen.ntnu.no/ntnu-xmlui/bitstream/handle/11250/2433761/16128_FULLTEXT.pdf">Tree Boosting with XGBoost - Why Does XGBoost Win “Every” Machine Learning Competition?</a> by Didrik Nielsen</li>
+</ul>
+</div>
+<div id="todo" class="section level1">
+<h1>TODO</h1>
+<ul>
+<li>Check notation with dataset</li>
+<li>Check entire notation</li>
+<li>Add relationship: loss &lt;&gt; risk: conditional variance, MSE</li>
+</ul>
+</div>
