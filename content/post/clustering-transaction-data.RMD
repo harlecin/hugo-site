@@ -13,5 +13,6 @@ Outline:
 - ways to cluster transaction data using txmeans dataset
   - kmeans with jaccard, euclidean, txmeans, deep learning
   - embeddings: https://towardsdatascience.com/deep-learning-4-embedding-layers-f9a02d55ac12
+      https://towardsdatascience.com/deep-learning-structured-data-8d6a278f3088
   
   
