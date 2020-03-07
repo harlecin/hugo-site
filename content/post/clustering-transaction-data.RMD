@@ -1,0 +1,16 @@
+---
+title: "Clustering Transaction Data"
+author: "Christoph"
+date: 2020-03-0T14:41:14-05:00
+categories: ["clustering"]
+tags: ["clustering", "neural nets"]
+---
+
+Outline:
+- Clustering = finding structure in data in an unsupervised fashion
+- Transaction Data has various specific properties: high cardinality of categorical features, lots of data
+- curse of dimensionality with euclidean distance (unit ball) -> jaccard distance
+- ways to cluster transaction data using txmeans dataset
+  - kmeans with jaccard, euclidean, txmeans, deep learning
+  
+  
