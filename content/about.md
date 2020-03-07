@@ -1,6 +1,6 @@
 +++
 title = "About"
-date = "2018-02-19"
+date = "2020-02-19"
 +++
 
 Hi, I am Christoph, Group Lead Analytics for BILLA, with about 1,100 stores one of 
@@ -19,3 +19,4 @@ You can find me on
 
 
 Hopefully, you enjoy this site. If you find any errors, please open a [Github issue](https://github.com/harlecin/hugo-site).
+
