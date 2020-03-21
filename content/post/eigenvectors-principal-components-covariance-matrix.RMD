@@ -1,0 +1,24 @@
+---
+title: "PCA, Eigenvectors and the Covariance Matrix"
+author: "Christoph"
+date: 2020-03-20T14:41:14-05:00
+categories: ["theory"]
+tags: ["math"]
+---
+
+Almost every data science course will at some point (usually) sooner than later cover PCA, i.e. Principal Component Analysis. PCA is an important tool used in exploratory data analysis for dimensionality reduction. In this post I want 
+to show you how PCA works its mathematical magic (hopefully in an intuitive way).
+
+Let's start with a short description of PCA taken straight from [Wikipedia](https://en.wikipedia.org/wiki/Principal_component_analysis):
+
+> PCA is "a statistical procedure that uses an an orthogonal transformation to convert a set of observations of possibly correlated variables into a set of values of linearly uncorrelated variables called principal components. This transformation is defined in such a way that the first principal component [...] accounts for as much of the variability in the data as possible, and each succedding component in turn has the highest variance possible under the constraint that it is orthogonal to the preceding components.
+
+So, mathematically speaking, PCA is a change in basis. Since variance is affected by units of measurement, it is necessary to standardize (z-transform) the original variables before applying PCA, because otherwise 'large' variables will naturally account for more variance.
+
+PCA goes by many names depending on the field, but in mathematics, it is usally called eigenvalue decomposition or singular value decomposition, because those are the mathematical tools used to calculate the principal components.
+
+
+
+
+## Notes from Wiki
+The results of a PCA are usually discussed in terms of component scores, sometimes called factor scores (the transformed variable values corresponding to a particular data point), and loadings (the weight by which each standardized original variable should be multiplied to get the component score).[5] If component scores are standardized to unit variance, loadings must contain the data variance in them (and that is the magnitude of eigenvalues). If component scores are not standardized (therefore they contain the data variance) then loadings must be unit-scaled, ("normalized") and these weights are called eigenvectors; they are the cosines of orthogonal rotation of variables into principal components or back. 
