@@ -17,6 +17,7 @@ So, mathematically speaking, PCA is a change in basis. Since variance is affecte
 
 PCA goes by many names depending on the field, but in mathematics, it is usally called eigenvalue decomposition or singular value decomposition, because those are the mathematical tools used to calculate the principal components.
 
+So how does PCA actually work? 
 
 
 
