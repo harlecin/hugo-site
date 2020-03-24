@@ -22,15 +22,12 @@ The company does not want to purchase more than 15 trucks total, at least 3 of t
 Let's get started with OR-Tools:)
 
 
-```python
+```
 from __future__ import print_function
 from ortools.linear_solver import pywraplp
 ```
 
-<<<<<<< HEAD
 ```
-=======
->>>>>>> d741c5ad699e45b585860aac35a70a2d37e8731c
 ---------------------------------------------------------------------------
 ImportError                               Traceback (most recent call last)
 <ipython-input-2-7b3da395caf7> in <module>
@@ -47,15 +44,12 @@ ImportError                               Traceback (most recent call last)
      15     import _pywraplp
 
 ImportError: DLL load failed: The specified module could not be found.
-<<<<<<< HEAD
 ```
-=======
->>>>>>> d741c5ad699e45b585860aac35a70a2d37e8731c
 
 Ok, I have to admit getting an error this fast was kind of unexpected:) Thankfully, installing Microsoft Visual C++ Redistributable für Visual Studio 2019 from [here](https://aka.ms/vs/16/release/VC_redist.x64.exe) solved the issue for me. So, let's move on to the actual exercise:
 
 
-```python
+```
 solver = pywraplp.Solver('TruckProblem', pywraplp.Solver.CBC_MIXED_INTEGER_PROGRAMMING)
     
 S = solver.IntVar(0.0, 15, 'S')
@@ -64,7 +58,7 @@ E = solver.IntVar(0.0, 15, 'E')
 ```
 
 
-```python
+```
 print('Number of variables:', solver.NumVariables())
 ```
 
@@ -72,11 +66,12 @@ print('Number of variables:', solver.NumVariables())
     
 
 
-```python
+```
 # Budget constraint
 solver.Add(67000*S + 55000*R + 45000*E <= 600000)
 
 # Capacity contraint
+
 solver.Add(5000*15*S + 2500*20*R + 1000*25*E >= 550000)
 
 # Truck constraints
@@ -93,14 +88,14 @@ solver.Add(S <= 7)
 
 
 
-```python
+```
 solver.Minimize(550*S + 425*R + 350*E)
 
 status = solver.Solve()
 ```
 
 
-```python
+```
 if status == pywraplp.Solver.OPTIMAL:
         print('Solution:')
         print('Minimum Monthly OPEX =', solver.Objective().Value())
