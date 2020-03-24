@@ -27,7 +27,10 @@ from __future__ import print_function
 from ortools.linear_solver import pywraplp
 ```
 
+<<<<<<< HEAD
 ```
+=======
+>>>>>>> d741c5ad699e45b585860aac35a70a2d37e8731c
 ---------------------------------------------------------------------------
 ImportError                               Traceback (most recent call last)
 <ipython-input-2-7b3da395caf7> in <module>
@@ -44,7 +47,10 @@ ImportError                               Traceback (most recent call last)
      15     import _pywraplp
 
 ImportError: DLL load failed: The specified module could not be found.
+<<<<<<< HEAD
 ```
+=======
+>>>>>>> d741c5ad699e45b585860aac35a70a2d37e8731c
 
 Ok, I have to admit getting an error this fast was kind of unexpected:) Thankfully, installing Microsoft Visual C++ Redistributable für Visual Studio 2019 from [here](https://aka.ms/vs/16/release/VC_redist.x64.exe) solved the issue for me. So, let's move on to the actual exercise:
 
