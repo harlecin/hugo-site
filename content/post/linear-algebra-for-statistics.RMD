@@ -8,9 +8,65 @@ tags: ["math", "statistics"]
 
 Since quite some time has passed since I took my linear algebra courses, I thought I could comb through my old course notes and write a small post about linear algebra stuff that is quite useful to remember for statistics.
 
+```{r, include=FALSE}
+library(ggplot2)
+```
+
 ## Some useful Properties of Matrices
 
+### Some Calculation Rules
+Let $A$, $B$, $C$ be $(m \times n)$ matrices and let $\alpha, \beta \in \mathbb{R}$. Then:
+
+1. $(A + B)^t = A^t + B^t$
+2. $(AB)^t = B^t A^t$
+3. $A(BC) = (AB)C$
+4. $A(B + C) = AB + AC$
+5. $(A + B)C = AC + BC$
+6. $AB \neq BA \text{ in general}$
+7. If $A, B$ invertible, then: 
+  1. $(A^{-1})^{-1} = 1$
+  2. $(A^t)^{-1} = (A^{-1})^t$
+  3. $(AB)^{-1} = B^{-1}A^{-1}$
+
+### Some Useful Properties
+
+- Symmetric: A matrix $A$ is called symmetric $\iff$ $A = A^t$
+- Inverse: Matrices $A, B$ are inverse to each other $iff$ $AB = BA = I$.
+  $A, B$ are called regular or invertible: $B = A^{-1}$. $A$ is called singular if it is not invertible
+- Let $A$ be a square matrix. The following are equivalent:
+  1. $A$ is invertible
+  2. $Ax = 0 \iff x = 0$
+  3. The rows/columns of $A$ are linearly independent
+
+## Transformation Matrix
+
 ## Change of Basis
+When we work with vectors, we generally use the [Cartesian Coordinates](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Representing_a_vector_in_the_standard_basis), i.e. we represent vectors wrt. the standard basis $E$. Suppose we have a vector $v = (1, 2)$. Then $x = 1$ and $y = 2$ are the coordinates of $v$ wrt. the standard basis:
+
+$$
+E = \begin{bmatrix}
+            1 &0 \\
+            0 &1
+      \end{bmatrix} \\
+v = x \begin{bmatrix}
+            1 \\
+            0
+      \end{bmatrix} + 
+    y \begin{bmatrix}
+            0 \\
+            1
+      \end{bmatrix} = v^t E = Ev
+$$
+
+```{r}
+plot(x = 1, y = 2, xlab = "x", ylab = "y")
+```
+- http://www.boris-belousov.net/2016/05/31/change-of-basis/
+- relation between change of basis and projection onto a basis
+https://math.stackexchange.com/questions/2963797/relation-between-change-of-basis-and-projection-onto-a-basis
+
+Special case: change of basis in same vector space! endomorphism (covariance?)
+
 
 ## Matrices as Linear Transformations
 ### Scaling
@@ -19,5 +75,12 @@ Since quite some time has passed since I took my linear algebra courses, I thoug
 ### Reflection
 ### Orthogonal Projection
 
-## Positive Semi-Definite Matrices
+## Some Important Matrices
 ### Covariance Matrix
+
+
+### Jacobian Matrix -> not really linalg related?
+- Matrix Calculus https://en.wikipedia.org/wiki/Matrix_calculus#Derivatives_with_vectors
+
+## References
+- http://ibgwww.colorado.edu/~carey/p7291dir/handouts/matrix.algebra.pdf
