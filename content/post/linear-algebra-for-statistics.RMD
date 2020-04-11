@@ -1,0 +1,23 @@
+---
+title: "Linear Algebra for Statistics"
+author: "Christoph"
+date: 2020-04-11T14:41:14-05:00
+categories: ["theory"]
+tags: ["math", "statistics"]
+---
+
+Since quite some time has passed since I took my linear algebra courses, I thought I could comb through my old course notes and write a small post about linear algebra stuff that is quite useful to remember for statistics.
+
+## Some useful Properties of Matrices
+
+## Change of Basis
+
+## Matrices as Linear Transformations
+### Scaling
+### Rotation
+### Shearing
+### Reflection
+### Orthogonal Projection
+
+## Positive Semi-Definite Matrices
+### Covariance Matrix
