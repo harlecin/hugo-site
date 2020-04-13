@@ -4,3 +4,6 @@
 .Ruserdata
 public
 *.vscode/
+
+.fake
+.ionide
