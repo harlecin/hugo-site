@@ -142,29 +142,3 @@ And last but not least, especially interesting for everyone involved in data ana
 I plan to write more about PCA in another post. 
 
 Hope you found this a little bit helpful.
-
-
-- http://www.boris-belousov.net/2016/05/31/change-of-basis/
-- relation between change of basis and projection onto a basis
-https://math.stackexchange.com/questions/2963797/relation-between-change-of-basis-and-projection-onto-a-basis
-
-Special case: change of basis in same vector space! endomorphism (covariance?)
-
-
-## Matrices as Linear Transformations
-### Scaling
-### Rotation
-### Shearing
-### Reflection
-### Orthogonal Projection
-https://math.stackexchange.com/questions/2963797/relation-between-change-of-basis-and-projection-onto-a-basis
-
-## Some Important Matrices
-### Covariance Matrix
-
-
-### Jacobian Matrix -> not really linalg related?
-- Matrix Calculus https://en.wikipedia.org/wiki/Matrix_calculus#Derivatives_with_vectors
-
-## References
-- http://ibgwww.colorado.edu/~carey/p7291dir/handouts/matrix.algebra.pdf
