@@ -109,17 +109,40 @@ $$
 <E, A> = A \\
 <B, E> = B^{-1}
 $$
-While I did not like it at first, it is quite handy, if you want to quickly write down changes in basis and/or transformations from one vector space to another. Take the following example:
+While I did not like it at first, it is quite handy, if you want to quickly write down changes in basis and/or transformations from one vector space to another. All you have to do is make sure that the same letters are next to each other. Let's look at an example.
 
+Suppose we have a vector v with coordinates wrt. basis $A$ and we want to transform it to coordinates wrt. basis $B$:
+
+$$
+v_B = \overbrace{\underbrace{<B, E>}_{B^{-1}}\underbrace{<E, A>}_{A}}^{C}\underbrace{<A, v>}_{v_A}
+$$
+$C$ is also called the change of basis matrix.
+The communtative diagram looks as follows:
+![communtative-diagram-basis-change](/img/commutative-diagram-change-basis.png)
+
+Let's add a linear transformation to the mix:
 Suppose we have a vector space with basis $A$ and another vector space with basis $B$. There is a linear transformation that maps $E_n$ to $E_m$ called $T$. 
-Questions:
 
-1. How can you find the change of basis matrix that takes you from $A$ to $B$
-<
+How can you find the change of basis matrix that takes you from $A$ to $B$?
 
 $$
-<
+v_B = <B, E_m>\underbrace{<E_m, T><T, E_n>}_{T_{E_n, E_m}}<E_n, A><A, v>
 $$
+The commutative diagram is the following:
+![communtative-diagram-basis-change-transformation](/img/commutative-diagram-change-basis-transformation.png)
+Maybe you are wondering: 
+> But why all the fuss about how to change between different basis? 
+
+The answer is quite simple: Being able to change the representation of an object can be both computationally handy and offer new insights into the structure of objects. 
+
+Changes in basis are also what is called a 'passive transformation'. While with active transformations we change objects in a given coordinate system (e.g. we rotate or project a vector), with passive transformations we change to coordinate system to get the same effect without changing the object. We merely change its representation. Checkout Wikipedia for some [examples](https://en.wikipedia.org/wiki/Active_and_passive_transformation).
+
+And last but not least, especially interesting for everyone involved in data analysis: PCA is at its core nothing else than a change in basis such that the coordinate system is rotated to align with the eigenvectors of the covariance matrix, pretty awesome, right? 
+
+I plan to write more about PCA in another post. 
+
+Hope you found this a little bit helpful.
+
 
 - http://www.boris-belousov.net/2016/05/31/change-of-basis/
 - relation between change of basis and projection onto a basis
@@ -134,6 +157,7 @@ Special case: change of basis in same vector space! endomorphism (covariance?)
 ### Shearing
 ### Reflection
 ### Orthogonal Projection
+https://math.stackexchange.com/questions/2963797/relation-between-change-of-basis-and-projection-onto-a-basis
 
 ## Some Important Matrices
 ### Covariance Matrix
