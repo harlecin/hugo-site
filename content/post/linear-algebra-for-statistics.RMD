@@ -21,9 +21,9 @@ Let $A$, $B$, $C$ be $(m \times n)$ matrices and let $\alpha, \beta \in \mathbb{
 6. $AB \neq BA \text{ in general}$
 7. If $A, B$ invertible, then: 
 
-  1. $(A^{-1})^{-1} = 1$
-  2. $(A^t)^{-1} = (A^{-1})^t$
-  3. $(AB)^{-1} = B^{-1}A^{-1}$
+  - $(A^{-1})^{-1} = 1$
+  - $(A^t)^{-1} = (A^{-1})^t$
+  - $(AB)^{-1} = B^{-1}A^{-1}$
 
 ### Some Useful Matrix Properties
 
@@ -52,13 +52,15 @@ M_T^{2, 2} = \begin{bmatrix}
                    1 & 0
              \end{bmatrix}
 $$
+
 ## Representation of Vectors
+
 Taken from my course notes by Prof. Rüdinger Frey:
 
 Let $x = (x_1, \dots, x_n) \in \mathbb{R}^n$. Then $x_1, \dots, x_n$ are the (unique) coordinates of $x$ wrt. the standard basis $E$:
 $$
-x = x_1 e_1 + \dots + x_n e_n = \sum_{i = 1}^n x_i e_i = E_nx_E\\
-\text{with} \\
+x = x_1 e_1 + \dots + x_n e_n = \sum_{i = 1}^n x_i e_i = E_nx_E \\
+\text{ with } \\
 x_E = (x_1, \dots, x_n)^T
 $$
 If $B = (b_1, \dots, b_n)$ is another basis of $\mathbb{R}^n$, then there exist unique numbers $(a_1, \dots, a_n)$ such that x can be written as:
@@ -127,6 +129,7 @@ $$
 The commutative diagram is the following:
 ![communtative-diagram-basis-change-transformation](/img/commutative-diagram-change-basis-transformation.png)
 Maybe you are wondering: 
+
 > But why all the fuss about how to change between different basis? 
 
 The answer is quite simple: Being able to change the representation of an object can be both computationally handy and offer new insights into the structure of objects. 

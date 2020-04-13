@@ -14,17 +14,19 @@ tags: ["math", "statistics"]
 <h3>Some Matrix Calculation Rules</h3>
 <p>Let <span class="math inline">\(A\)</span>, <span class="math inline">\(B\)</span>, <span class="math inline">\(C\)</span> be <span class="math inline">\((m \times n)\)</span> matrices and let <span class="math inline">\(\alpha, \beta \in \mathbb{R}\)</span>. Then:</p>
 <ol style="list-style-type: decimal">
-<li><p><span class="math inline">\((A + B)^t = A^t + B^t\)</span></p></li>
-<li><p><span class="math inline">\((AB)^t = B^t A^t\)</span></p></li>
-<li><p><span class="math inline">\(A(BC) = (AB)C\)</span></p></li>
-<li><p><span class="math inline">\(A(B + C) = AB + AC\)</span></p></li>
-<li><p><span class="math inline">\((A + B)C = AC + BC\)</span></p></li>
-<li><p><span class="math inline">\(AB \neq BA \text{ in general}\)</span></p></li>
-<li><p>If <span class="math inline">\(A, B\)</span> invertible, then:</p></li>
-<li><p><span class="math inline">\((A^{-1})^{-1} = 1\)</span></p></li>
-<li><p><span class="math inline">\((A^t)^{-1} = (A^{-1})^t\)</span></p></li>
-<li><p><span class="math inline">\((AB)^{-1} = B^{-1}A^{-1}\)</span></p></li>
+<li><span class="math inline">\((A + B)^t = A^t + B^t\)</span></li>
+<li><span class="math inline">\((AB)^t = B^t A^t\)</span></li>
+<li><span class="math inline">\(A(BC) = (AB)C\)</span></li>
+<li><span class="math inline">\(A(B + C) = AB + AC\)</span></li>
+<li><span class="math inline">\((A + B)C = AC + BC\)</span></li>
+<li><span class="math inline">\(AB \neq BA \text{ in general}\)</span></li>
+<li>If <span class="math inline">\(A, B\)</span> invertible, then:</li>
 </ol>
+<ul>
+<li><span class="math inline">\((A^{-1})^{-1} = 1\)</span></li>
+<li><span class="math inline">\((A^t)^{-1} = (A^{-1})^t\)</span></li>
+<li><span class="math inline">\((AB)^{-1} = B^{-1}A^{-1}\)</span></li>
+</ul>
 </div>
 <div id="some-useful-matrix-properties" class="section level3">
 <h3>Some Useful Matrix Properties</h3>
@@ -57,13 +59,15 @@ M_T^{2, 2} = \begin{bmatrix}
                    0 &amp; 1 \\
                    1 &amp; 0
              \end{bmatrix}
-\]</span>
-## Representation of Vectors
-Taken from my course notes by Prof. Rüdinger Frey:</p>
+\]</span></p>
+</div>
+<div id="representation-of-vectors" class="section level2">
+<h2>Representation of Vectors</h2>
+<p>Taken from my course notes by Prof. Rüdinger Frey:</p>
 <p>Let <span class="math inline">\(x = (x_1, \dots, x_n) \in \mathbb{R}^n\)</span>. Then <span class="math inline">\(x_1, \dots, x_n\)</span> are the (unique) coordinates of <span class="math inline">\(x\)</span> wrt. the standard basis <span class="math inline">\(E\)</span>:
 <span class="math display">\[
-x = x_1 e_1 + \dots + x_n e_n = \sum_{i = 1}^n x_i e_i = E_nx_E\\
-\text{with} \\
+x = x_1 e_1 + \dots + x_n e_n = \sum_{i = 1}^n x_i e_i = E_nx_E \\
+\text{ with } \\
 x_E = (x_1, \dots, x_n)^T
 \]</span>
 If <span class="math inline">\(B = (b_1, \dots, b_n)\)</span> is another basis of <span class="math inline">\(\mathbb{R}^n\)</span>, then there exist unique numbers <span class="math inline">\((a_1, \dots, a_n)\)</span> such that x can be written as:
@@ -125,8 +129,10 @@ v_B = &lt;B, E_m&gt;\underbrace{&lt;E_m, T&gt;&lt;T, E_n&gt;}_{T_{E_n, E_m}}&lt;
 \]</span>
 The commutative diagram is the following:
 <img src="/img/commutative-diagram-change-basis-transformation.png" alt="communtative-diagram-basis-change-transformation" />
-Maybe you are wondering:
-&gt; But why all the fuss about how to change between different basis?</p>
+Maybe you are wondering:</p>
+<blockquote>
+<p>But why all the fuss about how to change between different basis?</p>
+</blockquote>
 <p>The answer is quite simple: Being able to change the representation of an object can be both computationally handy and offer new insights into the structure of objects.</p>
 <p>Changes in basis are also what is called a ‘passive transformation’. While with active transformations we change objects in a given coordinate system (e.g. we rotate or project a vector), with passive transformations we change to coordinate system to get the same effect without changing the object. We merely change its representation. Checkout Wikipedia for some <a href="https://en.wikipedia.org/wiki/Active_and_passive_transformation">examples</a>.</p>
 <p>And last but not least, especially interesting for everyone involved in data analysis: PCA is at its core nothing else than a change in basis such that the coordinate system is rotated to align with the eigenvectors of the covariance matrix, pretty awesome, right?</p>
