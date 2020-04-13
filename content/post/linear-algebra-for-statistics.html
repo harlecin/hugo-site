@@ -1,0 +1,135 @@
+---
+title: "Linear Algebra Refresher"
+author: "Christoph"
+date: 2020-04-11T14:41:14-05:00
+categories: ["theory"]
+tags: ["math", "statistics"]
+---
+
+
+
+<p>Since quite some time has passed since I took my linear algebra courses, I thought I could comb through my old course notes and write a small post about linear algebra stuff that is quite useful to remember in my opinion.</p>
+<p>Let`s start with some computation rules for working with matrices:</p>
+<div id="some-matrix-calculation-rules" class="section level3">
+<h3>Some Matrix Calculation Rules</h3>
+<p>Let <span class="math inline">\(A\)</span>, <span class="math inline">\(B\)</span>, <span class="math inline">\(C\)</span> be <span class="math inline">\((m \times n)\)</span> matrices and let <span class="math inline">\(\alpha, \beta \in \mathbb{R}\)</span>. Then:</p>
+<ol style="list-style-type: decimal">
+<li><p><span class="math inline">\((A + B)^t = A^t + B^t\)</span></p></li>
+<li><p><span class="math inline">\((AB)^t = B^t A^t\)</span></p></li>
+<li><p><span class="math inline">\(A(BC) = (AB)C\)</span></p></li>
+<li><p><span class="math inline">\(A(B + C) = AB + AC\)</span></p></li>
+<li><p><span class="math inline">\((A + B)C = AC + BC\)</span></p></li>
+<li><p><span class="math inline">\(AB \neq BA \text{ in general}\)</span></p></li>
+<li><p>If <span class="math inline">\(A, B\)</span> invertible, then:</p></li>
+<li><p><span class="math inline">\((A^{-1})^{-1} = 1\)</span></p></li>
+<li><p><span class="math inline">\((A^t)^{-1} = (A^{-1})^t\)</span></p></li>
+<li><p><span class="math inline">\((AB)^{-1} = B^{-1}A^{-1}\)</span></p></li>
+</ol>
+</div>
+<div id="some-useful-matrix-properties" class="section level3">
+<h3>Some Useful Matrix Properties</h3>
+<ul>
+<li>Symmetric: A matrix <span class="math inline">\(A\)</span> is called symmetric <span class="math inline">\(\iff\)</span> <span class="math inline">\(A = A^t\)</span></li>
+<li>Inverse: Matrices <span class="math inline">\(A, B\)</span> are inverse to each other <span class="math inline">\(iff\)</span> <span class="math inline">\(AB = BA = I\)</span>.
+<span class="math inline">\(A, B\)</span> are called regular or invertible: <span class="math inline">\(B = A^{-1}\)</span>. <span class="math inline">\(A\)</span> is called singular if it is not invertible</li>
+<li>Let <span class="math inline">\(A\)</span> be a square matrix. The following are equivalent:
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(A\)</span> is invertible</li>
+<li><span class="math inline">\(Ax = 0 \iff x = 0\)</span></li>
+<li>The rows/columns of <span class="math inline">\(A\)</span> are linearly independent</li>
+</ol></li>
+</ul>
+</div>
+<div id="transformation-matrix" class="section level3">
+<h3>Transformation Matrix</h3>
+<p>A transformation matrix is the matrix representation of a linear function. If we have a linear transformation:
+<span class="math display">\[
+T: \mathbb{R}^n \to \mathbb{R}^m \\
+T(x) = y
+\]</span>
+we can easily get the matrix representation of <span class="math inline">\(T\)</span> simply by plugging in our basis vectors:
+<span class="math display">\[
+M_T = [T(e_1), \dots, T(e_n)] \in \mathbb{R}^{m, n}
+\]</span>
+Let’s look at a simple example. Suppose we have <span class="math inline">\(T: \mathbb{R}^2 \to \mathbb{R}^2\)</span> with <span class="math inline">\(T(x, y) = (y, x)^T\)</span>. Then we get:
+<span class="math display">\[
+M_T^{2, 2} = \begin{bmatrix}
+                   0 &amp; 1 \\
+                   1 &amp; 0
+             \end{bmatrix}
+\]</span>
+## Representation of Vectors
+Taken from my course notes by Prof. Rüdinger Frey:</p>
+<p>Let <span class="math inline">\(x = (x_1, \dots, x_n) \in \mathbb{R}^n\)</span>. Then <span class="math inline">\(x_1, \dots, x_n\)</span> are the (unique) coordinates of <span class="math inline">\(x\)</span> wrt. the standard basis <span class="math inline">\(E\)</span>:
+<span class="math display">\[
+x = x_1 e_1 + \dots + x_n e_n = \sum_{i = 1}^n x_i e_i = E_nx_E\\
+\text{with} \\
+x_E = (x_1, \dots, x_n)^T
+\]</span>
+If <span class="math inline">\(B = (b_1, \dots, b_n)\)</span> is another basis of <span class="math inline">\(\mathbb{R}^n\)</span>, then there exist unique numbers <span class="math inline">\((a_1, \dots, a_n)\)</span> such that x can be written as:
+<span class="math display">\[
+x = x_1 b_1 + \dots + x_n b_n = \sum_{i = 1}^n x_i b_i = Bx_B
+\]</span>
+We call<span class="math inline">\((a_1, \dots, a_n)\)</span> the coordinates of x wrt. the basis <span class="math inline">\(B\)</span> and we write:
+<span class="math display">\[
+x_B = \begin{pmatrix}
+            a_1 \\
+            \vdots \\
+            a_n
+      \end{pmatrix}
+\]</span>
+A basis is simply a set of linearly independent vectors that span a given vector space. the most common basis is called the standard basis <span class="math inline">\(E\)</span> that we usually work with and that is used in our Cartesian coordinate system. In 2d it looks like this:
+<span class="math display">\[
+E_2 = \left\{
+      \begin{pmatrix}
+            1 \\
+            0 
+      \end{pmatrix},
+      \begin{pmatrix}
+            0 \\
+            1 
+      \end{pmatrix}
+    \right\} = 
+    \{e_1, e_2\}
+\]</span>
+So nothing special so far:) Now, let’s take a look at changing our basis, i.e. our coordinate system:</p>
+</div>
+<div id="change-of-basis" class="section level2">
+<h2>Change of Basis</h2>
+<p>We already saw that we can represent the same vector with different coordinates. Therefore, we can simply write:
+<span class="math display">\[
+x = Ex_E = Bx_B \\
+\to x_B = B^{-1}Ex_E = B^{-1}x
+\]</span>
+So in order to get the coordinates of a vector x wrt. basis B all we have to do is right multiply <span class="math inline">\(x\)</span> with <span class="math inline">\(B^{-1}\)</span>.</p>
+<p>Why does this work? Since a basis is necessarily square and all basis vectors are linearly independent per definition the matrix that represents the basis is invertible.</p>
+<p>At university, one of my Profs was quite fond of the following notation:
+<span class="math display">\[
+&lt;E, x&gt; = x_E \\
+&lt;E, A&gt; = A \\
+&lt;B, E&gt; = B^{-1}
+\]</span>
+While I did not like it at first, it is quite handy, if you want to quickly write down changes in basis and/or transformations from one vector space to another. All you have to do is make sure that the same letters are next to each other. Let’s look at an example.</p>
+<p>Suppose we have a vector v with coordinates wrt. basis <span class="math inline">\(A\)</span> and we want to transform it to coordinates wrt. basis <span class="math inline">\(B\)</span>:</p>
+<p><span class="math display">\[
+v_B = \overbrace{\underbrace{&lt;B, E&gt;}_{B^{-1}}\underbrace{&lt;E, A&gt;}_{A}}^{C}\underbrace{&lt;A, v&gt;}_{v_A}
+\]</span>
+<span class="math inline">\(C\)</span> is also called the change of basis matrix.
+The communtative diagram looks as follows:
+<img src="/img/commutative_diagram_change_basis.png" alt="communtative-diagram-basis-change" />
+Let’s add a linear transformation to the mix:
+Suppose we have a vector space with basis <span class="math inline">\(A\)</span> and another vector space with basis <span class="math inline">\(B\)</span>. There is a linear transformation that maps <span class="math inline">\(E_n\)</span> to <span class="math inline">\(E_m\)</span> called <span class="math inline">\(T\)</span>.</p>
+<p>How can you find the change of basis matrix that takes you from <span class="math inline">\(A\)</span> to <span class="math inline">\(B\)</span>?</p>
+<p><span class="math display">\[
+v_B = &lt;B, E_m&gt;\underbrace{&lt;E_m, T&gt;&lt;T, E_n&gt;}_{T_{E_n, E_m}}&lt;E_n, A&gt;&lt;A, v&gt;
+\]</span>
+The commutative diagram is the following:
+<img src="/img/commutative-diagram-change-basis-transformation.png" alt="communtative-diagram-basis-change-transformation" />
+Maybe you are wondering:
+&gt; But why all the fuss about how to change between different basis?</p>
+<p>The answer is quite simple: Being able to change the representation of an object can be both computationally handy and offer new insights into the structure of objects.</p>
+<p>Changes in basis are also what is called a ‘passive transformation’. While with active transformations we change objects in a given coordinate system (e.g. we rotate or project a vector), with passive transformations we change to coordinate system to get the same effect without changing the object. We merely change its representation. Checkout Wikipedia for some <a href="https://en.wikipedia.org/wiki/Active_and_passive_transformation">examples</a>.</p>
+<p>And last but not least, especially interesting for everyone involved in data analysis: PCA is at its core nothing else than a change in basis such that the coordinate system is rotated to align with the eigenvectors of the covariance matrix, pretty awesome, right?</p>
+<p>I plan to write more about PCA in another post.</p>
+<p>Hope you found this a little bit helpful.</p>
+</div>
