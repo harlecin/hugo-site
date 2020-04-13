@@ -1,20 +1,20 @@
 ---
-title: "Linear Algebra for Statistics"
+title: "Linear Algebra Refresher"
 author: "Christoph"
 date: 2020-04-11T14:41:14-05:00
 categories: ["theory"]
 tags: ["math", "statistics"]
 ---
 
-Since quite some time has passed since I took my linear algebra courses, I thought I could comb through my old course notes and write a small post about linear algebra stuff that is quite useful to remember for statistics.
+Since quite some time has passed since I took my linear algebra courses, I thought I could comb through my old course notes and write a small post about linear algebra stuff that is quite useful to remember in my opinion.
 
 ```{r, include=FALSE}
 library(ggplot2)
 ```
 
-## Some useful Properties of Matrices
+Let`s start with some computation rules for working with matrices:
 
-### Some Calculation Rules
+### Some Matrix Calculation Rules
 Let $A$, $B$, $C$ be $(m \times n)$ matrices and let $\alpha, \beta \in \mathbb{R}$. Then:
 
 1. $(A + B)^t = A^t + B^t$
@@ -28,7 +28,7 @@ Let $A$, $B$, $C$ be $(m \times n)$ matrices and let $\alpha, \beta \in \mathbb{
   2. $(A^t)^{-1} = (A^{-1})^t$
   3. $(AB)^{-1} = B^{-1}A^{-1}$
 
-### Some Useful Properties
+### Some Useful Matrix Properties
 
 - Symmetric: A matrix $A$ is called symmetric $\iff$ $A = A^t$
 - Inverse: Matrices $A, B$ are inverse to each other $iff$ $AB = BA = I$.
@@ -38,29 +38,89 @@ Let $A$, $B$, $C$ be $(m \times n)$ matrices and let $\alpha, \beta \in \mathbb{
   2. $Ax = 0 \iff x = 0$
   3. The rows/columns of $A$ are linearly independent
 
-## Transformation Matrix
+### Transformation Matrix
+A transformation matrix is the matrix representation of a linear function. If we have a linear transformation:
+$$
+T: \mathbb{R}^n \to \mathbb{R}^m \\
+T(x) = y
+$$
+we can easily get the matrix representation of $T$ simply by plugging in our basis vectors:
+$$
+M_T = [T(e_1), \dots, T(e_n)] \in \mathbb{R}^{m, n}
+$$
+Let's look at a simple example. Suppose we have $T: \mathbb{R}^2 \to \mathbb{R}^2$ with $T(x, y) = (y, x)^T$. Then we get:
+$$
+M_T^{2, 2} = \begin{bmatrix}
+                   0 & 1 \\
+                   1 & 0
+             \end{bmatrix}
+$$
+## Representation of Vectors
+Taken from my course notes by Prof. Rüdinger Frey:
+
+Let $x = (x_1, \dots, x_n) \in \mathbb{R}^n$. Then $x_1, \dots, x_n$ are the (unique) coordinates of $x$ wrt. the standard basis $E$:
+$$
+x = x_1 e_1 + \dots + x_n e_n = \sum_{i = 1}^n x_i e_i = E_nx_E\\
+\text{with} \\
+x_E = (x_1, \dots, x_n)^T
+$$
+If $B = (b_1, \dots, b_n)$ is another basis of $\mathbb{R}^n$, then there exist unique numbers $(a_1, \dots, a_n)$ such that x can be written as:
+$$
+x = x_1 b_1 + \dots + x_n b_n = \sum_{i = 1}^n x_i b_i = Bx_B
+$$
+We call$(a_1, \dots, a_n)$  the coordinates of x wrt. the basis $B$ and we write: 
+$$
+x_B = \begin{pmatrix}
+            a_1 \\
+            \vdots \\
+            a_n
+      \end{pmatrix}
+$$
+A basis is simply a set of linearly independent vectors that span a given vector space. the most common basis is called the standard basis $E$ that we usually work with and that is used in our Cartesian coordinate system. In 2d it looks like this:
+$$
+E_2 = \left\{
+      \begin{pmatrix}
+            1 \\
+            0 
+      \end{pmatrix},
+      \begin{pmatrix}
+            0 \\
+            1 
+      \end{pmatrix}
+    \right\} = 
+    \{e_1, e_2\}
+$$
+So nothing special so far:) Now, let's take a look at changing our basis, i.e. our coordinate system:
 
 ## Change of Basis
-When we work with vectors, we generally use the [Cartesian Coordinates](https://en.wikipedia.org/wiki/Cartesian_coordinate_system#Representing_a_vector_in_the_standard_basis), i.e. we represent vectors wrt. the standard basis $E$. Suppose we have a vector $v = (1, 2)$. Then $x = 1$ and $y = 2$ are the coordinates of $v$ wrt. the standard basis:
+
+We already saw that we can represent the same vector with different coordinates. Therefore, we can simply write:
+$$
+x = Ex_E = Bx_B \\
+\to x_B = B^{-1}Ex_E = B^{-1}x
+$$
+So in order to get the coordinates of a vector x wrt. basis B all we have to do is right multiply $x$ with $B^{-1}$.
+
+Why does this work? Since a basis is necessarily square and all basis vectors are linearly independent per definition the matrix that represents the basis is invertible.
+
+At university, one of my Profs was quite fond of the following notation:
+$$
+<E, x> = x_E \\
+<E, A> = A \\
+<B, E> = B^{-1}
+$$
+While I did not like it at first, it is quite handy, if you want to quickly write down changes in basis and/or transformations from one vector space to another. Take the following example:
+
+Suppose we have a vector space with basis $A$ and another vector space with basis $B$. There is a linear transformation that maps $E_n$ to $E_m$ called $T$. 
+Questions:
+
+1. How can you find the change of basis matrix that takes you from $A$ to $B$
+<
 
 $$
-E = \begin{bmatrix}
-            1 &0 \\
-            0 &1
-      \end{bmatrix} \\
-v = x \begin{bmatrix}
-            1 \\
-            0
-      \end{bmatrix} + 
-    y \begin{bmatrix}
-            0 \\
-            1
-      \end{bmatrix} = v^t E = Ev
+<
 $$
 
-```{r}
-plot(x = 1, y = 2, xlab = "x", ylab = "y")
-```
 - http://www.boris-belousov.net/2016/05/31/change-of-basis/
 - relation between change of basis and projection onto a basis
 https://math.stackexchange.com/questions/2963797/relation-between-change-of-basis-and-projection-onto-a-basis
