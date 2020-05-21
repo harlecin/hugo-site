@@ -19,6 +19,26 @@ PCA goes by many names depending on the field, but in mathematics, it is usally 
 
 So how does PCA actually work? 
 
+Let's start with a very simple dataset and work from there:
+```{r}
+library(ggplot2)
+library(data.table)
+ggplot(mtcars, aes(x = wt, y = mpg)) + 
+  geom_point() +
+  labs(title="Relationship between mpg and weight") +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+ We can clearly see that the linear relationship between weight (wt) and miles per gallon (mpg). 
+ 
+Let's take a look at the covariance matrix of mpg and wt:
+```{r}
+mt = matrix(c(mtcars$mpg, mtcars$wt), nrow = 5, ncol = 2)
+cov(mt)
+```
+
+ 
+
 
 
 ## Notes from Wiki
