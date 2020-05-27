@@ -1,7 +1,7 @@
 ---
 title: "PCA, Eigenvectors and the Covariance Matrix"
 author: "Christoph"
-date: 2020-03-20T14:41:14-05:00
+date: 2020-05-27T14:41:14-05:00
 categories: ["theory"]
 tags: ["math"]
 ---
@@ -13,33 +13,101 @@ Let's start with a short description of PCA taken straight from [Wikipedia](http
 
 > PCA is "a statistical procedure that uses an an orthogonal transformation to convert a set of observations of possibly correlated variables into a set of values of linearly uncorrelated variables called principal components. This transformation is defined in such a way that the first principal component [...] accounts for as much of the variability in the data as possible, and each succedding component in turn has the highest variance possible under the constraint that it is orthogonal to the preceding components.
 
-So, mathematically speaking, PCA is a change in basis. Since variance is affected by units of measurement, it is necessary to standardize (z-transform) the original variables before applying PCA, because otherwise 'large' variables will naturally account for more variance.
+So, what does that mean exactly?
 
-PCA goes by many names depending on the field, but in mathematics, it is usally called eigenvalue decomposition or singular value decomposition, because those are the mathematical tools used to calculate the principal components.
+Let's start by looking at a very simple example and take it from there:
 
-So how does PCA actually work? 
-
-Let's start with a very simple dataset and work from there:
 ```{r}
 library(ggplot2)
 library(data.table)
+
 ggplot(mtcars, aes(x = wt, y = mpg)) + 
   geom_point() +
   labs(title="Relationship between mpg and weight") +
   geom_smooth(method = "lm", se = FALSE)
 ```
 
- We can clearly see that the linear relationship between weight (wt) and miles per gallon (mpg). 
+We can clearly see the linear relationship between weight (wt) and miles per gallon (mpg). 
  
-Let's take a look at the covariance matrix of mpg and wt:
+Let's take a look at the covariance matrix of mpg and wt.
+
+Remember, a covariance matrix looks like this:
+$$
+Cov(x, y) = 
+            \begin{bmatrix}
+                   \sigma_x^2 & \sigma_{x,y} \\
+                   \sigma_{y, x} & \sigma_y^2
+             \end{bmatrix}
+$$
+where $\sigma_{x,y}=\sigma_{y,x}$.
+
+We can easily calculate it using R's `cov` function:
 ```{r}
 mt = matrix(c(mtcars$mpg, mtcars$wt), nrow = 5, ncol = 2)
+
 cov(mt)
 ```
+The following exposition is based on the excellent overview of how PCA works by Jon Shlens.
 
- 
+We saw already in the picture that the mpg depends on the weight of the car (they covary) which is why the covariance matrix has off-diagonal elements that are not zero (2.714 in this particular case). Now imagine we could rotate our coordinate axis so that in the new coordinate system the covariance matrix looks like this:
+$$
+Cov(x, y) = 
+            \begin{bmatrix}
+                   \sigma_x^2 & 0 \\
+                   0 & \sigma_y^2
+             \end{bmatrix}
+$$
+The two variables are uncorrelate given our new basis and the axis are aligned with the direction of largest variance.
+
+So given our matrix of observations $X$, we are looking for a linear transformation matrix $P$ such that we get a new matrix of observations $Y$ with a covariance matrix that is diagonal like above.
+'
+Let's start by writing down the matrix expression of the covariance matrix (you might want to take a look at my previous blog post where I summarised some matrix calculation rules):
+$$
+\begin{align}
+C_Y &= \frac{1}{n-1}YY^t\\
+ & = \frac{1}{n-1}(PX)(PX)^t \\
+ & = \frac{1}{n-1} PXX^tP^t \\
+ & = \frac{1}{n-1} P(XX^t)P^t \\
+ & = \frac{1}{n-1} PAP^t
+\end{align}
+$$
+We get a new matrix $A$ which is symmetric by construction. Now we need to brush off our rusty linear algebra knowledge to remember that a symmetric matrix is diagonalized by an orthogonal matrix of its eigenvectors. So we get the following:
+
+$$
+A = EDE^t
+$$
+where E is a matrix of eigenvectors of A and D is a diagonal matrix. So if we want to diagonalize $C_Y$, we need to pick a linear transformation $P$ = $E^t$ and use the fact that $P^{-1}=P^t$ for orthonormal matrices and we get:
+$$
+\begin{align}
+C_Y &= \frac{1}{n-1}YY^t\\
+ & = \frac{1}{n-1} PAP^t \\
+ & = \frac{1}{n-1} PEDE^tP^t \\
+ & = \frac{1}{n-1} E^tEDE^tE \\
+ & = \frac{1}{n-1} D
+\end{align}
+$$
+So we found the transformation that diagonalizes the covariance matrix $C_Y$.
+
+## References
+
+- [A Tutorial on Principal Component Analysis by Jon Shlens](https://www.cs.princeton.edu/picasso/mats/PCA-Tutorial-Intuition_jp.pdf)
+
+
+
+
+# Add
+- interpretation of P as basis = rotation and stretch
+- scaling and centering
 
 
 
 ## Notes from Wiki
+Since variance is affected by units of measurement, it is necessary to standardize (z-transform) the original variables before applying PCA, because otherwise 'large' variables will naturally account for more variance.
+
+PCA goes by many names depending on the field, but in mathematics, it is usally called eigenvalue decomposition or singular value decomposition, because those are the mathematical tools used to calculate the principal components.
+
+So how does PCA actually work? 
+
+Let's start with a very simple dataset and work from there:
+
 The results of a PCA are usually discussed in terms of component scores, sometimes called factor scores (the transformed variable values corresponding to a particular data point), and loadings (the weight by which each standardized original variable should be multiplied to get the component score).[5] If component scores are standardized to unit variance, loadings must contain the data variance in them (and that is the magnitude of eigenvalues). If component scores are not standardized (therefore they contain the data variance) then loadings must be unit-scaled, ("normalized") and these weights are called eigenvectors; they are the cosines of orthogonal rotation of variables into principal components or back. 
