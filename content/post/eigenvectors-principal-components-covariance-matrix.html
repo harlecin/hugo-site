@@ -108,15 +108,17 @@ eigen_vec</code></pre>
 ##            [,1]      [,2]
 ## [1,]  0.7071068 0.7071068
 ## [2,] -0.7071068 0.7071068</code></pre>
-<p><strong>PS:</strong></p>
-<p>In case you were wondering, why the blue regression line did not correspond to the axis of the first prinicpal component: Regression tries to minimize the distance between the regression line and a point wrt to the y axis (<span class="math inline">\(\hat{y} - y\)</span>), whereas PCA tries to minimize the orthogonal distance. You can find a few nice graphics illustrating that point <a href="https://shankarmsy.github.io/posts/pca-vs-lr.html">here</a></p>
+<p><strong>PS:</strong>
+In case you were wondering, why the blue regression line did not correspond to the axis of the first prinicpal component: Regression tries to minimize the distance between the regression line and a point wrt to the y axis (<span class="math inline">\(\hat{y} - y\)</span>), whereas PCA tries to minimize the orthogonal distance. You can find a few nice graphics illustrating that point <a href="https://shankarmsy.github.io/posts/pca-vs-lr.html">here</a></p>
 <p><strong>PPS:</strong>
 Variance is affected by units of measurement, so it is neceassary to first standardize (z-transform) your data before applying PCA. Otherwise ‘large’ variables will naturally account for more variance and distort your analysis.</p>
-<p><strong>PPPS:</strong></p>
-<p>Since PCA is an eigen-decomposition of the covariance matrix (which is mean-centered per definition) mean centering is not necessary, but singular-value-decomposition (svd), a commonly used alternative way to perform PCA, requires centered data. Check out the stackoverflow posts <a href="https://stats.stackexchange.com/questions/134282/relationship-between-svd-and-pca-how-to-use-svd-to-perform-pca">here</a> and <a href="https://stats.stackexchange.com/questions/189822/how-does-centering-make-a-difference-in-pca-for-svd-and-eigen-decomposition">here</a></p>
+<p><strong>PPPS:</strong>
+Since PCA is an eigen-decomposition of the covariance matrix (which is mean-centered per definition) mean centering is not necessary, but singular-value-decomposition (svd), a commonly used alternative way to perform PCA, requires centered data. Check out the stackoverflow posts <a href="https://stats.stackexchange.com/questions/134282/relationship-between-svd-and-pca-how-to-use-svd-to-perform-pca">here</a> and <a href="https://stats.stackexchange.com/questions/189822/how-does-centering-make-a-difference-in-pca-for-svd-and-eigen-decomposition">here</a></p>
 <div id="references" class="section level2">
 <h2>References</h2>
-<p>-<a href="https://www.cs.princeton.edu/picasso/mats/PCA-Tutorial-Intuition_jp.pdf">A Tutorial on Principal Component Analysis by Jon Shlens</a></p>
-<p>-<a href="https://www.visiondummy.com/2014/04/geometric-interpretation-covariance-matrix/">A geometric interpretation of the covariance matrix</a></p>
-<p>-<a href="https://www.youtube.com/watch?v=P2LTAUO1TdA&amp;list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&amp;index=13">Basis - 3Blue1Brown</a></p>
+<ul>
+<li><a href="https://www.cs.princeton.edu/picasso/mats/PCA-Tutorial-Intuition_jp.pdf">A Tutorial on Principal Component Analysis by Jon Shlens</a></li>
+<li><a href="https://www.visiondummy.com/2014/04/geometric-interpretation-covariance-matrix/">A geometric interpretation of the covariance matrix</a></li>
+<li><a href="https://www.youtube.com/watch?v=P2LTAUO1TdA&amp;list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&amp;index=13">Basis - 3Blue1Brown</a></li>
+</ul>
 </div>
