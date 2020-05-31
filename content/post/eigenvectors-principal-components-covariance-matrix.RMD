@@ -56,7 +56,7 @@ ggplot(mtcars, aes(x = scale(wt), y = scale(mpg))) +
   geom_vline(xintercept = 0, color = "black")
 ```
 
-This basis clearly captures the dynamics of our data better than the original one did, but why choose this particular one and not e.g. a coordinate system based on our blue regression line? (Eigenvectors are cool, but that does not count as a sufficient reason:).
+This basis clearly captures the dynamics of our data better than the original one did, but why choose this particular one and not e.g. a coordinate system based on our blue regression line?
 
 Before we continue, let's take a look at the covariance matrix of mpg and wt.
 
@@ -121,10 +121,24 @@ $$
  & = \frac{1}{n-1} D
 \end{align}
 $$
+Since we have:
+$$
+P = E^t = E^{-1}
+$$
+we see that the eigenvectors form a basis of our transformed space since:
+$$
+Y = E^{-1}X
+$$
+is the change of basis from the standard basis to the basis given by $E$. Since a passive transformation has a corresponding active transformation, we can also view $P$ as a rotation and a stretch (see [Wikipedia](https://en.wikipedia.org/wiki/Active_and_passive_transformation#Active_transformation) for more infos).
+
 So we found the transformation that diagonalizes the covariance matrix $\text{Cov}_Y$ and that is in a nutshell, what PCA does. We can now select a subset of principal components to reduce the dimension of our dataset. In our particular case we get:
 
 ```{r}
+mt = matrix(c(scale(mtcars$wt), scale(mtcars$mpg)), nrow = length(mtcars$mpg), ncol = 2)
 
+eigen_vec = eigen(cov(mt))
+
+eigen_vec
 ```
 
 
@@ -142,13 +156,6 @@ Since PCA is an eigen-decomposition of the covariance matrix (which is mean-cent
 
 - [A Tutorial on Principal Component Analysis by Jon Shlens](https://www.cs.princeton.edu/picasso/mats/PCA-Tutorial-Intuition_jp.pdf)
 
+- [A geometric interpretation of the covariance matrix](https://www.visiondummy.com/2014/04/geometric-interpretation-covariance-matrix/)
 
-
-
-
-
-
-# Add
-- interpretation of P as basis = rotation and stretch:
-https://www.visiondummy.com/2014/04/geometric-interpretation-covariance-matrix/https://math.stackexchange.com/questions/2615794/change-of-basis-with-rotation-matrices
-https://www.youtube.com/watch?v=P2LTAUO1TdA&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&index=13
+- [Basis - 3Blue1Brown](https://www.youtube.com/watch?v=P2LTAUO1TdA&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&index=13)
