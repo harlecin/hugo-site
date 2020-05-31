@@ -7,7 +7,7 @@ tags: ["math"]
 ---
 
 Almost every data science course will at some point (usually) sooner than later cover PCA, i.e. Principal Component Analysis. PCA is an important tool used in exploratory data analysis for dimensionality reduction. In this post I want 
-to show you how PCA works its mathematical magic (hopefully in an intuitive way).
+to show you (hopefully in an intuitive way) how PCA works its mathematical magic.
 
 Let's start with a short description of PCA taken straight from [Wikipedia](https://en.wikipedia.org/wiki/Principal_component_analysis):
 
@@ -21,15 +21,44 @@ Let's start by looking at a very simple example and take it from there:
 library(ggplot2)
 library(data.table)
 
-ggplot(mtcars, aes(x = wt, y = mpg)) + 
+ggplot(mtcars, aes(x = scale(wt), y = scale(mpg))) + 
   geom_point() +
-  labs(title="Relationship between mpg and weight") +
-  geom_smooth(method = "lm", se = FALSE)
+  labs(title="Relationship between mpg and weight", 
+       subtitle="Standardized variables (mean = 0, std = 1)") +
+  geom_smooth(method = "lm", se = FALSE) +
+  coord_fixed(ratio = 1, xlim = NULL, ylim = NULL, clip = "on")+
+  geom_hline(yintercept = 0, color = "black") +
+  geom_vline(xintercept = 0, color = "black")
 ```
 
-We can clearly see the linear relationship between weight (wt) and miles per gallon (mpg). 
- 
-Let's take a look at the covariance matrix of mpg and wt.
+We can clearly see the linear relationship between weight (wt) and miles per gallon (mpg). Most of the points fit rather tightly around the blue line, without deviating to much above or below. So, if we had to summarise our data with one dimension only, it would be quite reasonable to pick a dimension somewhat similar to the blue line. This corresponds to a change in basis. We are rotating our standard basis given by the vectors (1,0) and (0,1) to hopefully find a new basis that better captures the dynamics in our data.
+
+In the next plot, I added one possible new coordinate system (red) that we could use: I set the axis to be equal to the eigenvectors of the covariance matrix of our dataset.
+
+```{r, echo=FALSE}
+mt = matrix(c(scale(mtcars$wt), scale(mtcars$mpg)), nrow = length(mtcars$mpg), ncol = 2)
+
+eigen_vec = eigen(cov(mt))
+
+
+ggplot(mtcars, aes(x = scale(wt), y = scale(mpg))) + 
+  geom_point() +
+  labs(title="Relationship between mpg and weight",
+       subtitle="Eigenvectors of Corr(X) as basis (red)") +
+  #geom_smooth(method = "lm", se = FALSE) +
+  geom_segment(aes(x = 0, y = 0, 
+                   xend = 0 +eigen_vec$vectors[1,1]*3, yend = 0 + eigen_vec$vectors[2,1]*3), arrow = arrow(length = unit(0.2, "cm")), color="red") +
+  geom_segment(aes(x = 0, y = 0, 
+                   xend = 0 + eigen_vec$vectors[1,2]*3, yend = 0 + eigen_vec$vectors[2,2]*3), arrow = arrow(length = unit(0.2, "cm")), color = "red")+
+  coord_fixed(ratio = 1, xlim = NULL, ylim = NULL, clip = "on") + 
+  geom_smooth(method="lm", se = FALSE) +
+  geom_hline(yintercept = 0, color = "black") +
+  geom_vline(xintercept = 0, color = "black")
+```
+
+This basis clearly captures the dynamics of our data better than the original one did, but why choose this particular one and not e.g. a coordinate system based on our blue regression line? (Eigenvectors are cool, but that does not count as a sufficient reason:).
+
+Before we continue, let's take a look at the covariance matrix of mpg and wt.
 
 Remember, a covariance matrix looks like this:
 $$
@@ -43,13 +72,12 @@ where $\sigma_{x,y}=\sigma_{y,x}$.
 
 We can easily calculate it using R's `cov` function:
 ```{r}
-mt = matrix(c(mtcars$mpg, mtcars$wt), nrow = 5, ncol = 2)
-
 cov(mt)
 ```
+
 The following exposition is based on the excellent overview of how PCA works by Jon Shlens.
 
-We saw already in the picture that the mpg depends on the weight of the car (they covary) which is why the covariance matrix has off-diagonal elements that are not zero (2.714 in this particular case). Now imagine we could rotate our coordinate axis so that in the new coordinate system the covariance matrix looks like this:
+We have already seen in the picture that mpg depends on the weight of the car (the variables covary) which is why the covariance matrix has off-diagonal elements that are not zero. Now imagine we could rotate our coordinate axis so that in the new coordinate system the covariance matrix looks like this:
 $$
 Cov(x, y) = 
             \begin{bmatrix}
@@ -57,14 +85,20 @@ Cov(x, y) =
                    0 & \sigma_y^2
              \end{bmatrix}
 $$
-The two variables are uncorrelate given our new basis and the axis are aligned with the direction of largest variance.
+The two variables are uncorrelate given our new basis and the axis are aligned with the direction of largest variance so we can easily see which axis is most important to explain the variance in our data.
 
-So given our matrix of observations $X$, we are looking for a linear transformation matrix $P$ such that we get a new matrix of observations $Y$ with a covariance matrix that is diagonal like above.
-'
+So given our matrix of observations $X$, we are looking for a linear transformation matrix $P$ such that we get a new matrix of observations $Y$ with a covariance matrix that is diagonal like above:
+
+$$
+Y = PX \text{ with } \text{Cov}_Y \text{ diagonal}
+$$
+
+
+
 Let's start by writing down the matrix expression of the covariance matrix (you might want to take a look at my previous blog post where I summarised some matrix calculation rules):
 $$
 \begin{align}
-C_Y &= \frac{1}{n-1}YY^t\\
+\text{Cov}_Y &= \frac{1}{n-1}YY^t\\
  & = \frac{1}{n-1}(PX)(PX)^t \\
  & = \frac{1}{n-1} PXX^tP^t \\
  & = \frac{1}{n-1} P(XX^t)P^t \\
@@ -76,17 +110,33 @@ We get a new matrix $A$ which is symmetric by construction. Now we need to brush
 $$
 A = EDE^t
 $$
+
 where E is a matrix of eigenvectors of A and D is a diagonal matrix. So if we want to diagonalize $C_Y$, we need to pick a linear transformation $P$ = $E^t$ and use the fact that $P^{-1}=P^t$ for orthonormal matrices and we get:
 $$
 \begin{align}
-C_Y &= \frac{1}{n-1}YY^t\\
+\text{Cov}_Y &= \frac{1}{n-1}YY^t\\
  & = \frac{1}{n-1} PAP^t \\
  & = \frac{1}{n-1} PEDE^tP^t \\
  & = \frac{1}{n-1} E^tEDE^tE \\
  & = \frac{1}{n-1} D
 \end{align}
 $$
-So we found the transformation that diagonalizes the covariance matrix $C_Y$.
+So we found the transformation that diagonalizes the covariance matrix $\text{Cov}_Y$ and that is in a nutshell, what PCA does. We can now select a subset of principal components to reduce the dimension of our dataset. In our particular case we get:
+
+```{r}
+
+```
+
+
+PS:
+In case you were wondering, why the blue regression line did not correspond to the axis of the first prinicpal component: Regression tries to minimize the distance between the regression line and a point wrt to the y axis ($\hat{y} - y$), whereas PCA tries to minimize the orthogonal distance. You can find a few nice graphics illustrating that point [here](https://shankarmsy.github.io/posts/pca-vs-lr.html)
+
+PPS:
+Variance is affected by units of measurement, so it is neceassary to first standardize (z-transform) your data before applying PCA. Otherwise 'large' variables will naturally account for more variance and distort your analysis. 
+
+PPPS: 
+Since PCA is an eigen-decomposition of the covariance matrix (which is mean-centered per definition) mean centering is not necessary, but singular-value-decomposition (svd), a commonly used alternative way to perform PCA, requires centered data. Check out the stackoverflow posts [here](https://stats.stackexchange.com/questions/134282/relationship-between-svd-and-pca-how-to-use-svd-to-perform-pca) and [here](https://stats.stackexchange.com/questions/189822/how-does-centering-make-a-difference-in-pca-for-svd-and-eigen-decomposition)
+
 
 ## References
 
@@ -95,19 +145,10 @@ So we found the transformation that diagonalizes the covariance matrix $C_Y$.
 
 
 
+
+
+
 # Add
-- interpretation of P as basis = rotation and stretch
-- scaling and centering
-
-
-
-## Notes from Wiki
-Since variance is affected by units of measurement, it is necessary to standardize (z-transform) the original variables before applying PCA, because otherwise 'large' variables will naturally account for more variance.
-
-PCA goes by many names depending on the field, but in mathematics, it is usally called eigenvalue decomposition or singular value decomposition, because those are the mathematical tools used to calculate the principal components.
-
-So how does PCA actually work? 
-
-Let's start with a very simple dataset and work from there:
-
-The results of a PCA are usually discussed in terms of component scores, sometimes called factor scores (the transformed variable values corresponding to a particular data point), and loadings (the weight by which each standardized original variable should be multiplied to get the component score).[5] If component scores are standardized to unit variance, loadings must contain the data variance in them (and that is the magnitude of eigenvalues). If component scores are not standardized (therefore they contain the data variance) then loadings must be unit-scaled, ("normalized") and these weights are called eigenvectors; they are the cosines of orthogonal rotation of variables into principal components or back. 
+- interpretation of P as basis = rotation and stretch:
+https://www.visiondummy.com/2014/04/geometric-interpretation-covariance-matrix/https://math.stackexchange.com/questions/2615794/change-of-basis-with-rotation-matrices
+https://www.youtube.com/watch?v=P2LTAUO1TdA&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&index=13
