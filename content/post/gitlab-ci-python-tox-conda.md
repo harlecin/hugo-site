@@ -1,4 +1,4 @@
-# Python Development with Jupyter, Gitlab CI and Tox
++++ date = "2020-11-22" title = "Python Development with Jupyter, Gitlab CI and Tox" +++
 
 In this post I want to give a brief overview how to structure a Python package, load it in Jupyter notebooks, setup continuous integration with Gitlab and `tox-conda` that I like to use for data science projects.
 
