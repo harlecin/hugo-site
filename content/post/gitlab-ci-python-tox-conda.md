@@ -205,4 +205,4 @@ dotenv -o "../.env"
 
 That's it, you should have working Python project structure ready to use :)
 
-You can download a zip file containing a sample project from [here](data\python-sample-project.zip).
+You can download a zip file containing a sample project from [here](post/python-sample-project.zip).
