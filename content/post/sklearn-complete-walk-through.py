@@ -135,7 +135,8 @@ preprocessing = ColumnTransformer([('num', num_pipeline, num_vars),
 model_logreg = make_pipeline(preprocessing, LogisticRegression())
 # %% [markdown]
 # A quick note here: If you use a OneHotEncoder in cross-validation, you need to either specify the categories beforehand or allow it to ignore unknown values. Otherwise you will quite likely induce NaNs in your data, because your train folds might not be big enough to contain all categories found in the corresponding test folds.
-
+#
+# If you are interested in running feature selection in a pipeline, check out [this article](https://scikit-learn.org/stable/auto_examples/compose/plot_feature_union.html) from the scikit-learn docs.
 # %%
 y = df_titanic.survived.values
 X = df_titanic.drop(["survived"], axis=1)
