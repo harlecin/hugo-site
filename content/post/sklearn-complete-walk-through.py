@@ -33,7 +33,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import train_test_split
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, cross_val_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 # %%
@@ -122,6 +122,7 @@ num_pipeline = make_pipeline(SimpleImputer(strategy='median'), StandardScaler())
 num_pipeline.steps
 # You can access steps by name:
 num_pipeline.named_steps["simpleimputer"]
+
 cat_pipeline = Pipeline([('imputer', SimpleImputer(strategy='most_frequent')),
                          ('onehot', OneHotEncoder(sparse=False, handle_unknown="ignore"))
                         ])
@@ -156,6 +157,8 @@ param_grid = {'columntransformer__num__simpleimputer__strategy': ['median', 'mea
 grid = GridSearchCV(model_logreg, param_grid, cv=10, scoring='roc_auc', verbose=1, error_score="raise")
 grid.fit(X_train, y_train)
 grid.best_score_
+# Display results table
+# pd.DataFrame(grid.cv_results_).T
 # %% [markdown]
 # Let's take a quick look at the results from our grid-search:
 # %%
@@ -174,8 +177,29 @@ print(grid.best_estimator_.predict(X_test)[0:5])
 # The confidence score for a sample is the signed distance of that sample to the hyperplane.
 print(grid.best_estimator_.decision_function(X_test)[0:5])
 
+# %% [markdown]
+# Last, but not least, I want to quickly show you how you can easily perform nested-cross-validation:
 
+# %%
+scores = cross_val_score(
+            GridSearchCV(
+                model_logreg, 
+                param_grid, 
+                cv=10, scoring='roc_auc', 
+                verbose=1, error_score="raise"), 
+            X, y)
+# %%
+print("Nested cross-validation scores: {}".format(scores))
+print("Mean nested-cv-score: {}".format(scores.mean()))
 
+# %% [markdown]
+# So, that is about it. I hope this quick walk-through was helpful.
+#
+# In the beginning I had quite some trouble deciding on a 'canonic' way to do things, because there are quite a number of different ways to get to the same end result. I am quite happy with this workflow at the moment, but if you have anys suggestions to improve the workflow, feel free to open a Github issue :)
+#
+# ## References
+# 
+# My post follows many recommendations from the book "Introduction to Machine Learning with Python" and only deviates from it significantely when my book was not up-to-date (e.g. OneHotEncoder could not handle strings when the book was published)
 
 
 # %% [markdown]
@@ -186,7 +210,6 @@ print(grid.best_estimator_.decision_function(X_test)[0:5])
 # TODO: Check if Pipeline always keeps variable order as specified in num_vars, cat_vars or if it is sensitive to underlying ordering
 # TODO: difference between gridsearchcv and cross_val_score
 # https://stackoverflow.com/questions/24096146/how-is-scikit-learn-gridsearchcv-best-score-calculated
-# TODO: include nested cross_validation
 # TODO: get feature names for coeffs
 
 
