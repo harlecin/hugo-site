@@ -201,18 +201,3 @@ print("Mean nested-cv-score: {}".format(scores.mean()))
 # ## References
 # 
 # My post follows many recommendations from the book "Introduction to Machine Learning with Python" and only deviates from it significantely when my book was not up-to-date (e.g. OneHotEncoder could not handle strings when the book was published)
-
-
-# %% [markdown]
-# Get feature names:
-# https://stackoverflow.com/questions/54646709/sklearn-pipeline-get-feature-names-after-onehotencode-in-columntransformer
-
-# TODO: Include Feature selection in pipeline?
-# TODO: Check if Pipeline always keeps variable order as specified in num_vars, cat_vars or if it is sensitive to underlying ordering
-# TODO: difference between gridsearchcv and cross_val_score
-# https://stackoverflow.com/questions/24096146/how-is-scikit-learn-gridsearchcv-best-score-calculated
-# TODO: get feature names for coeffs
-
-
-# DONE: Is grid.best_estimator_.predict() == grid.predict()? -> yes, per the docs
-# https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html
