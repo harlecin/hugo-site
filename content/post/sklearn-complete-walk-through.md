@@ -1,4 +1,7 @@
- # Scikit-Learn: Complete Walk-Through (for R-Users)
++++
+date = "2021-01-20"
+title = "Scikit-learn Complete Walk Through (for R-Users)"
++++)
 
 Python is one if not the most used language by data scientists interested in machine learning and deep learning techniques.
 
