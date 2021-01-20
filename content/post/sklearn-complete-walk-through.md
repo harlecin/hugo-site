@@ -11,14 +11,14 @@ Python is one if not the most used language by data scientists interested in mac
 
  So without further ado, let's get started :)
 
- ## Survial Chances on the Titanic
+## Survial Chances on the Titanic
 
 For this walk-through I will use one of the most widely used datasets in machine learning: the titanic dataset.
 
 Firstly, because it's a classic, but more importantely, it is small, readily available and has both numeric, string and missing features. If you want to follow along, you can find the dataset [here](https://www.openml.org/d/40945).
 
 
-```python
+```
 # Load autoreload module 
 # autoreload 1: reload modules imported with %aimport everytime before execution
 # autoreload 2: reload all modules
@@ -31,7 +31,7 @@ Firstly, because it's a classic, but more importantely, it is small, readily ava
     
 
 
-```python
+```
 # Import Libs
 import os
 import pandas as pd
@@ -48,7 +48,7 @@ from sklearn.metrics import roc_auc_score
 ```
 
 
-```python
+```
 # # Import dataset
 df_titanic = pd.read_csv("../../data/titanic.csv", sep=",", na_values="?")
 df_titanic.head()
@@ -184,10 +184,10 @@ df_titanic.head()
 
 
 
- So, now that we have our dataframe let's take a quick look at some summary statistics and plots:
+So, now that we have our dataframe let's take a quick look at some summary statistics and plots:
 
 
-```python
+```
 df_titanic.dtypes
 ```
 
@@ -213,7 +213,7 @@ df_titanic.dtypes
 
 
 
-```python
+```
 # Note: by default, only numeric attributes are described and NaN values excluded!
 df_titanic.describe()
 ```
@@ -336,7 +336,7 @@ df_titanic.describe()
 
 
 
-```python
+```
 df_titanic.describe(include=[object])
 ```
 
@@ -418,7 +418,7 @@ df_titanic.describe(include=[object])
 
 
 
-```python
+```
 # Check for NaN values per column
 df_titanic.isnull().sum()
 
@@ -446,14 +446,14 @@ df_titanic.isnull().sum()
 
 
 
-```python
+```
 px.histogram(df_titanic, x="age", color = "survived",title="Histogram of Age by Survial")
 ```
-![png](/img/sklearn/histogram_age.PNG)
+![png](/img/jupyter-sklearn/histogram_age.PNG)
 
 
 
-```python
+```
 # Since pandas >0.25 you can aggregate and rename columns in one go:
 df_gd = df_titanic.groupby(["sex"], as_index=False). \
                     agg(
@@ -466,13 +466,13 @@ df_gd = df_titanic.groupby(["sex"], as_index=False). \
 df_gd['prop_survived'] = df_gd.n_survived/df_gd.n_sex
 px.bar(df_gd, x = "sex", y="prop_survived", title="Survival Probability by Gender")
 ```
-![png](/img/sklearn/gender_survival.PNG)
+![png](/img/jupyter-sklearn/gender_survival.PNG)
 
 
 
  So, from these initial plots it seems that being male does not really help your survival chances. Now that we have a rough idea how the dataset looks like, let's start preparing the data for modeling.
 
- ## Data Preparation
+## Data Preparation
 
  Unlike R, Python does not have a dataframe as a native data structure which was later provided by the [pandas](https://github.com/pandas-dev/pandas) library and nowadays also by [datatable](https://github.com/h2oai/datatable). However, when scikit-learn was originally designed in 2007, pandas was not available yet (pandas was first released in 2008). This is probably one of the main reasons why scikit-learn takes some getting used to for R converts who are used to working with dataframes, because scikit-learn expects all inputs in the form of numpy-arrays (though it will automatically convert dataframes as long as they contain only numeric data).
 
@@ -481,12 +481,12 @@ px.bar(df_gd, x = "sex", y="prop_survived", title="Survival Probability by Gende
  I will show one way based on pandas and one using scikit-learn. But let's get rid of some columns first. Passenger name, ticket number and home.dest might be slightly correlated to survivial, but probably not. I don't know what "boat" and "body" represent and could not find it in the docs, so to make sure we are not accidentally including feature leaks, such as which life boat a person was on, better exclude them.
 
 
-```python
+```
 df_titanic.drop(["name", "ticket", "boat", "body", "home.dest"], axis=1, inplace=True)
 ```
 
 
-```python
+```
 # Let's grab only the deck part of the cabin to simplify things:
 df_titanic['cabin'] = df_titanic.cabin.astype(str)
 df_titanic['cabin'] = df_titanic.cabin.apply(lambda s: s[0])
@@ -499,18 +499,18 @@ num_vars = ['fare', 'age']
 ```
 
 
-```python
+```
 # 1) get_dummies() from pandas
 # Attention: dummy_na = True includes a dummy column even if there are none!
 df_m = pd.get_dummies(df_titanic, columns=cat_vars, drop_first=False, dummy_na=True)
 ```
 
- > Using get_dummies() on a Pandas dataframe can be dangerous when features change between training/test and prediction, because scikit-learn does not know about column names, it only considers column positions!
+> Using get_dummies() on a Pandas dataframe can be dangerous when features change between training/test and prediction, because scikit-learn does not know about column names, it only considers column positions!
 
- Let's use scikit-learn for our encoding:
+Let's use scikit-learn for our encoding:
 
 
-```python
+```
 oh_enc = OneHotEncoder(sparse=False, categories="auto", drop=None, handle_unknown='error')
 X_oh = oh_enc.fit_transform(df_titanic[cat_vars])
 
@@ -521,10 +521,10 @@ oh_enc.categories_
 X = np.hstack([df_titanic[num_vars], X_oh])
 ```
 
- Using the OneHotEncoder was a bit more work vs. using `get_dummies()`, but one huge benefit we get is that it integrates neatly into scikit-learns api. Using pipelines, we can do the following:
+Using the OneHotEncoder was a bit more work vs. using `get_dummies()`, but one huge benefit we get is that it integrates neatly into scikit-learns api. Using pipelines, we can do the following:
 
 
-```python
+```
 num_pipeline = Pipeline([('imputer', SimpleImputer(strategy='median')),
                          ('std_scaler', StandardScaler())
                         ])
@@ -547,12 +547,12 @@ preprocessing = ColumnTransformer([('num', num_pipeline, num_vars),
 model_logreg = make_pipeline(preprocessing, LogisticRegression())
 ```
 
- A quick note here: If you use a OneHotEncoder in cross-validation, you need to either specify the categories beforehand or allow it to ignore unknown values. Otherwise you will quite likely induce NaNs in your data, because your train folds might not be big enough to contain all categories found in the corresponding test folds.
+A quick note here: If you use a OneHotEncoder in cross-validation, you need to either specify the categories beforehand or allow it to ignore unknown values. Otherwise you will quite likely induce NaNs in your data, because your train folds might not be big enough to contain all categories found in the corresponding test folds.
 
- If you are interested in running feature selection in a pipeline, check out [this article](https://scikit-learn.org/stable/auto_examples/compose/plot_feature_union.html) from the scikit-learn docs.
+If you are interested in running feature selection in a pipeline, check out [this article](https://scikit-learn.org/stable/auto_examples/compose/plot_feature_union.html) from the scikit-learn docs.
 
 
-```python
+```
 y = df_titanic.survived.values
 X = df_titanic.drop(["survived"], axis=1)
 
@@ -560,7 +560,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
 ```
 
 
-```python
+```
 # Fit the model including the pipeline:
 model_logreg.fit(X_train, y_train)
 print("Logistic Regression score: {}".format(model_logreg.score(X_test, y_test)))
@@ -569,10 +569,10 @@ print("Logistic Regression score: {}".format(model_logreg.score(X_test, y_test))
     Logistic Regression score: 0.801829268292683
     
 
- Pipelines really shine when they are combined with for example grid search, because we can search for the optimal parameters over the entire pipeline:
+Pipelines really shine when they are combined with for example grid search, because we can search for the optimal parameters over the entire pipeline:
 
 
-```python
+```
 # By default make_pipeline() uses the lowercased class name as name.
 # Again, we can use model_logreg.steps to check the names we have to use:
 param_grid = {'columntransformer__num__simpleimputer__strategy': ['median', 'mean'],
@@ -599,7 +599,7 @@ grid.best_score_
  Let's take a quick look at the results from our grid-search:
 
 
-```python
+```
 print("Best estimator:\n{}".format(grid.best_estimator_))
 ```
 
@@ -624,7 +624,7 @@ print("Best estimator:\n{}".format(grid.best_estimator_))
     
 
 
-```python
+```
 print("Best parameters:\n{}".format(grid.best_params_))
 ```
 
@@ -633,7 +633,7 @@ print("Best parameters:\n{}".format(grid.best_params_))
     
 
 
-```python
+```
 print("Best cross-validation score (AUC):{}".format(grid.best_score_))
 print("Test set AUC: {}".format(roc_auc_score(y_true=y_test, y_score=grid.best_estimator_.predict(X_test))))
 print("Test set best score (default=accuracy): {}".format(grid.best_estimator_.score(X_test, y_test)))
@@ -645,7 +645,7 @@ print("Test set best score (default=accuracy): {}".format(grid.best_estimator_.s
     
 
 
-```python
+```
 # Run the model on our test data with the best pipeline:
 print(grid.best_estimator_.predict(X_test)[0:5])
 # Return confidence socres for samples:
@@ -662,7 +662,7 @@ print(grid.best_estimator_.decision_function(X_test)[0:5])
  Last, but not least, I want to quickly show you how you can easily perform nested-cross-validation:
 
 
-```python
+```
 scores = cross_val_score(
             GridSearchCV(
                 model_logreg, 
@@ -680,7 +680,7 @@ scores = cross_val_score(
     
 
 
-```python
+```
 print("Nested cross-validation scores: {}".format(scores))
 print("Mean nested-cv-score: {}".format(scores.mean()))
 ```
@@ -693,6 +693,6 @@ print("Mean nested-cv-score: {}".format(scores.mean()))
 
  In the beginning I had quite some trouble deciding on a 'canonic' way to do things, because there are quite a number of different ways to get to the same end result. I am quite happy with this workflow at the moment, but if you have anys suggestions to improve the workflow, feel free to open a Github issue :)
 
- ## References
+## References
 
- My post follows many recommendations from the book "Introduction to Machine Learning with Python" and only deviates from it significantely when the book I had was not up-to-date (e.g. OneHotEncoder could not handle strings when the book was published)
+My post follows many recommendations from the book "Introduction to Machine Learning with Python" and only deviates from it significantely when the book I had was not up-to-date (e.g. OneHotEncoder could not handle strings when the book was published)
