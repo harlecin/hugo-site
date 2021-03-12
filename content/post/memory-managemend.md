@@ -91,6 +91,7 @@ Image source udacity.com:
 Before we finish, let's briefly discuss tow more important terms that often come up when we talk about memory management:
 
 1: **Memory page**: A memory page is number of directly successive memory locations in virtual memory. All memory is divided into equally sized memory pages. The os uses memory pages to perform virtual memory management. Each memory pageis interpreted as a logical address and mapped to a physcial address if necessary.
+
 2. **Memory frame**: A memory frame is the same as a memory page, but it actually lies in physical not virtual memory.
 
 That's about as far as the basics are concerned :)
