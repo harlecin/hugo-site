@@ -1,6 +1,6 @@
 +++
 date = "2021-03-12"
-title = "Memory Management in C++ - Foundations"
+title = "Intro Memory Management in C++"
 +++
 
 
