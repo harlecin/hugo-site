@@ -80,3 +80,5 @@ In general, you can get the size of a data type in c++ by using:
 sizeof(T)
 ```
 So for example `sizeof(int)` gives us 4 bytes. If you plot the addresses of an int array, you will see that the addresses increment by 4 between each individual number.
+
+That's about as far as the basics are concerned :)
