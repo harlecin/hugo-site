@@ -65,7 +65,7 @@ Your g-value at L is 6, the f-value is 9 (6+3). Should we go up or to the right?
 
 Our a* search algorithm will have the following structure (Credits: udacity.com):
 
-![astar](/img/a-star-code-structure)
+![astar](/img/a-star-code-structure.png)
 
 ## C++ Implementation
 
