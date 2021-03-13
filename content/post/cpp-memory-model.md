@@ -48,7 +48,7 @@ int main()              -> 0) main() is the first item on the stack
     return 0;
 }
 ```
-When we run the program the stack gets allocated and deallocated according to first-in-first-out.
+When we run the program the stack gets allocated and deallocated according to last-in-first-out.
 
 So stack size looks basically like this:
 ```
