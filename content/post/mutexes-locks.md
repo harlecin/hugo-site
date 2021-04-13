@@ -5,7 +5,7 @@ title = "Mutexes and Locks"
 
 To avoid data races, c++ has a concept called *mutex*, short for Mutual EXclusion. A mutex manages access to a shared resource and ensures that only one thread at a time is able to access the resource:
 ```
-thread_1 --------------
+thread 1 --------------
                       |
                   locks resource
                       |
