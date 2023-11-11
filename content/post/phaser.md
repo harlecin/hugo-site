@@ -13,7 +13,9 @@ Getting started with `phaser` is also very easy, you can gradually easy into set
 
 After dabbling a bit with different `phaser` tutorials I bought the book 'Make 2d Games in Javascript with Phaser' by Thomas Palef to learn how to create games in a more professional manner. Thomas' book is really amazing, he takes you all the way from the very basics to a fully functional game that also works on mobile. He also includes additional game templates that you can easily customize. Worth every cent in my mind, really a very good resource. I have no affiliation whatsoever, just a very happy customer. You can buy his book [here](https://thomaspalef.gumroad.com/l/make-2d-games)
 
-Below you can find a slightly modded match-3 game using Thomas' template code. I plan to extend it in the future and include additional mechanics, but I think it is very fun already in this simple version:
+Below you can find a slightly modded match-3 game using Thomas' template code. I plan to extend it in the future and include additional mechanics, but I think it is very fun already in this simple version. 
+
+Get at least 3 hearts of the same color next to each other. You have 10 moves in total to get as many points as possible :)
 
 <head>
 <meta charset="utf-8" />
