@@ -14,11 +14,11 @@ Here is my setup, stay tuned for my first game :)
 <head>
 <meta charset="utf-8" />
 
-<script src="./js/phaser.min.js"></script> 
-<script src="./js/load.js"></script>
-<script src="./js/menu.js"></script>
-<script src="./js/play.js"></script>
-<script src="./js/game.js"></script>
+<script src="https://harlecin.netlify.app/js/phaser.min.js"></script> 
+<script src="https://harlecin.netlify.app/js/load.js"></script>
+<script src="https://harlecin.netlify.app/js/menu.js"></script>
+<script src="https://harlecin.netlify.app/js/play.js"></script>
+<script src="https://harlecin.netlify.app/js/game.js"></script>
 </head>
 <body>
 <div id="game"></div>
