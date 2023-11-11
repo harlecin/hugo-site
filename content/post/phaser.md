@@ -1,6 +1,6 @@
 +++
 date = "2023-11-11"
-title = "Test
+title = "Test"
 +++
 
 In this post I want to discuss the a* algorithm (pronounced 'a-star'), how it is used for motion planning and how we can implement it in cpp.
