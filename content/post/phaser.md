@@ -12,9 +12,15 @@ so I switched to vite, which is really nice :)
 
 Here is my setup, stay tuned for my first game :)
 
-<iframe
-  id="test"
-  frameborder="0" scrolling="no" height=500px width="100%"
-  src="https://play.famobi.com/tap-tap-dunk/A-IKI23">
-</iframe>
-
+    <head>
+        <meta charset="utf-8" />
+        <title>First Game</title>
+        <script src="js/phaser.min.js"></script> 
+        <script src="js/load.js"></script>
+        <script src="js/menu.js"></script>
+        <script src="js/play.js"></script>
+        <script src="js/game.js"></script>
+    </head>
+    <body>
+        <div id="game"></div>
+    </body>
