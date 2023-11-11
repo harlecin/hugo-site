@@ -10,5 +10,4 @@ The process of determining how to get from a start to an endpoint is called 'pla
 - discrete motion planning
 - continuous motion planning
 
- <iframe src="https://play.famobi.com/tap-tap-dunk/A-IKI23" title="game test"></iframe> 
 
