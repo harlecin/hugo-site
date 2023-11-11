@@ -7,7 +7,7 @@ title = "Test"
 
 <iframe
   id="test"
-  frameborder="0" scrolling="no" height="100%" width="100%"
+  frameborder="0" scrolling="no" height=500px width="100%"
   src="https://play.famobi.com/tap-tap-dunk/A-IKI23">
 </iframe>
 
