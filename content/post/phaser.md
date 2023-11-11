@@ -11,6 +11,9 @@ deno + fresh was my goto choice to redo my blob, but alas, I could not get it to
 so I switched to vite, which is really nice :)
 
 Here is my setup, stay tuned for my first game :)
+
+test
+
 <head>
 <meta charset="utf-8" />
 
