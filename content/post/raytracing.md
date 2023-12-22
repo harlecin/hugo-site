@@ -14,7 +14,7 @@ A raytracer is computer graphics technique to create realistic images by simulat
 The basic idea is very simple. Imagine you want to draw a picture somewhere outside of say a beautiful house, but unfortunately, you are not really very good at drawing. One trick that you could use would be the following:
 
 Take a metal grid with a very fine mesh, say 1x1cm and put it in front of the object you want to paint. Now for each metal grid section, check which color you see. Paint this color on the corresponding place on your paper. Checkout the image below (imagine that my drawing skills are better and the rays intersect nicely with the grid)
-![raytracer-explained](raytracer-explained.png)
+![raytracer-explained](img/raytracer-explained.png)
 
 The individual steps are:
 1. Imagine you place a camera `C` at some point `O`
@@ -140,7 +140,7 @@ We need the normal vector later to implement shadows and you can look up the for
 Now we can go forward and define our `Canvas` class. The `Canvas` will be responsible for storing our scene (aka the objects and lights we define) and then rendering the scene.
 
 We will give set our viewport to have viewport width $V_w=1$ and viewport height $V_h=1$ and we will set the distance $d$ between our camera and the viewport to $d=1$ as well. Note that the viewport is defined in realworld units (e.g. meters). Using more high-school math you can calculate that we get a field of view $\alpha$ of roughly 53°:
-![field-of-view](./field-of-view.png)
+![field-of-view](img/field-of-view.png)
 
 All that is left is to convert from our canvas (measured in pixels) to the real-world viewport (measured e.g. in meters). So if we set our canvas height $C_h = 640px$ and our canvas width $C_w= 640px$, we get that for every pixel on the canvas, we move $1/640$, aka $V_w/C_W$ in the viewport. That means that we get:
 
@@ -288,7 +288,7 @@ canvas.render(O)
 
 The code above gives us the following image:
 
-![rendering](rendering.png)
+![rendering](img/rendering.png)
 
 That's it. We implemented a simple raytracer while leveraging Python type hints and protocols to make the code easier to understand and to extend. 
 
