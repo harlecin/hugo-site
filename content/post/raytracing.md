@@ -115,6 +115,7 @@ As you can see, the `Sphere` has a variable called `_color` that is of type `rgb
 - Sphere equation: $<P - C, P - C> = r^2$, where $<>$ is the dot-product, $C$ is the center of the sphere and $P$ is a point on the surface.
 
 The ray intersects the sphere if and only if the ray and the sphere equation are both satisfied at the same time. So let's subsitute $P$ from our ray equation into our sphere equation:
+
 $$
 <O + t(\underbrace{V-O}_{D}) - C,O + t(\underbrace{V-O}_{D}) -C> = r^2 \\
 <\underbrace{O - C}_{CO} + tD,O -C + tD> = r^2 \\
