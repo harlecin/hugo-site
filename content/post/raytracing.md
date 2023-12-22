@@ -116,18 +116,18 @@ As you can see, the `Sphere` has a variable called `_color` that is of type `rgb
 
 The ray intersects the sphere if and only if the ray and the sphere equation are both satisfied at the same time. So let's subsitute $P$ from our ray equation into our sphere equation:
 
-<span class="math display">
-<O + t(\underbrace{V-O}_{D}) - C,O + t(\underbrace{V-O}_{D}) -C> = r^2 \\
+$$
+<O + t(\underbrace{V-O}\_{D}) - C,O + t(\underbrace{V-O}_{D}) -C> = r^2 \\
 <\underbrace{O - C}_{CO} + tD,O -C + tD> = r^2 \\
 <CO + tD, CO + tD> = r^2 \\
 t^2\underbrace{<D, D>}_a + t\underbrace{(2<CO, D>)}_b + \underbrace{(CO, CO) - r^2}_c = 0 \\
 at^2 + bt + c = 0
-<span>
+$$
 
 So all we need to do is solve the quadratic equation we know and love from high-school :)
-<span class="math display">
-(t_1, t_2) = \frac{-b \pm(b^2 - 4ac)}{2a}
-<span>
+$$
+(t\_1, t_2) = \frac{-b \pm(b^2 - 4ac)}{2a}
+$
 Geometrically speaking, we have three possibilities:
 
 1. Ray does NOT intersect the sphere: we have no solution to the above equation
