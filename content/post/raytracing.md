@@ -14,7 +14,7 @@ A raytracer is computer graphics technique to create realistic images by simulat
 The basic idea is very simple. Imagine you want to draw a picture somewhere outside of say a beautiful house, but unfortunately, you are not really very good at drawing. One trick that you could use would be the following:
 
 Take a metal grid with a very fine mesh, say 1x1cm and put it in front of the object you want to paint. Now for each metal grid section, check which color you see. Paint this color on the corresponding place on your paper. Checkout the image below (imagine that my drawing skills are better and the rays intersect nicely with the grid)
-![raytracer-explained](img/raytracer-explained.png)
+![raytracer-explained](/img/raytracer-explained.png)
 
 The individual steps are:
 1. Imagine you place a camera `C` at some point `O`
@@ -116,18 +116,18 @@ As you can see, the `Sphere` has a variable called `_color` that is of type `rgb
 
 The ray intersects the sphere if and only if the ray and the sphere equation are both satisfied at the same time. So let's subsitute $P$ from our ray equation into our sphere equation:
 
-$$
+<span class="math display">
 <O + t(\underbrace{V-O}_{D}) - C,O + t(\underbrace{V-O}_{D}) -C> = r^2 \\
 <\underbrace{O - C}_{CO} + tD,O -C + tD> = r^2 \\
 <CO + tD, CO + tD> = r^2 \\
 t^2\underbrace{<D, D>}_a + t\underbrace{(2<CO, D>)}_b + \underbrace{(CO, CO) - r^2}_c = 0 \\
 at^2 + bt + c = 0
-$$
+<span>
 
 So all we need to do is solve the quadratic equation we know and love from high-school :)
-$$
+<span class="math display">
 (t_1, t_2) = \frac{-b \pm(b^2 - 4ac)}{2a}
-$$
+<span>
 Geometrically speaking, we have three possibilities:
 
 1. Ray does NOT intersect the sphere: we have no solution to the above equation
@@ -141,15 +141,15 @@ We need the normal vector later to implement shadows and you can look up the for
 Now we can go forward and define our `Canvas` class. The `Canvas` will be responsible for storing our scene (aka the objects and lights we define) and then rendering the scene.
 
 We will give set our viewport to have viewport width $V_w=1$ and viewport height $V_h=1$ and we will set the distance $d$ between our camera and the viewport to $d=1$ as well. Note that the viewport is defined in realworld units (e.g. meters). Using more high-school math you can calculate that we get a field of view $\alpha$ of roughly 53°:
-![field-of-view](img/field-of-view.png)
+![field-of-view](/img/field-of-view.png)
 
 All that is left is to convert from our canvas (measured in pixels) to the real-world viewport (measured e.g. in meters). So if we set our canvas height $C_h = 640px$ and our canvas width $C_w= 640px$, we get that for every pixel on the canvas, we move $1/640$, aka $V_w/C_W$ in the viewport. That means that we get:
 
-$$
+<span class="math display">
 V_x = C_x \frac{V_w}{C_w} = C_x \frac{1}{640} \\
 V_y = C_y \frac{V_h}{C_h} =C_y \frac{1}{640}\\
 V_z = d =1
-$$
+</span>
 
 That means we are now ready to implement our `Canvas` class:
 ```
@@ -289,7 +289,7 @@ canvas.render(O)
 
 The code above gives us the following image:
 
-![rendering](img/rendering.png)
+![rendering](/img/rendering.png)
 
 That's it. We implemented a simple raytracer while leveraging Python type hints and protocols to make the code easier to understand and to extend. 
 
