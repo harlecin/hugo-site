@@ -117,17 +117,17 @@ As you can see, the `Sphere` has a variable called `_color` that is of type `rgb
 The ray intersects the sphere if and only if the ray and the sphere equation are both satisfied at the same time. So let's subsitute $P$ from our ray equation into our sphere equation:
 
 $$
-<O + t(\underbrace{V-O}\_{D}) - C,O + t(\underbrace{V-O}_{D}) -C> = r^2 \\
-<\underbrace{O - C}_{CO} + tD,O -C + tD> = r^2 \\
-<CO + tD, CO + tD> = r^2 \\
-t^2\underbrace{<D, D>}_a + t\underbrace{(2<CO, D>)}_b + \underbrace{(CO, CO) - r^2}_c = 0 \\
+<O + t(\underbrace{V-O}\_{D}) - C,O + t(\underbrace{V-O}_{D}) -C> = r^2 \newline
+<\underbrace{O - C}_{CO} + tD,O -C + tD> = r^2 \newline
+<CO + tD, CO + tD> = r^2 \newline
+t^2\underbrace{<D, D>}_a + t\underbrace{(2<CO, D>)}_b + \underbrace{(CO, CO) - r^2}_c = 0 \newline
 at^2 + bt + c = 0
 $$
 
 So all we need to do is solve the quadratic equation we know and love from high-school :)
 $$
 (t\_1, t_2) = \frac{-b \pm(b^2 - 4ac)}{2a}
-$
+$$
 Geometrically speaking, we have three possibilities:
 
 1. Ray does NOT intersect the sphere: we have no solution to the above equation
@@ -145,11 +145,11 @@ We will give set our viewport to have viewport width $V_w=1$ and viewport height
 
 All that is left is to convert from our canvas (measured in pixels) to the real-world viewport (measured e.g. in meters). So if we set our canvas height $C_h = 640px$ and our canvas width $C_w= 640px$, we get that for every pixel on the canvas, we move $1/640$, aka $V_w/C_W$ in the viewport. That means that we get:
 
-<span class="math display">
-V_x = C_x \frac{V_w}{C_w} = C_x \frac{1}{640} \\
-V_y = C_y \frac{V_h}{C_h} =C_y \frac{1}{640}\\
+$$
+V_x = C_x \frac{V_w}{C_w} = C_x \frac{1}{640} \newline
+V_y = C_y \frac{V_h}{C_h} =C_y \frac{1}{640} \newline
 V_z = d =1
-</span>
+$$
 
 That means we are now ready to implement our `Canvas` class:
 ```
