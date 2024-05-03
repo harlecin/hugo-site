@@ -1,7 +1,6 @@
 +++
 date = "2023-12-22"
 title = "Raytracing with Type Hints & Protocols in Python"
-math: true
 +++
 
 In this post, we will explore the basics of computer graphics by implementing a simple raytracer in Python. We will also use the raytracer as an example to experiment with Python type checking to catch more bugs and create self-documenting code. The implementation of the raytracer follows the fantastic book ["Computer Graphics from Scartch"](https://gabrielgambetta.com/computer-graphics-from-scratch/) from Gabriel Gambetta.
