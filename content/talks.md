@@ -7,7 +7,7 @@ I had the pleasure to present at the following events and conferences:
 
 - [Guest Lecture, 2024 Marketing Vienna University of Economics and Business](https://www.linkedin.com/posts/cordula-cerha_handel-marketing-rds-activity-7183913755942993921-n_K-): 'From LDA to Neural Nets: Using embeddings to understand our customers'
 - Guest Lecture, 2022 Quantitative Finance Master, Vienna University of Economics and Business: 'Business Insights and Analytics@IKI'
-- Datanauts TechTalk 2022]: 'Neural Networks for Customer Embeddings'
+- Datanauts TechTalk 2022: 'Neural Networks for Customer Embeddings'
 - [Business Circle, Digital Finance Conference, 2022](https://businesscircle.at/news/digitalisierung/digital-finance-forum-interview-mit-christoph-bodner-rewe-international/): 'Bridging the Gap between Finance, IT and Data Science'
 - [DSF-R 2019](http://dsf.academy/conference/): 'Fast, accurate and reproducible results – How can we increase our analytics ROI?'
 - [useR 2019 - Toulouse](http://www.user2019.fr/): 'Serverless Computing in R'
