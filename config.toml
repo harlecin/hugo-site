@@ -1,4 +1,4 @@
-baseurl = "https://harlecin.netlify.com/"
+baseurl = "https://harlecin.netlify.app/"
 title = "semper quaerere"
 author = "Christoph Bodner"
 canonifyurls = true
