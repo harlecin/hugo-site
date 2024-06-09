@@ -30,7 +30,7 @@ Now, let's install phaser by running: `npm install phaser`
 Then run `npm run dev` to get started :)
 
 ## Phaser HelloWorld
-By running `npm create vite@latest` and selecting framework "Vanilla" and variant "TypeScript", you will get the following project setup for you:
+By running `npm create vite@latest .` you specify that the project is scaffolded in the current folder. Select framework "Vanilla" and variant "TypeScript" and you will get the following project setup for you:
 ```
 public/
     vite.svg
