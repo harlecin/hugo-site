@@ -1,6 +1,6 @@
 +++
 title = "Talks"
-date = "2019-05-30"
+date = "2024-06-09"
 +++
 
 I had the pleasure to present at the following events and conferences:
