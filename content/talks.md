@@ -5,6 +5,7 @@ date = "2019-05-30"
 
 I had the pleasure to present at the following events and conferences:
 
+- [Turing College - TechTrek May 2024](https://blog.turingcollege.com/tech-trek-iki-lietuva/): 'From LDA to Neural Nets: Using embeddings to understand our customers'
 - [Guest Lecture, 2024 Marketing Vienna University of Economics and Business](https://www.linkedin.com/posts/cordula-cerha_handel-marketing-rds-activity-7183913755942993921-n_K-): 'From LDA to Neural Nets: Using embeddings to understand our customers'
 - Guest Lecture, 2022 Quantitative Finance Master, Vienna University of Economics and Business: 'Business Insights and Analytics@IKI'
 - Datanauts TechTalk 2022: 'Neural Networks for Customer Embeddings'
