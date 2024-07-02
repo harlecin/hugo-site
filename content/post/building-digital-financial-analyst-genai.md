@@ -1,6 +1,6 @@
 +++
 date = "2024-06-12"
-title = "Building a digital financial analyst using GenAI and Python"
+title = "Building a Digital Financial Analyst using GenAI and Python"
 +++
 
 In this post, we are going to explore how to create a digital financial analyst using the [Google Gemini LLM](https://gemini.google.com/app). The digital financial analyst should be able to quickly analyze company performance and financial data and provide summaries of the relevant insights it finds.
