@@ -56,7 +56,7 @@ $$
 > Note: The argmin operator returns the point where the minimum value is reached, while 
 the min operator returns the value of the function at that point!
 
-To generate predictions $a$, we use a function, i.e. a model, that maps $X$ to a:
+To generate predictions $a$, we use a function, i.e. a model, that maps $X$ to $a$:
 $$
 f: \mathcal{X} \to \mathcal{A} \\
 a = f(x)
@@ -104,6 +104,7 @@ So the empirical risk minimizer is given by:
 $$
 \hat{f} = argmin_{f \in \mathcal{F} \subseteq \mathcal{A}^{\mathcal{X}}}R(\hat{f})
 $$
+
 > Note: We consider only a subspace $\mathcal{F} \subseteq \mathcal{A}^{\mathcal{X}}$
 
 Since we only have finitely many datapoints, but an infinite function search space, there are 
@@ -229,6 +230,7 @@ One last sidenote: Terminology in this field can be quite confusing. I was spend
 - *Objective function*: the most general term for any function that you want to optimize
 
 User *lejlot* summarises with:
+
 > A loss function is a part of a cost function which is a type of an objective function.
 
 But the other definitions are quite nice as well:)
